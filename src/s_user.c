@@ -418,6 +418,11 @@ register_local_user(struct Client *client_p, struct Client *source_p, const char
 	if(!IsExemptKline(source_p) &&
 	   (xconf = find_xline(source_p->info, 1)) != NULL)
 	{
+		sendto_realops_snomask(SNO_BANNED, L_NETWIDE,
+			"Banned: X-line: %s!%s@%s{%s} %s (%s)", source_p->name,
+			source_p->username, source_p->host, source_p->sockhost, source_p->info,
+			xconf->host);
+
 		ServerStats.is_ref++;
 		add_reject(source_p, xconf->host, NULL);
 		exit_client(client_p, source_p, &me, "Bad user info");
@@ -432,6 +437,11 @@ register_local_user(struct Client *client_p, struct Client *source_p, const char
 					source_p->sockhost, source_p->preClient->dnsbl_listed->host);
 		else
 		{
+			sendto_realops_snomask(SNO_BANNED, L_NETWIDE,
+				"Banned: DNSBL: %s!%s@%s{%s} %s (%s)", source_p->name,
+				source_p->username, source_p->host, source_p->sockhost, source_p->info,
+				source_p->preClient->dnsbl_listed->host);
+
 			rb_dlink_list varlist = { NULL, NULL, 0 };
 
 			substitution_append_var(&varlist, "nick", source_p->name);
