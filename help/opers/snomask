@@ -11,7 +11,7 @@ Server notice masks:
        +f     - Clients refused due to limits
        +k     - Server and service kill messages
        +K     - Banned client connections
-       +n     - Local client nick changes
+       +n     - Local and global client nick changes
        +r     - Invalid usernames and dumb HTTP proxies
        +s     - Generic server messages and oper kills
        +u     - Client connections without auth{} block
