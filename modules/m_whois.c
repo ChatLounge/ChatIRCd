@@ -45,6 +45,7 @@
 #include "s_newconf.h"
 #include "ipv4_from_ipv6.h"
 #include "ratelimit.h"
+#include "s_user.h"
 
 static void do_whois(struct Client *client_p, struct Client *source_p, int parc, const char *parv[]);
 static void single_whois(struct Client *source_p, struct Client *target_p, int operspy);
@@ -237,6 +238,8 @@ single_whois(struct Client *source_p, struct Client *target_p, int operspy)
 	int cur_len = 0;
 	int mlen;
 	char *t;
+	int i;
+	char *m;
 	int tlen;
 	hook_data_client hdata;
 	int visible;
@@ -330,6 +333,21 @@ single_whois(struct Client *source_p, struct Client *target_p, int operspy)
 		sendto_one_numeric(source_p, RPL_WHOISCERTFP,
 				form_str(RPL_WHOISCERTFP),
 				target_p->name, target_p->certfp);
+
+	if(IsOper(source_p) || source_p == target_p)
+	{
+		m = buf;
+		*m++ = '+';
+
+		for (i = 0; i < 128; i++) /* >= 127 is extended ascii */
+			if (target_p->umodes & user_modes[i])
+				*m++ = (char) i;
+				*m = '\0';
+
+		sendto_one_numeric(source_p, RPL_WHOISMODES,
+				form_str(RPL_WHOISMODES),
+				target_p->name, buf);
+	}
 
 	if(MyClient(target_p))
 	{
