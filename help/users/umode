@@ -12,5 +12,6 @@ Usermodes:
          +B     - Marks you as a bot in /whois
          +D     - Deaf - ignores all channel messages.
          +Q     - Prevents you from being affected by channel forwarding.
-         +R     - Prevents non accept unidentified users from messaging you.
+         +R     - Prevents unidentified users you have not accepted from
+                  messaging you.
          +Z     - Is connected via SSL (cannot be set or unset).
