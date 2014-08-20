@@ -1,3 +1,23 @@
 Based on Charybdis 3.4.2.
 
-Added some backported fixes/features for Chat Lounge's needs.
+Description:
+
+	This IRCd is a Charybdis fork, designed for Chat Lounge
+in mind.  It may or may not suit your needs.
+
+	It may include some features from ShadowIRCd,
+ElementalIRCd, Ircd-seven, and elsewhere.
+
+Differences from Charybdis:
+
+- Global nick change notices (both global and local
+	are controlled by snomask +n)
+- Usermode +B (Mark as bot in whois)
+- Oper override does not expire.  It still generates
+	notices when used.
+- Usermodes are shown in /whois.  Only shown when
+	an oper performs the whois, or a self-whois.
+- When a K-lined user connects, snomask +K shows it.
+
+Note: The list may not be exhaustive.  Refer to the commit
+	history for details.
