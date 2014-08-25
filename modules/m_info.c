@@ -357,6 +357,12 @@ static struct InfoStruct info_table[] = {
 		"Network description"
 	},
 	{
+		"autochanmodes",
+		OUTPUT_STRING,
+		&ConfigChannel.autochanmodes,
+		"Channelmodes set on channel creation"
+	},
+	{
 		"nick_delay",
 		OUTPUT_DECIMAL,
 		&ConfigFileEntry.nick_delay,
