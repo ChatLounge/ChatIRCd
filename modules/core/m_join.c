@@ -351,6 +351,7 @@ m_join(struct Client *client_p, struct Client *source_p, int parc, const char *p
 			{
 				chptr->mode.mode |= MODE_TOPICLIMIT;
 				chptr->mode.mode |= MODE_NOPRIVMSGS;
+				chptr->mode.mode |= MODE_SECRET;
 			}
 
 			modes = channel_modes(chptr, &me);
