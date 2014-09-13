@@ -41,7 +41,7 @@ void
 show_info(hook_data *data)
 {
 	sendto_realops_snomask(SNO_SPY, L_ALL,
-			     "info requested by %s (%s@%s) [%s]",
+			     "INFO requested by %s (%s@%s) [%s]",
 			     data->client->name, data->client->username,
 			     data->client->host, data->client->servptr->name);
 }

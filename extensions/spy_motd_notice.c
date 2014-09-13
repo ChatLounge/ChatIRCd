@@ -41,7 +41,7 @@ void
 show_motd(hook_data *data)
 {
 	sendto_realops_snomask(SNO_SPY, L_ALL,
-			     "motd requested by %s (%s@%s) [%s]",
+			     "MOTD requested by %s (%s@%s) [%s]",
 			     data->client->name, data->client->username,
 			     data->client->host, data->client->servptr->name);
 }
