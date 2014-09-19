@@ -14,7 +14,7 @@
 
 static int _modinit(void);
 static void _moddeinit(void);
-static int eb_unregistered(const char *data, struct Client *client_p, struct Channel *chptr, long mode_type);
+static int eb_unidentified(const char *data, struct Client *client_p, struct Channel *chptr, long mode_type);
 
 DECLARE_MODULE_AV1(extb_unidentified, _modinit, _moddeinit, NULL, NULL, NULL, "Ban Unidentified Users with matching hostmask.");
 
