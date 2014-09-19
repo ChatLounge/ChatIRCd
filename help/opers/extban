@@ -23,13 +23,15 @@ Unless noted below, all types can be used with +b, +q, +e and +I.
               of the channel the ban is on cannot necessarily see whether
               the user is in the target channel, so it should not
               influence whether they can join either.)
+  $j:<chan> - matches users who are or are not banned from a specified
+              channel
      $o     - Matches opers (most useful with +I)
   $r:<mask> - Matches users with a realname (gecos) matching the mask
               (* and ? wildcards); this can only be used with +b and +q
   $s:<mask> - matches users connected to a server matching the mask
               (* and ? wildcards); this can only be used with +b and +q
-  $j:<chan> - matches users who are or are not banned from a specified
-              channel
+  $u:<mask> - Matches unidentified users who match the specified
+              nick!user@host
   $x:<mask> - Bans all users with matching nick!user@host#gecos
      $z     - Matches all SSL users
 
