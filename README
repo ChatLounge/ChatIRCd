@@ -13,6 +13,7 @@ Differences from Charybdis:
 - Global nick change notices (both global and local
 	are controlled by snomask +n)
 - Usermode +B (Mark as bot in whois)
+- Usermode +t - When enabled, only SSL/TLS users may message you.
 - Oper override does not expire.  It still generates
 	notices when used.
 - Usermodes are shown in /whois.  Only shown when
@@ -23,6 +24,8 @@ Differences from Charybdis:
 	option.
 - Default initial channel modes are now +nst.
 - Channel mode +T blocks channel notices.
+- Extended ban type $u.  $u:nick!ident@host matches any clients
+	that are not identified to services.
 
 Note: The list may not be exhaustive.  Refer to the commit
 	history for details.
