@@ -512,7 +512,7 @@ static  const char *  replies[] = {
 /* 484 ERR_ISCHANSERVICE */     ":%s 484 %s %s %s :Cannot kick or deop a network service",
 /* 485 ERR_BANNEDNICK, */	NULL,
 /* 486 ERR_NONONREG */          "%s :You must log in with services to message this user",
-/* 487 */       NULL,
+/* 487 ERR_NONONSSL */		"%s :You must be connected using SSL/TLS to message this user",
 /* 488 */       NULL,
 /* 489 ERR_VOICENEEDED */	":%s 489 %s %s :You're neither voiced nor channel operator",
 /* 490 */       NULL,

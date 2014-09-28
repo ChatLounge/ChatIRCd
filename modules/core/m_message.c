@@ -808,8 +808,10 @@ msg_client(int p_or_n, const char *command,
 	if(MyClient(target_p))
 	{
 		/* XXX Controversial? allow opers always to send through a +g */
-		if(!IsServer(source_p) && (IsSetCallerId(target_p) ||
-					(IsSetRegOnlyMsg(target_p) && !source_p->user->suser[0])))
+		if(!IsServer(source_p) && (IsSetCallerId(target_p) || (IsSetRegOnlyMsg(target_p) && !source_p->user->suser[0]) ||
+			(IsSetSslOnlyMsg(target_p) && !IsSSLClient(source_p)))
+			)
+		
 		{
 			/* Here is the anti-flood bot/spambot code -db */
 			if(accept_message(source_p, target_p) || IsOper(source_p))
@@ -825,6 +827,13 @@ msg_client(int p_or_n, const char *command,
 				if (p_or_n != NOTICE)
 					sendto_one_numeric(source_p, ERR_NONONREG,
 							form_str(ERR_NONONREG),
+							target_p->name);
+			}
+			else if (IsSetSslOnlyMsg(target_p) && !IsSSLClient(source_p))
+			{
+				if (p_or_n != NOTICE)
+					sendto_one_numeric(source_p, ERR_NONONSSL,
+							form_str(ERR_NONONSSL),
 							target_p->name);
 			}
 			else

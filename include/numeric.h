@@ -298,8 +298,9 @@ extern const char *form_str(int);
 /* #define ERR_RESTRICTED       484 	- hyb derived, no longer here */
 #define ERR_BANNEDNICK       485
 #define ERR_NONONREG         486 /* bahamut; aka ERR_ACCOUNTONLY asuka -- jilles */
+#define ERR_NONONSSL         487
 
-#define ERR_VOICENEEDED		489
+#define ERR_VOICENEEDED	     489
 
 #define ERR_NOOPERHOST       491
 

@@ -113,7 +113,7 @@ int user_modes[256] = {
 	0,			/* q */
 	0,			/* r */
 	UMODE_SERVNOTICE,	/* s */
-	0,			/* t */
+	UMODE_SSLONLYMSG,	/* t */
 	0,			/* u */
 	0,			/* v */
 	UMODE_WALLOP,		/* w */
