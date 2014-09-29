@@ -40,7 +40,7 @@ DECLARE_MODULE_AV1(info_spy, NULL, NULL, NULL, NULL, info_hfnlist, "$Revision: 4
 void
 show_info(hook_data *data)
 {
-	sendto_realops_snomask(SNO_SPY, L_ALL,
+	sendto_realops_snomask(SNO_SPY, L_NETWIDE,
 			     "INFO requested by %s (%s@%s) [%s]",
 			     data->client->name, data->client->username,
 			     data->client->host, data->client->servptr->name);
