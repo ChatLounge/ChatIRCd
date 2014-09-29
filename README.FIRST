@@ -34,7 +34,7 @@ Feature Specific Requirements:
 
 *******************************************************************************
 
-- To report bugs in charybdis, visit us at irc.atheme.org #charybdis
+- To report bugs in ChatIRCd, visit us at irc.chatlounge.net #ChatIRCd
 
 - See the INSTALL document for info on configuring and compiling
   charybdis.
@@ -64,6 +64,7 @@ Feature Specific Requirements:
     Gentoo & Gentoo Hardened ~x86/~amd64/~fbsd
     Fedora 8/9 / CentOS 4/5 / Redhat Enterprise 5
     Debian Etch, 
+    Debian Wheezy,
     OpenSuSE 10/11,
     OpenSolaris 2008.x?
     Solaris 10 sparc.

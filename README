@@ -2,10 +2,10 @@ Based on Charybdis 3.4.2.
 
 Description:
 
-    This IRCd is a Charybdis fork, designed for Chat Lounge
+This IRCd is a Charybdis fork, designed for Chat Lounge
 in mind.  It may or may not suit your needs.
 
-    It may include some features from ShadowIRCd,
+It may include some features from ShadowIRCd,
 ElementalIRCd, Ircd-seven, and elsewhere.
 
 Differences from Charybdis:
