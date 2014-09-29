@@ -10,8 +10,7 @@ ElementalIRCd, Ircd-seven, and elsewhere.
 
 Differences from Charybdis:
 
-- Global nick change notices (both global and local
-	are controlled by snomask +n)
+- Global nick change notices (snomask +N)
 - SNO_SPY Server notices (extensions/sno_*_notice.c) are now global
 	(L_NETWIDE).
 - Usermode +B (Mark as bot in whois)

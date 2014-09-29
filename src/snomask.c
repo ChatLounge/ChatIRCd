@@ -57,7 +57,7 @@ int snomask_modes[256] = {
         SNO_BANNED,             /* K */
         0,                      /* L */
         0,                      /* M */
-        0,                      /* N */
+        SNO_GNCHANGE,           /* N */
         0,                      /* O */
         0,                      /* P */
         0,		        /* Q */
