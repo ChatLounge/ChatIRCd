@@ -8,9 +8,10 @@ dnl said functions need to be just about as complex as they already are.
 AC_PREREQ(2.57)
 
 dnl Sneaky way to get an Id tag into the configure script
+AC_COPYRIGHT([$Id: configure.ac 2014 Chat Lounge IRC Network Development $])
 AC_COPYRIGHT([$Id: configure.ac 3516 2007-06-10 16:14:03Z jilles $])
 
-AC_INIT([ChatIRCd], [1.0.8])
+AC_INIT([ChatIRCd], [1.1.0-dev])
 
 AC_CONFIG_HEADER(include/setup.h)
 

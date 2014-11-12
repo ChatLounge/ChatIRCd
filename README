@@ -1,7 +1,3 @@
-Based on Charybdis 3.4.2.
-
-Description:
-
 This IRCd is a Charybdis fork, designed for Chat Lounge
 in mind.  It may or may not suit your needs.
 
@@ -23,7 +19,7 @@ Differences from Charybdis:
 - Initial channel modes when a channel is created are
 	now configurable with the 'autochanmodes'
 	option.
-- Default initial channel modes are now +nst.
+- Default initial channel modes are now +nst if not configured.
 - Channel mode +T blocks channel notices.
 - Extended ban type $u.  $u:nick!ident@host matches any clients
 	that are not identified to services.
