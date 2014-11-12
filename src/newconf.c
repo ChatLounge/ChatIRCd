@@ -398,6 +398,7 @@ static struct mode_table shared_table[] =
 	{ "unresv",	SHARED_UNRESV	},
 	{ "locops",	SHARED_LOCOPS	},
 	{ "rehash",	SHARED_REHASH	},
+	{ "die",	SHARED_DIE	},
 	{ "all",	SHARED_ALL	},
 	{ "none",	0		},
 	{NULL, 0}
