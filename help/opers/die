@@ -2,4 +2,9 @@ DIE server.name
 
 Terminates the IRC server
 
+DIE server.name server.name
+
+Terminates a different IRC server on the network, if the
+server is configured to accept remote die/restart commands.
+
 - Requires Oper Priv: D
