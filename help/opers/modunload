@@ -1,8 +1,15 @@
 MODUNLOAD <module.so>
 
--- Unload a module from the ircd
+Unloads a module from the ircd.
 Use just the module name, the path is not needed.
 When a module is unloaded, all commands associated
 with it are unloaded as well.
+
+- Requires Oper Priv: A
+
+MODUNLOAD <module.so> irc.server
+
+Unloads a module on the the remote server, if
+the server accepts remote module loading.
 
 - Requires Oper Priv: A

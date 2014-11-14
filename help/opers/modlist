@@ -1,8 +1,19 @@
 MODLIST [match string]
 
--- List the modules that are currently loaded into the
+List the modules that are currently loaded into the
 ircd, along with their address and version.
 When a match string is provided, modlist only prints
 modules with names matching the match string.
+
+- Requires Oper Priv: A
+
+MODLIST match_string irc.server
+
+List the modules currently loaded into the remote
+server, along with address and version, if the server
+accepts remote module loading.
+
+NOTE: A match string must be provided.  Use * to list
+all modules on the other server.
 
 - Requires Oper Priv: A
