@@ -27,9 +27,9 @@
 #include "../include/serno.h"
 
 const char *libratbox_generation = "1";
-const char *libratbox_platform = "Linux debiantest2 2.6.32-5-amd64 #1 SMP Mon Feb 25 00:26:11 UTC 2013 x86_64 GNU/Linux";
+const char *libratbox_platform = "Linux chatlounge-test-server1 3.2.0-4-amd64 #1 SMP Debian 3.2.63-2+deb7u1 x86_64 GNU/Linux";
 const char *libratbox_serno = SERIALNUM;
-const char *libratbox_creation = "Wed Apr 10 2013 at 19:33:47 CDT";
+const char *libratbox_creation = "Thu Dec 11 2014 at 05:35:13 CST";
 
 const char *libratbox_infotext[] =
 {

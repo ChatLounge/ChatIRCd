@@ -874,6 +874,12 @@ report_and_set_user_flags(struct Client *source_p, struct ConfItem *aconf)
 		SetExemptShide(source_p);
 		sendto_one_notice(source_p, ":*** You are exempt from serverhiding");
 	}
+
+	if(IsConfExtendChans(aconf))
+	{
+		SetExtendChans(source_p);
+		sendto_one_notice(source_p, ":*** You are exempt from normal channel limits.");
+	}
 }
 
 static void
@@ -1316,6 +1322,7 @@ oper_up(struct Client *source_p, struct oper_conf *oper_p)
 	Count.oper++;
 
 	SetExemptKline(source_p);
+	SetExtendChans(source_p);
 
 	source_p->flags2 |= oper_p->flags;
 	source_p->localClient->opername = rb_strdup(oper_p->name);
