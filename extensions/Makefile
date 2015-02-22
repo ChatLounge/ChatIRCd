@@ -1,0 +1,129 @@
+#
+# Makefile.in for ircd/contrib
+#
+# $Id: Makefile.in 3522 2007-07-06 07:48:28Z nenolod $
+#
+CC		= gcc
+RM		= /bin/rm
+SED             = /bin/sed
+LEX		= flex
+LEXLIB		= -lfl
+CFLAGS		=  -O0 -Wall -std=gnu99 -g -g -O2  -DIRCD_PREFIX=\"/home/chatircd/ircd\"
+PICFLAGS	= -fPIC -DPIC -shared
+MKDEP		= gcc -MM
+INSTALL		= /usr/bin/install -c
+INSTALL_PROGRAM	= ${INSTALL}
+INSTALL_DATA	= ${INSTALL} -m 644
+INSTALL_SUID    = ${INSTALL} -o root -m 4755
+SHELL		= /bin/sh
+
+prefix          = /home/chatircd/ircd
+exec_prefix     = ${prefix}
+libdir          = ${exec_prefix}/lib
+pkglibdir       = ${libdir}/${PACKAGE_TARNAME}
+moduledir       = /home/chatircd/ircd/modules
+PACKAGE_TARNAME = chatircd
+AUTOMODULEDIR	= $(moduledir)/extensions
+
+SSL_LIBS	=  -lcrypto
+SSL_INCLUDES	= 
+
+IRCDLIBS	= -ldl -lcrypt  $(SSL_LIBS)
+
+INCLUDES	= -I. -I../include -I../libratbox/include $(SSL_INCLUDES)
+CPPFLAGS	= ${INCLUDES} 
+
+SRCS =                          \
+  chm_adminonly.c		\
+  chm_operonly.c		\
+  chm_operonly_compat.c		\
+  chm_netadminonly.c		\
+  chm_quietunreg_compat.c	\
+  chm_sslonly.c			\
+  chm_sslonly_compat.c		\
+  createauthonly.c		\
+  createoperonly.c		\
+  extb_account.c		\
+  extb_canjoin.c		\
+  extb_channel.c		\
+  extb_oper.c			\
+  extb_server.c			\
+  extb_ssl.c			\
+  extb_realname.c		\
+  extb_unidentified.c		\
+  extb_usermode.c		\
+  extb_extgecos.c		\
+  force_user_invis.c		\
+  hurt.c			\
+  ip_cloaking.c			\
+  ip_cloaking_old.c		\
+  ip_cloaking_3.0.c		\
+  ip_cloaking_4.0.c		\
+  override.c			\
+  sno_farconnect.c		\
+  sno_globalkline.c		\
+  sno_globalnickchange.c	\
+  sno_globaloper.c		\
+  sno_whois.c			\
+  m_42.c			\
+  m_adminwall.c			\
+  m_findforwards.c		\
+  m_identify.c			\
+  m_mkpasswd.c                  \
+  m_ojoin.c			\
+  m_olist.c			\
+  m_okick.c			\
+  m_omode.c			\
+  m_opme.c			\
+  m_sendbans.c			\
+  m_webirc.c			\
+  m_remove.c			\
+  m_roleplay.c			\
+  no_locops.c			\
+  no_oper_invis.c		\
+  spy_admin_notice.c		\
+  spy_info_notice.c		\
+  spy_links_notice.c		\
+  spy_motd_notice.c		\
+  spy_stats_notice.c            \
+  spy_stats_p_notice.c		\
+  spy_trace_notice.c		\
+  example_module.c
+
+OBJS = ${SRCS:.c=.so}
+
+default:	build
+build: all
+all: $(OBJS)
+
+install: all
+	-@if test ! -d $(DESTDIR)$(AUTOMODULEDIR); then \
+                mkdir $(DESTDIR)$(AUTOMODULEDIR); \
+        fi
+	@echo "Installing modules into $(DESTDIR)$(AUTOMODULEDIR) .."
+	@for file in $(OBJS); do \
+		$(INSTALL_DATA) $$file $(DESTDIR)$(AUTOMODULEDIR); \
+	done
+
+.SUFFIXES: .so
+
+.c.so:
+	${CC} ${PICFLAGS} ${CPPFLAGS} ${CFLAGS} ${LDFLAGS} $< -o $@
+
+.PHONY: depend clean distclean
+depend:
+	@${MKDEP} ${CPPFLAGS} ${SRCS} > .depend
+	@sed s/\\\.o/\\\.so/ < .depend > .depend.tmp
+	@sed -e '/^# DO NOT DELETE THIS LINE/,$$d' <Makefile >Makefile.depend
+	@echo '# DO NOT DELETE THIS LINE!!!' >>Makefile.depend
+	@echo '# make depend needs it.' >>Makefile.depend
+	@cat .depend.tmp >>Makefile.depend
+	@mv Makefile.depend Makefile
+	@rm -f .depend.tmp .depend
+
+clean:
+	${RM} -f *.so *~ 
+
+distclean: clean
+	${RM} -f Makefile
+
