@@ -1274,5 +1274,6 @@ Configuration of ${BRANDING_NAME}-${BRANDING_VERSION}:
 	Nickname length    : $NICKLEN
 	Topic length       : $TOPICLEN
 
-Use (g)make to compile $BRANDING_NAME, then (g)make install to install it.
+Use 'make' to compile $BRANDING_NAME, then 'make install' to install it.
+You make need to use 'gmake' in lieu of 'make'.
 "
