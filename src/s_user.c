@@ -107,7 +107,7 @@ int user_modes[256] = {
 	0,			/* k */
 	UMODE_LOCOPS,		/* l */
 	0,			/* m */
-	0,			/* n */
+	UMODE_NETADMIN,		/* n */
 	UMODE_OPER,		/* o */
 	0,			/* p */
 	0,			/* q */
@@ -1140,6 +1140,13 @@ user_mode(struct Client *client_p, struct Client *source_p, int parc, const char
 		source_p->umodes &= ~UMODE_ADMIN;
 	}
 
+	if(MyConnect(source_p) && (source_p->umodes & UMODE_NETADMIN) &&
+	   (!IsOperNetAdmin(source_p) || IsOperHiddenNetAdmin(source_p)))
+	{
+		sendto_one_notice(source_p, ":*** You need oper and netadmin flag for +n");
+		source_p->umodes &= ~UMODE_NETADMIN;
+	}
+
 	/* let modules providing usermodes know that we've changed our usermode --nenolod */
 	hdata.client = source_p;
 	hdata.oldumodes = setflags;
@@ -1333,6 +1340,8 @@ oper_up(struct Client *source_p, struct oper_conf *oper_p)
 
 	if(IsOperAdmin(source_p) && !IsOperHiddenAdmin(source_p))
 		source_p->umodes |= UMODE_ADMIN;
+	if(IsOperNetAdmin(source_p) && !IsOperHiddenNetAdmin(source_p))
+		source_p->umodes |= UMODE_NETADMIN;
 	if(!IsOperN(source_p))
 		source_p->snomask &= ~SNO_NCHANGE;
 	if(!IsOperOperwall(source_p))

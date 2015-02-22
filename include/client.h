@@ -335,6 +335,7 @@ struct ListClient
 
 #define IsOper(x)		((x)->umodes & UMODE_OPER)
 #define IsAdmin(x)		((x)->umodes & UMODE_ADMIN)
+#define IsNetAdmin(x)		((x)->umodes & UMODE_NETADMIN)
 
 #define SetReject(x)		{(x)->status = STAT_REJECT; \
 				 (x)->handler = UNREGISTERED_HANDLER; }
@@ -429,6 +430,7 @@ struct ListClient
 /* user information flags, only settable by remote mode or local oper */
 #define UMODE_OPER         0x1000	/* Operator */
 #define UMODE_ADMIN        0x2000	/* Admin on server */
+#define UMODE_NETADMIN     0x0400	/* NetAdmin on network */
 #define UMODE_SSLCLIENT    0x4000	/* using SSL */
 
 /* overflow flags */
@@ -505,7 +507,7 @@ struct ListClient
 #define SetOper(x)              {(x)->umodes |= UMODE_OPER; \
 				 if (MyClient((x))) (x)->handler = OPER_HANDLER;}
 
-#define ClearOper(x)            {(x)->umodes &= ~(UMODE_OPER|UMODE_ADMIN); \
+#define ClearOper(x)            {(x)->umodes &= ~(UMODE_OPER|UMODE_ADMIN|UMODE_NETADMIN); \
 				 if (MyClient((x)) && !IsOper((x)) && !IsServer((x))) \
 				  (x)->handler = CLIENT_HANDLER; }
 

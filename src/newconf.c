@@ -2223,6 +2223,7 @@ static struct ConfEntry conf_general_table[] =
 
 	{ "default_operstring",	CF_QSTRING, NULL, REALLEN,    &ConfigFileEntry.default_operstring },
 	{ "default_adminstring",CF_QSTRING, NULL, REALLEN,    &ConfigFileEntry.default_adminstring },
+	{ "default_netadminstring", CF_QSTRING, NULL, REALLEN, &ConfigFileEntry.default_netadminstring },
 	{ "servicestring",	CF_QSTRING, NULL, REALLEN,    &ConfigFileEntry.servicestring },
 	{ "egdpool_path",	CF_QSTRING, NULL, PATH_MAX, &ConfigFileEntry.egdpool_path },
 	{ "kline_reason",	CF_QSTRING, NULL, REALLEN, &ConfigFileEntry.kline_reason },

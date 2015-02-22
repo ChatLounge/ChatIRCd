@@ -335,6 +335,9 @@ initialize_global_set_options(void)
 	rb_strlcpy(GlobalSetOptions.adminstring,
 		ConfigFileEntry.default_adminstring,
 		sizeof(GlobalSetOptions.adminstring));
+	rb_strlcpy(GlobalSetOptions.netadminstring,
+		ConfigFileEntry.default_netadminstring,
+		sizeof(GlobalSetOptions.netadminstring));
 
 	/* memset( &ConfigChannel, 0, sizeof(ConfigChannel)); */
 

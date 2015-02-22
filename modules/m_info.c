@@ -170,6 +170,12 @@ static struct InfoStruct info_table[] = {
 		"Startup value of FLOODCOUNT",
 	},
 	{
+		"default_netadminstring",
+		OUTPUT_STRING,
+		&ConfigFileEntry.default_netadminstring,
+		"Default netadminstring at startup.",
+	},
+	{
 		"default_adminstring",
 		OUTPUT_STRING,
 		&ConfigFileEntry.default_adminstring,

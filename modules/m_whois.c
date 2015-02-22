@@ -321,8 +321,9 @@ single_whois(struct Client *source_p, struct Client *target_p, int operspy)
 		sendto_one_numeric(source_p, RPL_WHOISOPERATOR, form_str(RPL_WHOISOPERATOR),
 				   target_p->name,
 				   IsService(target_p) ? ConfigFileEntry.servicestring :
+				   (IsNetAdmin(target_p) ? GlobalSetOptions.netadminstring :
 				   (IsAdmin(target_p) ? GlobalSetOptions.adminstring :
-				    GlobalSetOptions.operstring));
+				    GlobalSetOptions.operstring)));
 	}
 
 	if(IsSSLClient(target_p))

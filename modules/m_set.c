@@ -71,6 +71,7 @@ static void quote_floodcount(struct Client *, const char *, int);
 static void quote_identtimeout(struct Client *, const char *, int);
 static void quote_max(struct Client *, const char *, int);
 static void quote_operstring(struct Client *, const char *, int);
+static void quote_netadminstring(struct Client *, const char *, int);
 static void quote_spamnum(struct Client *, const char *, int);
 static void quote_spamtime(struct Client *, const char *, int);
 static void quote_splitmode(struct Client *, const char *, int);
@@ -99,6 +100,7 @@ static struct SetStruct set_cmd_table[] = {
 	{"MAX", 	quote_max, 		0,	1	},
 	{"MAXCLIENTS",	quote_max,		0,	1	},
 	{"OPERSTRING",	quote_operstring,	1,	0	},
+	{"NETADMINSTRING", quote_netadminstring,1,	0	},
 	{"SPAMNUM", 	quote_spamnum, 		0,	1	},
 	{"SPAMTIME", 	quote_spamtime, 	0,	1	},
 	{"SPLITMODE", 	quote_splitmode, 	1,	0	},
@@ -282,6 +284,25 @@ quote_adminstring(struct Client *source_p, const char *arg, int newval)
 		sendto_realops_snomask(SNO_GENERAL, L_ALL,
 				     "%s has changed ADMINSTRING to '%s'",
 				     get_oper_name(source_p), arg);
+	}
+}
+
+/* SET NETADMINSTRING */
+static void
+quote_netadminstring(struct Client *source_p, const char *arg, int newval)
+{
+	if(EmptyString(arg))
+	{
+		sendto_one_notice(source_p, ":NETADMINSTRING is currently '%s'", GlobalSetOptions.netadminstring);
+	}
+	else
+	{
+		rb_strlcpy(GlobalSetOptions.netadminstring, arg,
+			sizeof(GlobalSetOptions.netadminstring));
+
+		sendto_realops_snomask(SNO_GENERAL, L_ALL,
+					"%s has changed NETADMINSTRING to '%s'",
+					get_oper_name(source_p), arg);
 	}
 }
 
