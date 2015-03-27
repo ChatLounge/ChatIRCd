@@ -736,6 +736,108 @@ chm_staff(struct Client *source_p, struct Channel *chptr,
 }
 
 void
+chm_admin(struct Client *source_p, struct Channel *chptr,
+	  int alevel, int parc, int *parn,
+	  const char **parv, int *errors, int dir, char c, long mode_type)
+{
+	if(!IsAdmin(source_p) && !IsServer(source_p))
+	{
+		if(!(*errors & SM_ERR_NOPRIVS))
+			sendto_one_numeric(source_p, ERR_NOPRIVILEGES, form_str(ERR_NOPRIVILEGES));
+		*errors |= SM_ERR_NOPRIVS;
+		return;
+	}
+	if(MyClient(source_p) && !IsOperResv(source_p))
+	{
+		if(!(*errors & SM_ERR_NOPRIVS))
+			sendto_one(source_p, form_str(ERR_NOPRIVS), me.name,
+					source_p->name, "resv");
+		*errors |= SM_ERR_NOPRIVS;
+		return;
+	}
+
+	if(MyClient(source_p) && (++mode_limit_simple > MAXMODES_SIMPLE))
+		return;
+
+	/* setting + */
+	if((dir == MODE_ADD) && !(chptr->mode.mode & mode_type))
+	{
+		chptr->mode.mode |= mode_type;
+
+		mode_changes[mode_count].letter = c;
+		mode_changes[mode_count].dir = MODE_ADD;
+		mode_changes[mode_count].caps = 0;
+		mode_changes[mode_count].nocaps = 0;
+		mode_changes[mode_count].id = NULL;
+		mode_changes[mode_count].mems = ALL_MEMBERS;
+		mode_changes[mode_count++].arg = NULL;
+	}
+	else if((dir == MODE_DEL) && (chptr->mode.mode & mode_type))
+	{
+		chptr->mode.mode &= ~mode_type;
+
+		mode_changes[mode_count].letter = c;
+		mode_changes[mode_count].dir = MODE_DEL;
+		mode_changes[mode_count].caps = 0;
+		mode_changes[mode_count].nocaps = 0;
+		mode_changes[mode_count].mems = ALL_MEMBERS;
+		mode_changes[mode_count].id = NULL;
+		mode_changes[mode_count++].arg = NULL;
+	}
+}
+
+void
+chm_netadmin(struct Client *source_p, struct Channel *chptr,
+	  int alevel, int parc, int *parn,
+	  const char **parv, int *errors, int dir, char c, long mode_type)
+{
+	if(!IsNetAdmin(source_p) && !IsServer(source_p))
+	{
+		if(!(*errors & SM_ERR_NOPRIVS))
+			sendto_one_numeric(source_p, ERR_NOPRIVILEGES, form_str(ERR_NOPRIVILEGES));
+		*errors |= SM_ERR_NOPRIVS;
+		return;
+	}
+	if(MyClient(source_p) && !IsOperResv(source_p))
+	{
+		if(!(*errors & SM_ERR_NOPRIVS))
+			sendto_one(source_p, form_str(ERR_NOPRIVS), me.name,
+					source_p->name, "resv");
+		*errors |= SM_ERR_NOPRIVS;
+		return;
+	}
+
+	if(MyClient(source_p) && (++mode_limit_simple > MAXMODES_SIMPLE))
+		return;
+
+	/* setting + */
+	if((dir == MODE_ADD) && !(chptr->mode.mode & mode_type))
+	{
+		chptr->mode.mode |= mode_type;
+
+		mode_changes[mode_count].letter = c;
+		mode_changes[mode_count].dir = MODE_ADD;
+		mode_changes[mode_count].caps = 0;
+		mode_changes[mode_count].nocaps = 0;
+		mode_changes[mode_count].id = NULL;
+		mode_changes[mode_count].mems = ALL_MEMBERS;
+		mode_changes[mode_count++].arg = NULL;
+	}
+	else if((dir == MODE_DEL) && (chptr->mode.mode & mode_type))
+	{
+		chptr->mode.mode &= ~mode_type;
+
+		mode_changes[mode_count].letter = c;
+		mode_changes[mode_count].dir = MODE_DEL;
+		mode_changes[mode_count].caps = 0;
+		mode_changes[mode_count].nocaps = 0;
+		mode_changes[mode_count].mems = ALL_MEMBERS;
+		mode_changes[mode_count].id = NULL;
+		mode_changes[mode_count++].arg = NULL;
+	}
+}
+
+void
 chm_ban(struct Client *source_p, struct Channel *chptr,
 	int alevel, int parc, int *parn,
 	const char **parv, int *errors, int dir, char c, long mode_type)

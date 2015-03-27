@@ -333,9 +333,9 @@ struct ListClient
 
 #define IsAnyServer(x)          (IsServer(x) || IsHandshake(x) || IsConnecting(x))
 
-#define IsOper(x)		((x)->umodes & UMODE_OPER)
-#define IsAdmin(x)		((x)->umodes & UMODE_ADMIN)
-#define IsNetAdmin(x)		((x)->umodes & UMODE_NETADMIN)
+#define IsOper(x)		((x)->umodes & UMODE_OPER || (x)->umodes & UMODE_ADMIN || (x)->umodes & UMODE_NETADMIN)
+#define IsAdmin(x)		((x)->umodes & UMODE_ADMIN || (x)->umodes & UMODE_NETADMIN)
+#define IsNetAdmin(x)	((x)->umodes & UMODE_NETADMIN)
 
 #define SetReject(x)		{(x)->status = STAT_REJECT; \
 				 (x)->handler = UNREGISTERED_HANDLER; }
