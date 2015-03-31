@@ -392,10 +392,19 @@ static void safelist_channel_named(struct Client *source_p, const char *name, in
 
 	visible = !SecretChannel(chptr) || IsMember(source_p, chptr);
 	if (visible || operspy)
+	{
+		// Stores the channel mode and topic into a character array.  Syntax: [+nt] Topic goes here
+		static char modetopic[BUFSIZE];
+		rb_strlcpy(modetopic, "[", sizeof modetopic);
+		rb_strlcat(modetopic, channel_modes(chptr, source_p), sizeof modetopic);
+		rb_strlcat(modetopic, "] ", sizeof modetopic);
+		rb_strlcat(modetopic, chptr->topic == NULL ? "" : chptr->topic, sizeof modetopic);
+		
 		sendto_one(source_p, form_str(RPL_LIST), me.name, source_p->name,
 			   visible ? "" : "!",
 			   chptr->chname, rb_dlink_list_length(&chptr->members),
-			   chptr->topic == NULL ? "" : chptr->topic);
+			   modetopic);
+	}
 
 	sendto_one(source_p, form_str(RPL_LISTEND), me.name, source_p->name);
 	return;
@@ -435,11 +444,18 @@ static void safelist_one_channel(struct Client *source_p, struct Channel *chptr)
 
 	if (safelist_data->created_max && chptr->channelts > safelist_data->created_max)
 		return;
+	
+	// Stores the channel mode and topic into a character array.  Syntax: [+nt] Topic goes here
+	static char modetopic[BUFSIZE];
+	rb_strlcpy(modetopic, "[", sizeof modetopic);
+	rb_strlcat(modetopic, channel_modes(chptr, source_p), sizeof modetopic);
+	rb_strlcat(modetopic, "] ", sizeof modetopic);
+	rb_strlcat(modetopic, chptr->topic == NULL ? "" : chptr->topic, sizeof modetopic);
 
 	sendto_one(source_p, form_str(RPL_LIST), me.name, source_p->name,
 		   visible ? "" : "!",
 		   chptr->chname, rb_dlink_list_length(&chptr->members),
-		   chptr->topic == NULL ? "" : chptr->topic);
+		   modetopic);
 }
 
 /*

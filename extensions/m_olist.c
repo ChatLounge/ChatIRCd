@@ -106,10 +106,17 @@ list_all_channels(struct Client *source_p)
 	{
 		chptr = ptr->data;
 
+		// Stores the channel mode and topic into a character array.  Syntax: [+nt] Topic goes here
+		static char modetopic[BUFSIZE];
+		rb_strlcpy(modetopic, "[", sizeof modetopic);
+		rb_strlcat(modetopic, channel_modes(chptr, source_p), sizeof modetopic);
+		rb_strlcat(modetopic, "] ", sizeof modetopic);
+		rb_strlcat(modetopic, chptr->topic == NULL ? "" : chptr->topic, sizeof modetopic);
+		
 		sendto_one(source_p, form_str(RPL_LIST),
 				me.name, source_p->name, "", chptr->chname,
 				rb_dlink_list_length(&chptr->members),
-				chptr->topic == NULL ? "" : chptr->topic);
+				modetopic);
 	}
 
 	return;
@@ -145,7 +152,16 @@ list_named_channel(struct Client *source_p, const char *name)
 		sendto_one_numeric(source_p, ERR_NOSUCHCHANNEL,
 				form_str(ERR_NOSUCHCHANNEL), n);
 	else
+	{
+		// Stores the channel mode and topic into a character array.  Syntax: [+nt] Topic goes here
+		static char modetopic[BUFSIZE];
+		rb_strlcpy(modetopic, "[", sizeof modetopic);
+		rb_strlcat(modetopic, channel_modes(chptr, source_p), sizeof modetopic);
+		rb_strlcat(modetopic, "] ", sizeof modetopic);
+		rb_strlcat(modetopic, chptr->topic == NULL ? "" : chptr->topic, sizeof modetopic);
+		
 		sendto_one(source_p, form_str(RPL_LIST), me.name, source_p->name, "",
 			chptr->chname, rb_dlink_list_length(&chptr->members),
-			chptr->topic ? chptr->topic : "");
+			modetopic);
+	}
 }
