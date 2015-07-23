@@ -1,10 +1,10 @@
 This IRCd is a Charybdis fork, designed for Chat Lounge
 in mind.  It may or may not suit your needs.
 
-It may include some features from ShadowIRCd,
-ElementalIRCd, Ircd-seven, and elsewhere.
+In addition to original code, it may include some features and code from
+ShadowIRCd, ElementalIRCd, Ircd-seven, and elsewhere.
 
-Differences from Charybdis:
+Differences from Charybdis 3.4.2:
 
 - Global nick change notices (snomask +N)
 - SNO_SPY Server notices (extensions/sno_*_notice.c) are now global
@@ -23,6 +23,11 @@ Differences from Charybdis:
 - Channel mode +T blocks channel notices.
 - Extended ban type $u.  $u:nick!ident@host matches any clients
 	that are not identified to services.
+- SSLv3 is no longer supported.  SSL clients must support TLS v1.0+.
+- Higher configurable channel limit for either certain opers or auth{} blocks.
+- Network Administrator, or NetAdmin role, "higher" than "Admin."
+	NetAdmin is required to perform remote rehash, restart, and module loading.
+- Channel modes are now shown in /list and /olist.
 
 Note: The list may not be exhaustive.  Refer to the commit
 	history for details.
