@@ -10,4 +10,7 @@ MODLOAD <module.so> irc.server
 Reload a module on the the remote server, if
 the server accepts remote module loading.
 
+Remote module loading requires the netadmin
+priv.
+
 - Requires Oper Priv: A

@@ -7,4 +7,6 @@ RESTART server.name server.name
 Restarts a different IRC server on the network, if the
 server is configured to accept remote die/restart commands.
 
+Remotely restarting a server requires the netadmin priv.
+
 - Requires Oper Priv: D

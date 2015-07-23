@@ -24,4 +24,6 @@ REHASH [option] irc.server
 Rehashes [option], or the config file if none given, on irc.server if
 irc.server accepts remote rehashes.
 
+Remotely rehashing a server requires the netadmin priv.
+
 - Requires Oper Priv: HB

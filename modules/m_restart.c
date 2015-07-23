@@ -83,6 +83,13 @@ mo_restart(struct Client *client_p, struct Client *source_p, int parc, const cha
 		}
 		if (!IsMe(server_p))
 		{
+			if (!IsNetAdmin(source_p))
+			{
+				sendto_one(source_p, form_str(ERR_NOPRIVS),
+					me.name, source_p->name, "netadmin");
+				return 0;
+			}
+
 			sendto_one(server_p, ":%s ENCAP %s RESTART %s", source_p->name, parv[2], parv[1]);
 			return 0;
 		}

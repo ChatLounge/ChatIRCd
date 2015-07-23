@@ -360,6 +360,13 @@ me_modload(struct Client *client_p, struct Client *source_p, int parc, const cha
 {
 	if(!find_shared_conf(source_p->username, source_p->host, source_p->servptr->name, SHARED_MODULE))
 	{
+		if(!IsNetAdmin(source_p))
+		{
+			sendto_one(source_p, form_str(ERR_NOPRIVS),
+				me.name, source_p->name, "netadmin");
+			return 0;
+		}
+		
 		sendto_one_notice(source_p, ":*** You do not have an appropriate shared block "
 				"to load modules on this server.");
 		return 0;
@@ -415,6 +422,13 @@ me_modunload(struct Client *client_p, struct Client *source_p, int parc, const c
 {
 	if(!find_shared_conf(source_p->username, source_p->host, source_p->servptr->name, SHARED_MODULE))
 	{
+		if(!IsNetAdmin(source_p))
+		{
+			sendto_one(source_p, form_str(ERR_NOPRIVS),
+				me.name, source_p->name, "netadmin");
+			return 0;
+		}
+		
 		sendto_one_notice(source_p, ":*** You do not have an appropriate shared block "
 				"to load modules on this server.");
 		return 0;
@@ -479,6 +493,13 @@ me_modreload(struct Client *client_p, struct Client *source_p, int parc, const c
 {
 	if(!find_shared_conf(source_p->username, source_p->host, source_p->servptr->name, SHARED_MODULE))
 	{
+		if(!IsNetAdmin(source_p))
+		{
+			sendto_one(source_p, form_str(ERR_NOPRIVS),
+				me.name, source_p->name, "netadmin");
+			return 0;
+		}
+
 		sendto_one_notice(source_p, ":*** You do not have an appropriate shared block "
 				"to load modules on this server.");
 		return 0;
@@ -549,6 +570,13 @@ me_modlist(struct Client *client_p, struct Client *source_p, int parc, const cha
 {
 	if(!find_shared_conf(source_p->username, source_p->host, source_p->servptr->name, SHARED_MODULE))
 	{
+		if(!IsNetAdmin(source_p))
+		{
+			sendto_one(source_p, form_str(ERR_NOPRIVS),
+				me.name, source_p->name, "netadmin");
+			return 0;
+		}
+
 		sendto_one_notice(source_p, ":*** You do not have an appropriate shared block "
 				"to load modules on this server.");
 		return 0;
@@ -615,6 +643,13 @@ me_modrestart(struct Client *client_p, struct Client *source_p, int parc, const 
 {
 	if(!find_shared_conf(source_p->username, source_p->host, source_p->servptr->name, SHARED_MODULE))
 	{
+		if(!IsNetAdmin(source_p))
+		{
+			sendto_one(source_p, form_str(ERR_NOPRIVS),
+				me.name, source_p->name, "netadmin");
+			return 0;
+		}
+
 		sendto_one_notice(source_p, ":*** You do not have an appropriate shared block "
 				"to load modules on this server.");
 		return 0;
