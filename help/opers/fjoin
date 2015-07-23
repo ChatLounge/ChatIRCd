@@ -1,0 +1,7 @@
+FJOIN <nick> <#channel>
+
+-- Forces a user to join the specified channel.
+
+Alias for FORCEJOIN.
+
+Requires oper priv: oper:admin
