@@ -182,8 +182,12 @@ mo_forcejoin(struct Client *client_p, struct Client *source_p, int parc, const c
 			return 0;
 		}
 
-		/* channel name must begin with & or # */
-		if(!IsChannelName(newch))
+		/*
+		 * channel name must begin with & or #, or only # if local channels
+		 * are disabled.
+		 */
+		if(!IsChannelName(newch) ||
+			(ConfigChannel.disable_local_channels && newch[0] == '&' ) )
 		{
 			sendto_one(source_p, form_str(ERR_BADCHANNAME), me.name,
 				   source_p->name, (unsigned char *) newch);
