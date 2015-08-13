@@ -102,6 +102,10 @@ init_builtin_capabs(void)
 {
 	serv_capindex = capability_index_create("server capabilities");
 
+	/* These two are not set via CAPAB/GCAP keywords. */
+	CAP_CAP = capability_put_anonymous(serv_capindex);
+	CAP_TS6 = capability_put_anonymous(serv_capindex);
+
 	CAP_QS = capability_put(serv_capindex, "QS");
 	CAP_EX = capability_put(serv_capindex, "EX");
 	CAP_CHW = capability_put(serv_capindex, "CHW");
@@ -120,6 +124,9 @@ init_builtin_capabs(void)
 	CAP_EOPMOD = capability_put(serv_capindex, "EOPMOD");
 	CAP_BAN = capability_put(serv_capindex, "BAN");
 	CAP_MLOCK = capability_put(serv_capindex, "MLOCK");
+
+	capability_require(serv_capindex, "QS");
+	capability_require(serv_capindex, "ENCAP");
 }
 
 static CNCB serv_connect_callback;
