@@ -76,6 +76,7 @@ mr_server(struct Client *client_p, struct Client *source_p, int parc, const char
 	struct Client *target_p;
 	int hop;
 	unsigned int required_mask;
+	const char *missing;
 
 	name = parv[1];
 	hop = atoi(parv[2]);
@@ -106,16 +107,6 @@ mr_server(struct Client *client_p, struct Client *source_p, int parc, const char
 	if(bogus_host(name))
 	{
 		exit_client(client_p, client_p, client_p, "Bogus server name");
-		return 0;
-	}
-
-	/* check to ensure any "required" caps are set. --nenolod */
-	/* XXX: show required CAPABs. */
-	required_mask = capability_index_get_required(serv_capindex);
-	if (!IsCapable(client_p, required_mask))
-	{
-		exit_client(client_p, client_p, client_p, "Missing required CAPABs");
-
 		return 0;
 	}
 
@@ -200,6 +191,28 @@ mr_server(struct Client *client_p, struct Client *source_p, int parc, const char
 		sendto_realops_snomask(SNO_GENERAL, is_remote_connect(client_p) ? L_NETWIDE : L_ALL,
 					"Link %s dropped, TS6 protocol is required", name);
 		exit_client(client_p, client_p, client_p, "Incompatible TS version");
+		return 0;
+	}
+
+	/* check to ensure any "required" caps are set. --nenolod */
+	required_mask = capability_index_get_required(serv_capindex);
+	if (!IsCapable(client_p, required_mask))
+	{
+		missing = capability_index_list(serv_capindex, required_mask &
+				~client_p->localClient->caps);
+		sendto_realops_snomask(SNO_GENERAL, is_remote_connect(client_p) ? L_NETWIDE : L_ALL,
+					"Link %s dropped, required CAPABs [%s] are missing",
+					name, missing);
+		ilog(L_SERVER, "Link %s%s dropped, required CAPABs [%s] are missing",
+				EmptyString(client_p->name) ? name : "",
+				log_client_name(client_p, SHOW_IP), missing);
+				/* Do not use '[' in the below message because it would cause
+				 * it to be considered potentially unsafe (might disclose IP
+				 * addresses)
+				 */
+		sendto_one(client_p, "ERROR :Missing required CAPABs (%s)", missing);
+		exit_client(client_p, client_p, client_p, "Missing required CAPABs (%s)");
+
 		return 0;
 	}
 
