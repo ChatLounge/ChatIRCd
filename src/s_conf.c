@@ -52,6 +52,7 @@
 #include "bandbi.h"
 #include "operhash.h"
 #include "chmode.h"
+#include "hook.h"
 
 struct config_server_hide ConfigServerHide;
 
@@ -1380,8 +1381,11 @@ read_conf_files(int cold)
 	{
 		clear_out_old_conf();
 	}
-
+	
+	call_hook(h_conf_read_start, NULL);
 	read_conf(conf_fbfile_in);
+	call_hook(h_conf_read_end, NULL);
+
 	fclose(conf_fbfile_in);
 }
 
