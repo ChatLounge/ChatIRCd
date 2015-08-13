@@ -64,6 +64,7 @@ m_whowas(struct Client *client_p, struct Client *source_p, int parc, const char 
 	char *p;
 	const char *nick;
 	char tbuf[26];
+	long sendq_limit;
 
 	static time_t last_used = 0L;
 
@@ -95,6 +96,8 @@ m_whowas(struct Client *client_p, struct Client *source_p, int parc, const char 
 		*p = '\0';
 
 	nick = parv[1];
+	
+	sendq_limit = get_sendq(client_p) * 9 / 10;
 
 	temp = WHOWASHASH[hash_whowas_name(nick)];
 	found = 0;
@@ -102,6 +105,12 @@ m_whowas(struct Client *client_p, struct Client *source_p, int parc, const char 
 	{
 		if(!irccmp(nick, temp->name))
 		{
+			if(cur > 0 && rb_linebuf_len(&client_p->localClient->buf_sendq) > sendq_limit)
+			{
+				sendto_one(source_p, form_str(ERR_TOOMANYMATCHES),
+				me.name, source_p->name, "WHOWAS");
+				break;
+			}
 			sendto_one(source_p, form_str(RPL_WHOWASUSER),
 				   me.name, source_p->name, temp->name,
 				   temp->username, temp->hostname, temp->realname);
