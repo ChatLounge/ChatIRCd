@@ -1,1 +1,1 @@
-#define SERNO "20150316-d8e558b"
+#define SERNO "20150813-a2f5179"

@@ -322,6 +322,7 @@ extern const char *form_str(int);
 
 #define ERR_HELPNOTFOUND     524
 
+#define RPL_STARTTLS         670 /* IRCv3.1 tls-3.1 */
 #define RPL_WHOISSECURE      671 /* Unreal3.2 --nenolod */
 
 #define RPL_MODLIST          702

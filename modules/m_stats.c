@@ -70,7 +70,8 @@ DECLARE_MODULE_AV1(stats, NULL, NULL, stats_clist, stats_hlist, NULL, "$Revision
 
 const char *Lformat = "%s %u %u %u %u %u :%u %u %s";
 
-static void stats_l_list(struct Client *s, const char *, int, int, rb_dlink_list *, char);
+static void stats_l_list(struct Client *s, const char *, int, int, rb_dlink_list *, char,
+				int (*check_fn)(struct Client *target_p));
 static void stats_l_client(struct Client *source_p, struct Client *target_p,
 				char statchar);
 
@@ -861,7 +862,7 @@ stats_usage (struct Client *source_p)
 		rup = 1;
   
 	sendto_one_numeric(source_p, RPL_STATSDEBUG,
-			   "R :CPU Secs %d:%d User %d:%d System %d:%d",
+			   "R :CPU Secs %d:%02d User %d:%02d System %d:%02d",
 			   (int) (secs / 60), (int) (secs % 60),
 			   (int) (rus.ru_utime.tv_sec / 60),
 			   (int) (rus.ru_utime.tv_sec % 60),
@@ -1479,6 +1480,18 @@ stats_servlinks (struct Client *source_p)
 	sendto_one_numeric(source_p, RPL_STATSDEBUG, "? :Server recv: %s", buf);
 }
 
+static int
+stats_l_should_show_oper(struct Client *target_p)
+{
+	if (IsOperInvis(target_p))
+		return 0;
+
+	if(target_p->user->away)
+		return 0;
+
+	return 1;
+}
+
 static void
 stats_ltrace(struct Client *source_p, int parc, const char *parv[])
 {
@@ -1539,8 +1552,8 @@ stats_ltrace(struct Client *source_p, int parc, const char *parv[])
 		/* local opers get everyone */
 		if(MyOper(source_p))
 		{
-			stats_l_list(source_p, name, doall, wilds, &unknown_list, statchar);
-			stats_l_list(source_p, name, doall, wilds, &lclient_list, statchar);
+			stats_l_list(source_p, name, doall, wilds, &unknown_list, statchar, NULL);
+			stats_l_list(source_p, name, doall, wilds, &lclient_list, statchar, NULL);
 		}
 		else
 		{
@@ -1548,12 +1561,12 @@ stats_ltrace(struct Client *source_p, int parc, const char *parv[])
 			if(MyClient(source_p))
 				stats_l_client(source_p, source_p, statchar);
 
-			stats_l_list(source_p, name, doall, wilds, &local_oper_list, statchar);
+			stats_l_list(source_p, name, doall, wilds, &local_oper_list, statchar, stats_l_should_show_oper);
 		}
 
 		if (!ConfigServerHide.flatten_links || IsOper(source_p) ||
 				IsExemptShide(source_p))
-			stats_l_list(source_p, name, doall, wilds, &serv_list, statchar);
+			stats_l_list(source_p, name, doall, wilds, &serv_list, statchar, NULL);
 
 		return;
 	}
@@ -1561,7 +1574,7 @@ stats_ltrace(struct Client *source_p, int parc, const char *parv[])
 	/* ok, at this point theyre looking for a specific client whos on
 	 * our server.. but it contains a wildcard.  --fl
 	 */
-	stats_l_list(source_p, name, doall, wilds, &lclient_list, statchar);
+	stats_l_list(source_p, name, doall, wilds, &lclient_list, statchar, NULL);
 
 	return;
 }
@@ -1569,7 +1582,7 @@ stats_ltrace(struct Client *source_p, int parc, const char *parv[])
 
 static void
 stats_l_list(struct Client *source_p, const char *name, int doall, int wilds,
-	     rb_dlink_list * list, char statchar)
+	     rb_dlink_list * list, char statchar, int (*check_fn)(struct Client *target_p))
 {
 	rb_dlink_node *ptr;
 	struct Client *target_p;
@@ -1585,7 +1598,8 @@ stats_l_list(struct Client *source_p, const char *name, int doall, int wilds,
 		if(!doall && wilds && !match(name, target_p->name))
 			continue;
 
-		stats_l_client(source_p, target_p, statchar);
+		if (check_fn == NULL || check_fn(target_p))
+			stats_l_client(source_p, target_p, statchar);
 	}
 }
 
