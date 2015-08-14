@@ -25,6 +25,6 @@ src/y.tab.h
 ssld/ssld
 tools/convertilines
 tools/convertklines
-tools/genssl.sh
+tools/genssl
 tools/mkpasswd
 tools/viconf

@@ -9652,9 +9652,9 @@ _ACEOF
 
 fi
 
-ac_config_files="$ac_config_files Makefile bandb/Makefile ssld/Makefile extensions/Makefile src/Makefile modules/Makefile tools/Makefile tools/genssl.sh doc/Makefile help/Makefile"
+ac_config_files="$ac_config_files Makefile bandb/Makefile ssld/Makefile extensions/Makefile src/Makefile modules/Makefile tools/Makefile tools/genssl doc/Makefile help/Makefile"
 
-ac_config_commands="$ac_config_commands tools/genssl.sh_chmod"
+ac_config_commands="$ac_config_commands tools/genssl_chmod"
 
 
 cat >confcache <<\_ACEOF
@@ -10361,10 +10361,10 @@ do
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
     "modules/Makefile") CONFIG_FILES="$CONFIG_FILES modules/Makefile" ;;
     "tools/Makefile") CONFIG_FILES="$CONFIG_FILES tools/Makefile" ;;
-    "tools/genssl.sh") CONFIG_FILES="$CONFIG_FILES tools/genssl.sh" ;;
+    "tools/genssl") CONFIG_FILES="$CONFIG_FILES tools/genssl" ;;
     "doc/Makefile") CONFIG_FILES="$CONFIG_FILES doc/Makefile" ;;
     "help/Makefile") CONFIG_FILES="$CONFIG_FILES help/Makefile" ;;
-    "tools/genssl.sh_chmod") CONFIG_COMMANDS="$CONFIG_COMMANDS tools/genssl.sh_chmod" ;;
+    "tools/genssl_chmod") CONFIG_COMMANDS="$CONFIG_COMMANDS tools/genssl_chmod" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
@@ -10920,7 +10920,7 @@ $as_echo "$as_me: executing $ac_file commands" >&6;}
 
 
   case $ac_file$ac_mode in
-    "tools/genssl.sh_chmod":C) chmod 755 tools/genssl.sh ;;
+    "tools/genssl_chmod":C) chmod 755 tools/genssl ;;
 
   esac
 done # for ac_tag
