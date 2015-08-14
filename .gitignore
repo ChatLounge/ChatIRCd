@@ -6,6 +6,7 @@ config.status
 Makefile
 bandb/bandb
 bandb/bantool
+include/serno.h
 include/setup.h
 libratbox/config.log
 libratbox/config.status
