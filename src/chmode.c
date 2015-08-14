@@ -847,8 +847,8 @@ chm_ban(struct Client *source_p, struct Channel *chptr,
 	rb_dlink_node *ptr;
 	struct Ban *banptr;
 	int errorval;
-	int rpl_list;
-	int rpl_endlist;
+	const char *rpl_list_p;
+	const char *rpl_endlist_p;
 	int caps;
 	int mems;
 
@@ -857,8 +857,8 @@ chm_ban(struct Client *source_p, struct Channel *chptr,
 	case CHFL_BAN:
 		list = &chptr->banlist;
 		errorval = SM_ERR_RPL_B;
-		rpl_list = RPL_BANLIST;
-		rpl_endlist = RPL_ENDOFBANLIST;
+		rpl_list_p = form_str(RPL_BANLIST);
+		rpl_endlist_p = form_str(RPL_ENDOFBANLIST);
 		mems = ALL_MEMBERS;
 		caps = 0;
 		break;
@@ -871,8 +871,8 @@ chm_ban(struct Client *source_p, struct Channel *chptr,
 
 		list = &chptr->exceptlist;
 		errorval = SM_ERR_RPL_E;
-		rpl_list = RPL_EXCEPTLIST;
-		rpl_endlist = RPL_ENDOFEXCEPTLIST;
+		rpl_list_p = form_str(RPL_EXCEPTLIST);
+		rpl_endlist_p = form_str(RPL_ENDOFEXCEPTLIST);
 		caps = CAP_EX;
 
 		if(ConfigChannel.use_except || (dir == MODE_DEL))
@@ -889,8 +889,8 @@ chm_ban(struct Client *source_p, struct Channel *chptr,
 
 		list = &chptr->invexlist;
 		errorval = SM_ERR_RPL_I;
-		rpl_list = RPL_INVITELIST;
-		rpl_endlist = RPL_ENDOFINVITELIST;
+		rpl_list_p = form_str(RPL_INVITELIST);
+		rpl_endlist_p = form_str(RPL_ENDOFINVITELIST);
 		caps = CAP_IE;
 
 		if(ConfigChannel.use_invex || (dir == MODE_DEL))
@@ -902,8 +902,8 @@ chm_ban(struct Client *source_p, struct Channel *chptr,
 	case CHFL_QUIET:
 		list = &chptr->quietlist;
 		errorval = SM_ERR_RPL_Q;
-		rpl_list = RPL_QUIETLIST;
-		rpl_endlist = RPL_ENDOFQUIETLIST;
+		rpl_list_p = form_str(RPL_QUIETLIST);
+		rpl_endlist_p = form_str(RPL_ENDOFQUIETLIST);
 		mems = ALL_MEMBERS;
 		caps = 0;
 		break;
@@ -941,11 +941,11 @@ chm_ban(struct Client *source_p, struct Channel *chptr,
 			else
 				rb_strlcpy(buf, banptr->banstr, sizeof(buf));
 
-			sendto_one(source_p, form_str(rpl_list),
+			sendto_one(source_p, rpl_list_p,
 				   me.name, source_p->name, chptr->chname,
 				   buf, banptr->who, banptr->when);
 		}
-		sendto_one(source_p, form_str(rpl_endlist), me.name, source_p->name, chptr->chname);
+		sendto_one(source_p, rpl_endlist_p, me.name, source_p->name, chptr->chname);
 		return;
 	}
 
