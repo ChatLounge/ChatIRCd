@@ -10,6 +10,7 @@
 #include "numeric.h"
 #include "s_conf.h"
 #include "modules.h"
+#include "messages.h"
 
 #include <string.h>
 
