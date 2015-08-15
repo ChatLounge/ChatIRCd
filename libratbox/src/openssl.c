@@ -316,7 +316,7 @@ rb_init_ssl(void)
 	SSL_CTX_set_verify(ssl_server_ctx, SSL_VERIFY_PEER | SSL_VERIFY_CLIENT_ONCE, verify_accept_all_cb);
 
 	/* Set ECDHE on OpenSSL 1.00+ */
-#if (OPENSSL_VERSION_NUMBER >= 0x10000000)
+#if (OPENSSL_VERSION_NUMBER >= 0x10000000) && defined(NID_secp384r1)
 		SSL_CTX_set_tmp_ecdh(ssl_server_ctx, EC_KEY_new_by_curve_name(NID_secp384r1));
 #endif
 
