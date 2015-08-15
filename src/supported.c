@@ -81,6 +81,7 @@
 #include "s_user.h"
 #include "supported.h"
 #include "chmode.h"
+#include "send.h"
 
 rb_dlink_list isupportlist;
 
@@ -329,7 +330,6 @@ init_isupport(void)
 	add_isupport("STATUSMSG", isupport_string, "@+");
 	add_isupport("CALLERID", isupport_umode, "g");
 	add_isupport("CASEMAPPING", isupport_string, "rfc1459");
-	add_isupport("CHARSET", isupport_string, "ascii");
 	add_isupport("NICKLEN", isupport_nicklen, NULL);
 	add_isupport("MAXNICKLEN", isupport_intptr, &maxnicklen);
 	add_isupport("CHANNELLEN", isupport_intptr, &channellen);

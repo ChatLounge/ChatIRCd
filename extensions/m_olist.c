@@ -41,6 +41,9 @@
 #include "parse.h"
 #include "modules.h"
 #include "s_newconf.h"
+#include "inline/stringops.h"
+#include "s_assert.h"
+#include "logger.h"
 
 static int mo_olist(struct Client *, struct Client *, int parc, const char *parv[]);
 
