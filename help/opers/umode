@@ -1,6 +1,6 @@
 MODE <nick> <+|-><modes>
 
-Usermodes: (* designates that the umode is oper only)
+User modes: (* designates that the umode is oper only)
 
      USERMODE     DESCRIPTION
 -----------------------------------------------------------------

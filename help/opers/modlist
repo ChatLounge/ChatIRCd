@@ -5,7 +5,7 @@ ircd, along with their address and version.
 When a match string is provided, modlist only prints
 modules with names matching the match string.
 
-- Requires Oper Priv: A
+- Requires Oper Priv: oper:admin
 
 MODLIST match_string irc.server
 
@@ -16,4 +16,4 @@ accepts remote module loading.
 NOTE: A match string must be provided.  Use * to list
 all modules on the other server.
 
-- Requires Oper Priv: A
+- Requires Oper Priv: oper:netadmin

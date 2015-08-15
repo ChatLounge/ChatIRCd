@@ -1,10 +1,7 @@
-DIE server.name
+DIE server.name [server.name]
 
-Terminates the IRC server
+Terminates the IRC server.  If a second server name
+is provided, remotely terminate that server.  In that
+case, both server names must match.
 
-DIE server.name server.name
-
-Terminates a different IRC server on the network, if the
-server is configured to accept remote die/restart commands.
-
-- Requires Oper Priv: D
+- Requires Oper Priv: oper:die

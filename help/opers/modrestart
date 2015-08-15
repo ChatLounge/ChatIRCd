@@ -4,14 +4,11 @@ Reload all modules into the ircd
 All modules are unloaded, then those in modules/autoload
 are loaded
 
-- Requires Oper Priv: A
+- Requires Oper Priv: oper:admin
 
 MODLOAD irc.server
 
 Reload all modules on the the remote server, if
 the server accepts remote module loading.
 
-Remote module loading requires the netadmin
-priv.
-
-- Requires Oper Priv: A
+- Requires Oper Priv: oper:netadmin
