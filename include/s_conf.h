@@ -151,6 +151,8 @@ struct config_file_entry
 	char *servicestring;
 	char *kline_reason;
 
+	char *sasl_service;
+
 	char *identifyservice;
 	char *identifycommand;
 	
