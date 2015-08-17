@@ -679,8 +679,8 @@ set_default_conf(void)
 	/* ServerInfo.name is not rehashable */
 	/* ServerInfo.name = ServerInfo.name; */
 	ServerInfo.description = NULL;
-	ServerInfo.network_name = rb_strdup(NETWORK_NAME_DEFAULT);
-	ServerInfo.network_desc = rb_strdup(NETWORK_DESC_DEFAULT);
+	ServerInfo.network_name = NULL;
+	ServerInfo.network_desc = NULL;
 
 	memset(&ServerInfo.ip, 0, sizeof(ServerInfo.ip));
 	ServerInfo.specific_ipv4_vhost = 0;
@@ -695,10 +695,10 @@ set_default_conf(void)
 	AdminInfo.email = NULL;
 	AdminInfo.description = NULL;
 
-	ConfigFileEntry.default_operstring = rb_strdup("is an IRC operator");
-	ConfigFileEntry.default_adminstring = rb_strdup("is a Server Administrator");
-	ConfigFileEntry.default_netadminstring = rb_strdup("is a Network Administrator");
-	ConfigFileEntry.servicestring = rb_strdup("is a Network Service");
+	ConfigFileEntry.default_operstring = NULL;
+	ConfigFileEntry.default_adminstring = NULL;
+	ConfigFileEntry.default_netadminstring = NULL;
+	ConfigFileEntry.servicestring = NULL;
 
 	ConfigFileEntry.default_umodes = UMODE_INVISIBLE;	
 	ConfigFileEntry.failed_oper_notice = YES;
@@ -739,6 +739,7 @@ set_default_conf(void)
 	ConfigFileEntry.fname_operlog = NULL;
 	ConfigFileEntry.fname_foperlog = NULL;
 	ConfigFileEntry.fname_serverlog = NULL;
+	ConfigFileEntry.fname_killlog = NULL;
 	ConfigFileEntry.fname_klinelog = NULL;
 	ConfigFileEntry.fname_operspylog = NULL;
 	ConfigFileEntry.fname_ioerrorlog = NULL;
@@ -883,6 +884,20 @@ validate_conf(void)
 		start_ssldaemon(start, ServerInfo.ssl_cert, ServerInfo.ssl_private_key, ServerInfo.ssl_dh_params);
 				
 	}
+	
+	/* General conf */
+	if (ConfigFileEntry.default_operstring == NULL)
+		ConfigFileEntry.default_operstring = rb_strdup("is an IRC operator");
+
+	if (ConfigFileEntry.default_adminstring == NULL)
+		ConfigFileEntry.default_adminstring = rb_strdup("is a Server Administrator");
+	
+	if (ConfigFileEntry.default_netadminstring == NULL)
+		ConfigFileEntry.default_netadminstring = rb_strdup("is a Network Administrator");
+
+	if (ConfigFileEntry.servicestring == NULL)
+		ConfigFileEntry.servicestring = rb_strdup("is a Network Service");
+
 
 	/* RFC 1459 says 1 message per 2 seconds on average and bursts of
 	 * 5 messages are acceptable, so allow at least that.
@@ -1475,8 +1490,36 @@ clear_out_old_conf(void)
 	 */
 
 	/* clean out general */
+	rb_free(ConfigFileEntry.default_operstring);
+	ConfigFileEntry.default_operstring = NULL;
+	rb_free(ConfigFileEntry.default_adminstring);
+	ConfigFileEntry.default_adminstring = NULL;
+	rb_free(ConfigFileEntry.default_netadminstring);
+	ConfigFileEntry.default_netadminstring = NULL;
+	rb_free(ConfigFileEntry.servicestring);
+	ConfigFileEntry.servicestring = NULL;
 	rb_free(ConfigFileEntry.kline_reason);
 	ConfigFileEntry.kline_reason = NULL;
+	
+	/* clean out log */
+	rb_free(ConfigFileEntry.fname_userlog);
+	ConfigFileEntry.fname_userlog = NULL;
+	rb_free(ConfigFileEntry.fname_fuserlog);
+	ConfigFileEntry.fname_fuserlog = NULL;
+	rb_free(ConfigFileEntry.fname_operlog);
+	ConfigFileEntry.fname_operlog = NULL;
+	rb_free(ConfigFileEntry.fname_foperlog);
+	ConfigFileEntry.fname_foperlog = NULL;
+	rb_free(ConfigFileEntry.fname_serverlog);
+	ConfigFileEntry.fname_serverlog = NULL;
+	rb_free(ConfigFileEntry.fname_killlog);
+	ConfigFileEntry.fname_killlog = NULL;
+	rb_free(ConfigFileEntry.fname_klinelog);
+	ConfigFileEntry.fname_klinelog = NULL;
+	rb_free(ConfigFileEntry.fname_operspylog);
+	ConfigFileEntry.fname_operspylog = NULL;
+	rb_free(ConfigFileEntry.fname_ioerrorlog);
+	ConfigFileEntry.fname_ioerrorlog = NULL;
 
 	RB_DLINK_FOREACH_SAFE(ptr, next_ptr, service_list.head)
 	{

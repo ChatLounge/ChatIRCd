@@ -243,6 +243,12 @@ static struct InfoStruct info_table[] = {
 		"Failed operator log file"
 	},
 	{
+		"fname_killlog",
+		OUTPUT_STRING,
+		&ConfigFileEntry.fname_killlog,
+		"KILL log file"
+	},
+	{
 		"fname_serverlog",
 		OUTPUT_STRING,
 		&ConfigFileEntry.fname_serverlog,

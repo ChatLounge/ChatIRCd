@@ -772,7 +772,7 @@ rb_listen(rb_fde_t *F, int backlog, int defer_accept)
 #ifdef TCP_DEFER_ACCEPT
 	if (defer_accept && !result)
 	{
-		setsockopt(F->fd, IPPROTO_TCP, TCP_DEFER_ACCEPT, &backlog, sizeof(int));
+		(void)setsockopt(F->fd, IPPROTO_TCP, TCP_DEFER_ACCEPT, &backlog, sizeof(int));
 	}
 #endif
 #ifdef SO_ACCEPTFILTER
@@ -2222,7 +2222,7 @@ rb_send_fd_buf(rb_fde_t *xF, rb_fde_t **F, int count, void *data, size_t datasiz
 	char empty = '0';
 	char *buf;
 
-	memset(&msg, 0, sizeof(&msg));
+	memset(&msg, 0, sizeof msg);
 	if(datasize == 0)
 	{
 		iov[0].iov_base = &empty;
