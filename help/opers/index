@@ -13,12 +13,13 @@ MODLOAD         MODRELOAD       MODRESTART      MODUNLOAD
 MONITOR         MOTD            NAMES           NICK
 NOTICE          OPER            OPERSPY         OPERWALL
 PART            PASS            PING            PONG
-POST            PRIVMSG         QUIT            REHASH
-RESTART         RESV            SCAN            SERVER
-SET             SJOIN           SNOMASK         SQUIT
-STATS           SVINFO          TESTGECOS       TESTLINE
-TESTMASK        TIME            TOPIC           TRACE
-UHELP           UMODE           UNDLINE         UNKLINE
-UNREJECT        UNRESV          UNXLINE         USER
-USERHOST        USERS           VERSION         WALLOPS
-WHO             WHOIS           WHOWAS          XLINE
+POST            PRIVMSG         PRIVS           QUIT
+REHASH          RESTART         RESV            SCAN
+SERVER          SET             SJOIN           SNOMASK
+SQUIT           STATS           SVINFO          TESTGECOS
+TESTLINE        TESTMASK        TIME            TOPIC
+TRACE           UHELP           UMODE           UNDLINE
+UNKLINE         UNREJECT        UNRESV          UNXLINE
+USER            USERHOST        USERS           VERSION
+WALLOPS         WHO             WHOIS           WHOWAS
+XLINE
