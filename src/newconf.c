@@ -1951,9 +1951,8 @@ cleanup_bl:
 	{
 		RB_DLINK_FOREACH_SAFE(ptr, nptr, yy_blacklist_filters.head)
 		{
-			rb_free(ptr);
-
 			rb_dlinkDelete(ptr, &yy_blacklist_filters);
+			rb_free(ptr);
 		}
 	}
 	else
@@ -2148,7 +2147,7 @@ add_conf_item(const char *topconf, const char *name, int type, void (*func) (voi
 	if((tc = find_top_conf(topconf)) == NULL)
 		return -1;
 
-	if((cf = find_conf_item(tc, name)) != NULL)
+	if(find_conf_item(tc, name) != NULL)
 		return -1;
 
 	cf = rb_malloc(sizeof(struct ConfEntry));
