@@ -171,6 +171,10 @@ mo_forcejoin(struct Client *client_p, struct Client *source_p, int parc, const c
 		}
 
 		channel_member_names(chptr, target_p, 1);
+
+		/* Send a notice to the affected user, saying who ran FORCEJOIN. */
+		sendto_one_notice(target_p, ":*** Notice -- %s forced you to join %s",
+				source_p->name, chptr->chname);
 	}
 	else
 	{
