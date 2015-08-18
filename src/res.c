@@ -552,7 +552,7 @@ static void query_name(struct reslist *request)
 	if ((request_len =
 	     irc_res_mkquery(request->queryname, C_IN, request->type, (unsigned char *)buf, sizeof(buf))) > 0)
 	{
-		HEADER *header = (HEADER *) buf;
+		HEADER *header = (HEADER *)(void *)buf;
 		header->id = request->id;
 		++request->sends;
 
@@ -617,7 +617,6 @@ static int proc_answer(struct reslist *request, HEADER * header, char *buf, char
 {
 	char hostbuf[IRCD_RES_HOSTLEN + 100];	/* working buffer */
 	unsigned char *current;	/* current position in buf */
-	int query_class;	/* answer class */
 	int type;		/* answer type */
 	int n;			/* temp count */
 	int rd_length;
@@ -674,7 +673,7 @@ static int proc_answer(struct reslist *request, HEADER * header, char *buf, char
 		type = irc_ns_get16(current);
 		current += TYPE_SIZE;
 
-		query_class = irc_ns_get16(current);
+		(void) irc_ns_get16(current);
 		current += CLASS_SIZE;
 
 		request->ttl = irc_ns_get32(current);
@@ -785,7 +784,7 @@ static int res_read_single_reply(rb_fde_t *F, void *data)
 	/*
 	 * convert DNS reply reader from Network byte order to CPU byte order.
 	 */
-	header = (HEADER *) buf;
+	header = (HEADER *)(void *)buf;
 	header->ancount = ntohs(header->ancount);
 	header->qdcount = ntohs(header->qdcount);
 	header->nscount = ntohs(header->nscount);
