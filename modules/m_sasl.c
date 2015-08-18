@@ -122,23 +122,24 @@ m_authenticate(struct Client *client_p, struct Client *source_p,
 
 	if(agent_p == NULL)
 	{
-		sendto_server(NULL, NULL, CAP_TS6|CAP_ENCAP, NOCAPS, ":%s ENCAP * SASL %s * H %s %s", me.id,
-					source_p->id, source_p->host, source_p->sockhost);
+		sendto_one(saslserv_p, ":%s ENCAP %s SASL %s %s H %s %s",
+					me.id, saslserv_p->servptr->name, source_p->id, saslserv_p->id,
+					source_p->host, source_p->sockhost);
 
 		if (!strcmp(parv[1], "EXTERNAL") && source_p->certfp != NULL)
-			sendto_one(saslserv_p, ":%s ENCAP %s SASL %s %s S %s %s", me.id, saslserv_p->servptr->name,
-					source_p->id, saslserv_p->id,
-					parv[1], source_p->certfp);
+			sendto_one(saslserv_p, ":%s ENCAP %s SASL %s %s S %s %s",
+						me.id, saslserv_p->servptr->name, source_p->id, saslserv_p->id,
+						parv[1], source_p->certfp);
 		else
-			sendto_one(saslserv_p, ":%s ENCAP %s SASL %s %s S %s", me.id, saslserv_p->servptr->name,
-					source_p->id, saslserv_p->id,
+			sendto_one(saslserv_p, ":%s ENCAP %s SASL %s %s S %s",
+					me.id, saslserv_p->servptr->name, source_p->id, saslserv_p->id,
 					parv[1]);
 
 		rb_strlcpy(source_p->localClient->sasl_agent, saslserv_p->id, IDLEN);
 	}
 	else
-		sendto_one(agent_p, ":%s ENCAP %s SASL %s %s C %s", me.id, agent_p->servptr->name,
-				source_p->id, agent_p->id,
+		sendto_one(agent_p, ":%s ENCAP %s SASL %s %s C %s",
+				me.id, agent_p->servptr->name, source_p->id, agent_p->id,
 				parv[1]);
 	source_p->localClient->sasl_out++;
 
