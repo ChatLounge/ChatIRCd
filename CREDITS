@@ -1,11 +1,21 @@
 $Id: CREDITS 3133 2007-01-21 15:38:16Z jilles $
  
-Charybdis started as an evolution from ircd-ratbox. Its development
-is led by a team of dedicated developers who have put a lot of time
-into the project, and it has seen use on a variety of different
-network configurations.
+  ChatIRCd is forked from Charybdis, which started as an evolution
+from ircd-ratbox.  Its development is led by a team of dedicated
+developers who have put a lot of time into the project, and it has
+seen use on a variety of different network configurations.
  
-The charybdis core team is listed in nick-alphabetical order:
+  ChatIRCd core team, in nick-alphabetical order:
+
+Ben, Ben C. <ben -at- mrbenc.com>
+ 
+Visit the ChatIRCd website at: http://www.chatlounge.net/software
+Visit us on IRC at: irc.chatlounge.net #ChatIRCd
+
+  NOTE: As this is not a Charybdis project, please don't contact any
+of the following people regarding this project.
+
+  The Charybdis core team is listed in nick-alphabetical order:
  
 jilles, Jilles Tjoelker <jilles -at- stack.nl>
 mr_flea, Keith Buck <mr_flea -at- esper.net>
@@ -27,6 +37,3 @@ Taros, Brett Greenham <taros -at- shadowircd.net>
 ThaPrince, Jon Christopherson <jon -at- vile.com>
 twincest, River Tarnell <river -at- attenuate.org>
 w00t, Robin Burchell <surreal.w00t -at- gmail.com>
- 
-Visit the Charybdis website at: http://www.ircd-charybdis.net
-Visit us on IRC at: irc.staticbox.net #charybdis
