@@ -283,6 +283,10 @@ struct LocalUser
 	struct ev_entry *event;			/* used for associated events */
 
 	struct PrivilegeSet *privset;		/* privset... */
+
+	char sasl_agent[IDLEN];
+	unsigned char sasl_out;
+	unsigned char sasl_complete;
 };
 
 struct PreClient
@@ -290,10 +294,6 @@ struct PreClient
 	char spoofnick[NICKLEN + 1];
 	char spoofuser[USERLEN + 1];
 	char spoofhost[HOSTLEN + 1];
-
-	char sasl_agent[IDLEN];
-	unsigned char sasl_out;
-	unsigned char sasl_complete;
 
 	rb_dlink_list dnsbl_queries; /* list of struct BlacklistClient * */
 	struct Blacklist *dnsbl_listed; /* first dnsbl where it's listed */
@@ -455,6 +455,7 @@ struct ListClient
 #define CLICAP_AWAY_NOTIFY		0x0010
 #define CLICAP_TLS				0x0020
 #define CLICAP_SASL_REAUTH		0x0040
+#define CLICAP_INVITE_NOTIFY	0x0080
 
 /*
  * flags macros.

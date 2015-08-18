@@ -216,8 +216,13 @@ m_invite(struct Client *client_p, struct Client *source_p, int parc, const char 
 		}
 		add_reply_target(target_p, source_p);
 		sendto_one(target_p, ":%s!%s@%s INVITE %s :%s", 
-			   source_p->name, source_p->username, source_p->host, 
-			   target_p->name, chptr->chname);
+			source_p->name, source_p->username, source_p->host, 
+			target_p->name, chptr->chname);
+
+		sendto_channel_local_with_capability_butone(target_p, ONLY_CHANOPS, CLICAP_INVITE_NOTIFY, NOCAPS, chptr,
+							":%s!%s@%s INVITE %s %s",
+							source_p->name, source_p->username, source_p->host,
+							target_p->name, chptr->chname);
 
 		if(store_invite)
 			add_invite(chptr, target_p);
