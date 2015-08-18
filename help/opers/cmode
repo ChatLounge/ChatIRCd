@@ -1,5 +1,8 @@
 MODE <channel> <+|-><modes> [parameters]
 
+? designates that the cmode is provided by an extension
+and may not be present on this server.
+
 CHANNELMODE - DESCRIPTION
 ------------------------------------------------------------------------
 NO PARAMETERS:
@@ -19,8 +22,11 @@ NO PARAMETERS:
               weakens +i control.
      +z     - Op moderated.  Messages blocked by +m, +b and +q are instead
               sent to ops.
+  ?  +A     - IRC server administrator only channel.
      +L     - Large ban list.  Increase maximum number of +beIq entries.
               Only settable by opers.
+  ?  +N     - IRC network administrator only channel.
+  ?  +O     - IRC operator only channel.
      +P     - Permanent.  Channel does not disappear when empty.  Only
               settable by opers.
      +F     - Free target.  Anyone may set forwards to this (otherwise
@@ -29,6 +35,8 @@ NO PARAMETERS:
               (however, new forwards can still be set subject to +F).
      +C     - Disable CTCP.  All CTCP messages to the channel, except ACTION,
               are disallowed.
+  ?  +S     - Only users connected via SSL/TLS may join the channel while this
+              mode is set. Users already in the channel are not affected.
      +T     - Disable notices.  All notices to the channel are blocked.
 
 WITH PARAMETERS:
