@@ -11,4 +11,4 @@ OPER            PART            PASS            PING
 PONG            PRIVMSG         QUIT            STATS
 TIME            TOPIC           TRACE           UMODE
 USER            USERHOST        USERS           VERSION
-WHO             WHOIS           WHOWAS
+WHO             WHOIS           WHOWAS          WHY

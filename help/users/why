@@ -1,0 +1,9 @@
+WHY <channel> <nick>
+
+When executed, this command will reply with any
+matching bans, ban exceptions, invite exceptions,
+and/or quiets matching the user.  Most useful in
+channels with a large number of bans set.
+
+You must be a channel operator or an IRC operator
+to run this command.

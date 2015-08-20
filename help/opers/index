@@ -22,4 +22,4 @@ TRACE           UHELP           UMODE           UNDLINE
 UNKLINE         UNREJECT        UNRESV          UNXLINE
 USER            USERHOST        USERS           VERSION
 WALLOPS         WHO             WHOIS           WHOWAS
-XLINE
+WHY             XLINE

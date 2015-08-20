@@ -73,6 +73,7 @@ SRCS =                          \
   m_opme.c						\
   m_sendbans.c					\
   m_webirc.c					\
+  m_why.c						\
   m_remove.c					\
   no_kill_services.c			\
   no_locops.c					\
