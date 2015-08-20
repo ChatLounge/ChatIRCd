@@ -173,7 +173,7 @@ show_result(struct Client *source_p, struct Channel *chptr, const char *targetni
 	/* If channel ban exceptions (+e) are enabled, check those too. */
 	if(ConfigChannel.use_except)
 	{
-		sendto_one_notice(source_p, ":*** Matching ban exceptions (+b) for %s (%s@%s) in %s:",
+		sendto_one_notice(source_p, ":*** Matching ban exceptions (+e) for %s (%s@%s) in %s:",
 					targetnick, target_p->username, target_p->host, chptr->chname);
 
 		didmatch = 0;
@@ -207,7 +207,7 @@ show_result(struct Client *source_p, struct Channel *chptr, const char *targetni
 	/* If channel invite exceptions (+I) are enabled, check those too. */
 	if(ConfigChannel.use_invex)
 	{
-		sendto_one_notice(source_p, ":*** Matching invite exceptions (+b) for %s (%s@%s) in %s:",
+		sendto_one_notice(source_p, ":*** Matching invite exceptions (+I) for %s (%s@%s) in %s:",
 					targetnick, target_p->username, target_p->host, chptr->chname);
 
 		didmatch = 0;
