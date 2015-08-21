@@ -154,6 +154,8 @@ struct config_file_entry
 	
 	int static_parts;
 	char *static_part_reason;
+	int static_quits;
+	char *static_quit_reason;
 
 	char *identifyservice;
 	char *identifycommand;

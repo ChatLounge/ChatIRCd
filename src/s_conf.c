@@ -704,6 +704,9 @@ set_default_conf(void)
 	ConfigFileEntry.static_parts = NO;
 	ConfigFileEntry.static_part_reason = NULL;
 
+	ConfigFileEntry.static_quits = NO;
+	ConfigFileEntry.static_quit_reason = NULL;
+
 	ConfigFileEntry.default_umodes = UMODE_INVISIBLE;	
 	ConfigFileEntry.failed_oper_notice = YES;
 	ConfigFileEntry.anti_nick_flood = NO;
@@ -903,8 +906,10 @@ validate_conf(void)
 		ConfigFileEntry.sasl_service = rb_strdup("SaslServ");
 	
 	if (ConfigFileEntry.static_part_reason == NULL)
-		ConfigFileEntry.static_part_reason = rb_strdup("");
+		ConfigFileEntry.static_part_reason = rb_strdup(" ");
 
+	if (ConfigFileEntry.static_quit_reason == NULL)
+		ConfigFileEntry.static_quit_reason = rb_strdup(" ");
 
 	/* RFC 1459 says 1 message per 2 seconds on average and bursts of
 	 * 5 messages are acceptable, so allow at least that.

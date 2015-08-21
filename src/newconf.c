@@ -2324,6 +2324,9 @@ static struct ConfEntry conf_general_table[] =
 	{ "static_parts", CF_YESNO, NULL, 0, &ConfigFileEntry.static_parts },
 	{ "static_part_reason", CF_QSTRING, NULL, REALLEN, &ConfigFileEntry.static_part_reason },
 
+	{ "static_quits", CF_YESNO, NULL, 0, &ConfigFileEntry.static_quits },
+	{ "static_quit_reason", CF_QSTRING, NULL, REALLEN, &ConfigFileEntry.static_quit_reason },
+
 	{ "anti_spam_exit_message_time", CF_TIME,  NULL, 0, &ConfigFileEntry.anti_spam_exit_message_time },
 	{ "disable_fake_channels",	 CF_YESNO, NULL, 0, &ConfigFileEntry.disable_fake_channels },
 	{ "min_nonwildcard_simple",	 CF_INT,   NULL, 0, &ConfigFileEntry.min_nonwildcard_simple },

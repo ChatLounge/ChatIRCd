@@ -213,6 +213,18 @@ static struct InfoStruct info_table[] = {
 		"The reason clients will part with, if static_parts is enabled.",
 	},
 	{
+		"static_quits",
+		OUTPUT_BOOLEAN_YN,
+		&ConfigFileEntry.static_quits,
+		"If enabled, all clients will quit with static_quit_reason.",
+	},
+	{
+		"static_quit_reason",
+		OUTPUT_STRING,
+		&ConfigFileEntry.static_quit_reason,
+		"The reason clients will quit with, if static_quits is enabled.",
+	},
+	{
 		"disable_auth",
 		OUTPUT_BOOLEAN_YN,
 		&ConfigFileEntry.disable_auth,

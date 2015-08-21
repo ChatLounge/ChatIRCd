@@ -79,6 +79,11 @@ m_quit(struct Client *client_p, struct Client *source_p, int parc, const char *p
 		return 0;
 	}
 
+	if(ConfigFileEntry.static_quits)
+	{
+		exit_client(client_p, source_p, source_p, ConfigFileEntry.static_quit_reason);
+	}
+
 	exit_client(client_p, source_p, source_p, comment);
 
 	return 0;
