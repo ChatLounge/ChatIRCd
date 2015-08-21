@@ -573,6 +573,12 @@ static struct InfoStruct info_table[] = {
 		"Kick users riding splits to join +i or +k channels"
 	},
 	{
+		"strip_topic_colors_and_formatting",
+		OUTPUT_BOOLEAN_YN,
+		&ConfigChannel.strip_topic_colors_and_formatting,
+		"Remove colors and formatting from channel topics in /list."
+	},
+	{
 		"disable_local_channels",
 		OUTPUT_BOOLEAN_YN,
 		&ConfigChannel.disable_local_channels,

@@ -261,6 +261,7 @@ struct config_channel_entry
 	int only_ascii_channels;
 	int resv_forcepart;
 	int channel_target_change;
+	int strip_topic_colors_and_formatting;
 	int disable_local_channels;
 };
 
