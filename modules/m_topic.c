@@ -39,6 +39,7 @@
 #include "parse.h"
 #include "modules.h"
 #include "packet.h"
+#include "inline/stringops.h"
 #include "tgchange.h"
 #include "logger.h"
 
@@ -124,9 +125,13 @@ m_topic(struct Client *client_p, struct Client *source_p, int parc, const char *
 				 can_send(chptr, source_p, msptr)))
 		{
 			char topic_info[USERHOST_REPLYLEN];
+			char *topic_out = parv[2];
 			rb_sprintf(topic_info, "%s!%s@%s",
 					source_p->name, source_p->username, source_p->host);
-			set_channel_topic(chptr, parv[2], topic_info, rb_current_time());
+			if(ConfigChannel.strip_topic_colors_and_formatting)
+				strip_colour(topic_out);
+			
+			set_channel_topic(chptr, topic_out, topic_info, rb_current_time());
 
 			sendto_server(client_p, chptr, CAP_TS6, NOCAPS,
 					":%s TOPIC %s :%s",

@@ -576,6 +576,12 @@ static struct InfoStruct info_table[] = {
 		"strip_topic_colors_and_formatting",
 		OUTPUT_BOOLEAN_YN,
 		&ConfigChannel.strip_topic_colors_and_formatting,
+		"Remove colors and formatting from channel topics."
+	},
+	{
+		"strip_topic_colors_and_formatting_from_list",
+		OUTPUT_BOOLEAN_YN,
+		&ConfigChannel.strip_topic_colors_and_formatting_from_list,
 		"Remove colors and formatting from channel topics in /list."
 	},
 	{

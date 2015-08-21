@@ -2409,6 +2409,8 @@ static struct ConfEntry conf_channel_table[] =
 	{ "channel_target_change", CF_YESNO, NULL, 0, &ConfigChannel.channel_target_change	},
 	{ "strip_topic_colors_and_formatting", CF_YESNO, NULL, 0,
 		&ConfigChannel.strip_topic_colors_and_formatting },
+	{ "strip_topic_colors_and_formatting_from_list", CF_YESNO, NULL, 0,
+		&ConfigChannel.strip_topic_colors_and_formatting_from_list },
 	{ "disable_local_channels", CF_YESNO, NULL, 0, &ConfigChannel.disable_local_channels },
 	{ "\0", 		0, 	  NULL, 0, NULL }
 };

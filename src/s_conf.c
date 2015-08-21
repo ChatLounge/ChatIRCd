@@ -787,7 +787,8 @@ set_default_conf(void)
 	ConfigChannel.no_create_on_split = YES;
 	ConfigChannel.resv_forcepart = YES;
 	ConfigChannel.channel_target_change = YES;
-	ConfigChannel.strip_topic_colors_and_formatting = YES;
+	ConfigChannel.strip_topic_colors_and_formatting = NO;
+	ConfigChannel.strip_topic_colors_and_formatting_from_list = YES;
 	ConfigChannel.disable_local_channels = NO;
 
 	ConfigServerHide.flatten_links = 0;
