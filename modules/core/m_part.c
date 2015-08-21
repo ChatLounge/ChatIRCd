@@ -83,6 +83,8 @@ m_part(struct Client *client_p, struct Client *source_p, int parc, const char *p
 	if(MyClient(source_p) && !IsFloodDone(source_p))
 		flood_endgrace(source_p);
 
+	strip_colour(reason);
+
 	while(name)
 	{
 		/* If static_parts is enabled, set the reason to static_part_reason. - Ben */
