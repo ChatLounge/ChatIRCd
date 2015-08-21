@@ -5,6 +5,7 @@
  *  Copyright (C) 1990 Jarkko Oikarinen and University of Oulu, Co Center
  *  Copyright (C) 1996-2002 Hybrid Development Team
  *  Copyright (C) 2002-2005 ircd-ratbox development team
+ *  Copyright (C) 2015 Chat Lounge IRC Network Development Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -84,7 +85,13 @@ m_part(struct Client *client_p, struct Client *source_p, int parc, const char *p
 
 	while(name)
 	{
-		part_one_client(client_p, source_p, name, reason);
+		/* If static_parts is enabled, set the reason to static_part_reason. - Ben */
+		if(ConfigFileEntry.static_parts)
+		{
+			part_one_client(client_p, source_p, name, ConfigFileEntry.static_part_reason);
+		}
+		else
+			part_one_client(client_p, source_p, name, reason);
 		name = rb_strtok_r(NULL, ",", &p);
 	}
 	return 0;
