@@ -7,6 +7,7 @@
  *
  *  Copyright (C) 2002 by the past and present ircd coders, and others.
  *  Copyright (C) 2004 ircd-ratbox Development Team
+ *  Copyright (C) 2015 Chat Lounge IRC Network Development Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -111,7 +112,11 @@ list_all_channels(struct Client *source_p)
 
 		// Stores the channel mode and topic into a character array.  Syntax: [+nt] Topic goes here
 		static char modetopic[BUFSIZE];
+
+		
 		rb_strlcpy(modetopic, "[", sizeof modetopic);
+		if(!IsMember(source_p, chptr))
+					rb_strlcat(modetopic, "!", sizeof modetopic);
 		rb_strlcat(modetopic, channel_modes(chptr, source_p), sizeof modetopic);
 		rb_strlcat(modetopic, "] ", sizeof modetopic);
 		rb_strlcat(modetopic, chptr->topic == NULL ? "" : chptr->topic, sizeof modetopic);
