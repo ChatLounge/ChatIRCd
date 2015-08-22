@@ -225,16 +225,23 @@ m_chantrace(struct Client *client_p, struct Client *source_p, int parc, const ch
 
 	name = parv[1];
 
-	if(IsOperSpy(source_p) && parv[1][0] == '!')
+	if(IsOperSpy(source_p))
 	{
-		name++;
-		operspy = 1;
-
-		if(EmptyString(name))
+		if(parv[1][0] == '!')
 		{
-			sendto_one(source_p, form_str(ERR_NEEDMOREPARAMS),
-					me.name, source_p->name, "CHANTRACE");
-			return 0;
+			name++;
+		}
+
+		if(ConfigFileEntry.operspy_dont_care_chan_info || parv[1][0] == '!')
+		{
+			operspy = 1;
+
+			if(EmptyString(name))
+			{
+				sendto_one(source_p, form_str(ERR_NEEDMOREPARAMS),
+						me.name, source_p->name, "CHANTRACE");
+				return 0;
+			}
 		}
 	}
 
@@ -246,7 +253,7 @@ m_chantrace(struct Client *client_p, struct Client *source_p, int parc, const ch
 	}
 
 	/* dont report operspys for nonexistant channels. */
-	if(operspy)
+	if(operspy && !ConfigFileEntry.operspy_dont_care_chan_info)
 		report_operspy(source_p, "CHANTRACE", chptr->chname);
 
 	if(!operspy && !IsMember(client_p, chptr))

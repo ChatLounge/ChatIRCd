@@ -424,6 +424,12 @@ static struct InfoStruct info_table[] = {
 		"Send +Z operspy notices to admins only"
 	},
 	{
+		"operspy_dont_care_chan_info",
+		OUTPUT_BOOLEAN,
+		&ConfigFileEntry.operspy_dont_care_chan_info,
+		"Remove accountability and '!' requirement from channel operspy."
+	},
+	{
 		"operspy_dont_care_user_info",
 		OUTPUT_BOOLEAN,
 		&ConfigFileEntry.operspy_dont_care_user_info,

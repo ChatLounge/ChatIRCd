@@ -73,16 +73,23 @@ m_topic(struct Client *client_p, struct Client *source_p, int parc, const char *
 
 	name = parv[1];
 
-	if(IsOperSpy(source_p) && parv[1][0] == '!')
+	if(IsOperSpy(source_p))
 	{
-		name++;
-		operspy = 1;
-
-		if(EmptyString(name))
+		if(parv[1][0] == '!')
 		{
-			sendto_one(source_p, form_str(ERR_NEEDMOREPARAMS),
-					me.name, source_p->name, "TOPIC");
-			return 0;
+			name++;
+		}
+		
+		if(ConfigFileEntry.operspy_dont_care_chan_info || parv[1][0] == '!')
+		{
+			operspy = 1;
+
+			if(EmptyString(name))
+			{
+				sendto_one(source_p, form_str(ERR_NEEDMOREPARAMS),
+						me.name, source_p->name, "TOPIC");
+				return 0;
+			}
 		}
 	}
 
@@ -125,7 +132,7 @@ m_topic(struct Client *client_p, struct Client *source_p, int parc, const char *
 				 can_send(chptr, source_p, msptr)))
 		{
 			char topic_info[USERHOST_REPLYLEN];
-			char *topic_out = parv[2];
+			char *topic_out = (char *)parv[2];
 			rb_sprintf(topic_info, "%s!%s@%s",
 					source_p->name, source_p->username, source_p->host);
 			if(ConfigChannel.strip_topic_colors_and_formatting)
@@ -150,7 +157,7 @@ m_topic(struct Client *client_p, struct Client *source_p, int parc, const char *
 	}
 	else if(MyClient(source_p))
 	{
-		if(operspy)
+		if(operspy && !ConfigFileEntry.operspy_dont_care_chan_info)
 			report_operspy(source_p, "TOPIC", chptr->chname);
 		if(!IsMember(source_p, chptr) && SecretChannel(chptr) &&
 				!operspy)

@@ -123,7 +123,7 @@ m_mode(struct Client *client_p, struct Client *source_p, int parc, const char *p
 	/* Now know the channel exists */
 	if(parc < n + 1)
 	{
-		if(operspy)
+		if(operspy && !ConfigFileEntry.operspy_dont_care_chan_info)
 			report_operspy(source_p, "MODE", chptr->chname);
 
 		sendto_one(source_p, form_str(RPL_CHANNELMODEIS),

@@ -103,7 +103,8 @@ list_all_channels(struct Client *source_p)
 	struct Channel *chptr;
 	rb_dlink_node *ptr;
 
-	report_operspy(source_p, "LIST", NULL);
+	if(!ConfigFileEntry.operspy_dont_care_chan_info)
+		report_operspy(source_p, "LIST", NULL);
 	sendto_one(source_p, form_str(RPL_LISTSTART), me.name, source_p->name);
 
 	RB_DLINK_FOREACH(ptr, global_channel_list.head)
@@ -151,7 +152,7 @@ list_named_channel(struct Client *source_p, const char *name)
 
 	/* Put operspy notice before any output, but only if channel exists */
 	chptr = EmptyString(n) ? NULL : find_channel(n);
-	if(chptr != NULL)
+	if((chptr != NULL) && (!ConfigFileEntry.operspy_dont_care_chan_info))
 		report_operspy(source_p, "LIST", chptr->chname);
 
 	sendto_one(source_p, form_str(RPL_LISTSTART), me.name, source_p->name);

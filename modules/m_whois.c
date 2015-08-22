@@ -185,17 +185,26 @@ do_whois(struct Client *client_p, struct Client *source_p, int parc, const char 
 	if((p = strchr(nick, ',')))
 		*p = '\0';
 
-	if(IsOperSpy(source_p) && *nick == '!')
+	if(IsOperSpy(source_p))
 	{
-		operspy = 1;
-		nick++;
+		char *nick2 = "";
+		if(*nick == '!')
+		{
+			nick2 = nick;
+			nick++;
+		}
+		
+		if(*nick2 == '!')
+			operspy = 1;
+		if(ConfigFileEntry.operspy_dont_care_chan_info)
+			operspy = 1;
 	}
 
 	target_p = find_named_person(nick);
 
 	if(target_p != NULL)
 	{
-		if(operspy)
+		if(operspy && !ConfigFileEntry.operspy_dont_care_chan_info)
 		{
 			char buffer[BUFSIZE];
 

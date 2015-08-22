@@ -160,16 +160,25 @@ m_who(struct Client *client_p, struct Client *source_p, int parc, const char *pa
 		return 0;
 	}
 
-	if(IsOperSpy(source_p) && *mask == '!')
+	if(IsOperSpy(source_p))
 	{
-		mask++;
-		operspy = 1;
-
-		if(EmptyString(mask))
+		char *mask2;
+		if(*mask == '!')
 		{
-			sendto_one(source_p, form_str(RPL_ENDOFWHO),
-					me.name, source_p->name, parv[1]);
-			return 0;
+			mask2 = mask;
+			mask++;
+		}
+
+		if(ConfigFileEntry.operspy_dont_care_chan_info || *mask2 == '!')
+		{
+			operspy = 1;
+
+			if(EmptyString(mask))
+			{
+				sendto_one(source_p, form_str(RPL_ENDOFWHO),
+						me.name, source_p->name, parv[1]);
+				return 0;
+			}
 		}
 	}
 
@@ -177,7 +186,12 @@ m_who(struct Client *client_p, struct Client *source_p, int parc, const char *pa
 	if(IsChannelName(mask))
 	{
 		/* List all users on a given channel */
-		chptr = find_channel(parv[1] + operspy);
+		if(!ConfigFileEntry.operspy_dont_care_chan_info)
+		{
+			chptr = find_channel(parv[1] + operspy);
+		}
+		else
+			chptr = find_channel(mask);
 
 		if(chptr != NULL)
 		{
@@ -190,7 +204,7 @@ m_who(struct Client *client_p, struct Client *source_p, int parc, const char *pa
 				return 0;
 			}
 
-			if(operspy)
+			if(operspy && !ConfigFileEntry.operspy_dont_care_chan_info)
 				report_operspy(source_p, "WHO", chptr->chname);
 
 			if(IsMember(source_p, chptr) || operspy)
@@ -199,8 +213,14 @@ m_who(struct Client *client_p, struct Client *source_p, int parc, const char *pa
 				do_who_on_channel(source_p, chptr, server_oper, NO, &fmt);
 		}
 
-		sendto_one(source_p, form_str(RPL_ENDOFWHO),
-			   me.name, source_p->name, parv[1] + operspy);
+		if(ConfigFileEntry.operspy_dont_care_chan_info)
+		{
+			sendto_one(source_p, form_str(RPL_ENDOFWHO),
+				me.name, source_p->name, mask);
+		}
+		else
+			sendto_one(source_p, form_str(RPL_ENDOFWHO),
+				me.name, source_p->name, mask);
 		return 0;
 	}
 

@@ -231,6 +231,7 @@ struct config_file_entry
 	int resv_fnc;
 	int default_umodes;
 	int global_snotices;
+	int operspy_dont_care_chan_info;
 	int operspy_dont_care_user_info;
 	int use_propagated_bans;
 	int max_ratelimit_tokens;
