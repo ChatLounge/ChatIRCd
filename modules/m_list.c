@@ -162,7 +162,6 @@ static int mo_list(struct Client *client_p, struct Client *source_p, int parc, c
 	struct ListClient *params;
 	char *p;
 	char *args = NULL;
-	char *args2 = NULL;
 	int i;
 	int operspy = 0;
 
@@ -185,6 +184,9 @@ static int mo_list(struct Client *client_p, struct Client *source_p, int parc, c
 			report_operspy(source_p, "LIST", args);
 		operspy = 1;
 	}
+	
+	if (IsOperSpy(source_p) && ConfigFileEntry.operspy_dont_care_chan_info)
+		operspy = 1;
 
 	/* Single channel. */
 	if (args && IsChannelName(args))
