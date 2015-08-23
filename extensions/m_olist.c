@@ -116,8 +116,6 @@ list_all_channels(struct Client *source_p)
 
 		
 		rb_strlcpy(modetopic, "[", sizeof modetopic);
-		if(!IsMember(source_p, chptr))
-					rb_strlcat(modetopic, "!", sizeof modetopic);
 		rb_strlcat(modetopic, channel_modes(chptr, source_p), sizeof modetopic);
 		rb_strlcat(modetopic, "] ", sizeof modetopic);
 		rb_strlcat(modetopic, chptr->topic == NULL ? "" : chptr->topic, sizeof modetopic);
@@ -125,8 +123,8 @@ list_all_channels(struct Client *source_p)
 		if(ConfigChannel.strip_topic_colors_and_formatting_from_list)
 			strip_colour(modetopic);
 
-		sendto_one(source_p, form_str(RPL_LIST),
-				me.name, source_p->name, "", chptr->chname,
+		sendto_one(source_p, form_str(RPL_LIST), me.name, source_p->name,
+				IsMember(source_p, chptr) ? "": "!", chptr->chname,
 				rb_dlink_list_length(&chptr->members),
 				modetopic);
 	}
