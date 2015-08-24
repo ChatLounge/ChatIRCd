@@ -271,6 +271,7 @@ struct config_channel_entry
 	int strip_topic_colors_and_formatting;
 	int strip_topic_colors_and_formatting_from_list;
 	int disable_local_channels;
+	int disable_join_0;
 };
 
 struct config_server_hide

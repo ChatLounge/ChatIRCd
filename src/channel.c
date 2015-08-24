@@ -45,6 +45,7 @@
 #include "s_assert.h"
 #include "packet.h"
 #include "ratelimit.h"
+#include "messages.h"
 
 struct config_channel_entry ConfigChannel;
 rb_dlink_list global_channel_list;
@@ -1495,6 +1496,7 @@ user_join(struct Client * client_p, struct Client * source_p, char * channels, c
 	char *p = NULL, *p2 = NULL;
 	char *chanlist;
 	char *mykey;
+	int joinzeroattempt = 0;
 
 	jbuf[0] = '\0';
 
@@ -1576,13 +1578,18 @@ user_join(struct Client * client_p, struct Client * source_p, char * channels, c
 		/* JOIN 0 simply parts all channels the user is in */
 		if(*name == '0' && !atoi(name))
 		{
-			if(source_p->user->channel.head == NULL)
+			if(!ConfigChannel.disable_join_0)
+			{
+				if(source_p->user->channel.head == NULL)
+					continue;
+
+				do_join_0(&me, source_p);
 				continue;
-
-			do_join_0(&me, source_p);
-			continue;
+			}
+			else
+				joinzeroattempt = 1;
 		}
-
+		
 		/* look for the channel */
 		if((chptr = find_channel(name)) != NULL)
 		{
@@ -1739,6 +1746,10 @@ user_join(struct Client * client_p, struct Client * source_p, char * channels, c
 		hook_info.key = key;
 		call_hook(h_channel_join, &hook_info);
 	}
+	
+	/* Triggered when ConfigChannel.disable_join_0 = YES and a /JOIN 0 is attempted. */
+	if(joinzeroattempt)
+		sendto_one_notice(source_p, ":*** Notice -- /JOIN 0 has been administratively disabled.");
 }
 
 void

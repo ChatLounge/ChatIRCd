@@ -255,7 +255,12 @@ void user_join_override(struct Client * client_p, struct Client * source_p, stru
 			if(target_p->user->channel.head == NULL)
 				continue;
 
-			do_join_0(&me, target_p);
+			if(ConfigChannel.disable_join_0)
+			{
+				sendto_one_notice(source_p, ":*** Notice -- /JOIN 0 has been administratively disabled.");
+			}
+			else
+				do_join_0(&me, target_p);
 			continue;
 		}
 		

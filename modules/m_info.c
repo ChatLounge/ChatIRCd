@@ -628,6 +628,12 @@ static struct InfoStruct info_table[] = {
 		"Disable local channels (&channels)"
 	},
 	{
+		"disable_join_0",
+		OUTPUT_BOOLEAN_YN,
+		&ConfigChannel.disable_join_0,
+		"Disable the /join 0 shortcut."
+	},
+	{
 		"max_bans",
 		OUTPUT_DECIMAL,
 		&ConfigChannel.max_bans,
