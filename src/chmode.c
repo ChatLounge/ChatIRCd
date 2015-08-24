@@ -483,14 +483,14 @@ pretty_mask(const char *idmask)
 	return mask_buf + old_mask_pos;
 }
 
-/* check_forward()
+/* check_ban_forward()
  *
  * input	- client, channel to set mode on, target channel name
  * output	- true if forwarding should be allowed
  * side effects - numeric sent if not allowed
  */
 static int
-check_forward(struct Client *source_p, struct Channel *chptr,
+check_ban_forward(struct Client *source_p, struct Channel *chptr,
 		const char *forward)
 {
 	struct Channel *targptr;
@@ -987,8 +987,8 @@ chm_ban(struct Client *source_p, struct Channel *chptr,
 						chptr->chname, c, raw_mask);
 				return;
 			}
-			/* check_forward() sends its own error message */
-			if(!check_forward(source_p, chptr, forward))
+			/* check_ban_forward() sends its own error message */
+			if(!check_ban_forward(source_p, chptr, forward))
 				return;
 			/* Forwards only make sense for bans. */
 			if(mode_type != CHFL_BAN)
@@ -1339,7 +1339,7 @@ chm_forward(struct Client *source_p, struct Channel *chptr,
 		if(EmptyString(forward))
 			return;
 
-		if(!check_forward(source_p, chptr, forward))
+		if(!check_ban_forward(source_p, chptr, forward))
 			return;
 
 		rb_strlcpy(chptr->mode.forward, forward, sizeof(chptr->mode.forward));

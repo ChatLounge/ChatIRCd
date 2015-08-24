@@ -271,6 +271,12 @@ extern int match_extban(const char *banstr, struct Client *client_p, struct Chan
 extern int valid_extban(const char *banstr, struct Client *client_p, struct Channel *chptr, long mode_type);
 const char * get_extban_string(void);
 
+extern struct Channel * check_forward(struct Client *source_p, struct Channel *chptr, char *key, int *err);
+extern void user_join(struct Client * client_p, struct Client * source_p, char * channels, char * keys);
+extern void do_join_0(struct Client *client_p, struct Client *source_p);
+extern int check_channel_name_loc(struct Client *source_p, const char *name);
+extern void send_join_error(struct Client *source_p, int numeric, const char *name);
+
 extern int get_channel_access(struct Client *source_p, struct membership *msptr);
 
 extern void send_channel_join(struct Channel *chptr, struct Client *client_p);

@@ -62,7 +62,7 @@ SRCS =                          \
   ip_cloaking_4.0.c				\
   m_42.c						\
   m_adminwall.c					\
-  m_force.c						\
+  m_forcejoin.c					\
   m_findforwards.c				\
   m_identify.c					\
   m_mkpasswd.c                  \
