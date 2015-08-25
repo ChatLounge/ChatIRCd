@@ -156,10 +156,22 @@ show_lusers(struct Client *source_p)
 			   Count.invisi,
 			   (int)rb_dlink_list_length(&global_serv_list));
 
-	if(rb_dlink_list_length(&oper_list) > 0)
+	int opercount = 0;
+	rb_dlink_node *operptr;
+	struct Client *oper_p;
+
+	// Count opers who are not set umode +B.
+	RB_DLINK_FOREACH(operptr, oper_list.head)
+	{
+		oper_p = operptr->data;
+		
+		if(!IsSetBot(oper_p))
+			opercount++;
+	}
+
+	if(opercount > 0)	
 		sendto_one_numeric(source_p, RPL_LUSEROP, 
-				   form_str(RPL_LUSEROP),
-					(int)rb_dlink_list_length(&oper_list));
+				   form_str(RPL_LUSEROP), opercount);
 
 	if(rb_dlink_list_length(&unknown_list) > 0)
 		sendto_one_numeric(source_p, RPL_LUSERUNKNOWN, 
