@@ -165,12 +165,13 @@ extern void cluster_generic(struct Client *, const char *, int cltype,
 #define IsOperHiddenAdmin(x)    (HasPrivilege((x), "oper:hidden_admin") || HasPrivilege((x), "oper:hidden_netadmin"))
 #define IsOperAdmin(x)          (HasPrivilege((x), "oper:admin") || HasPrivilege((x), "oper:hidden_admin") || HasPrivilege((x), "oper:netadmin") || HasPrivilege((x), "oper:hidden_netadmin"))
 #define IsOperHiddenNetAdmin(x) (HasPrivilege((x), "oper:hidden_netadmin"))
-#define IsOperNetAdmin(x)	(HasPrivilege((x), "oper:netadmin") || HasPrivilege((x),"oper:hidden_netadmin"))
+#define IsOperNetAdmin(x)       (HasPrivilege((x), "oper:netadmin") || HasPrivilege((x),"oper:hidden_netadmin"))
 #define IsOperOperwall(x)       (HasPrivilege((x), "oper:operwall"))
 #define IsOperSpy(x)            (HasPrivilege((x), "oper:spy"))
 #define IsOperInvis(x)          (HasPrivilege((x), "oper:hidden"))
-#define IsOperRemoteBan(x)	(HasPrivilege((x), "oper:remoteban"))
-#define IsOperMassNotice(x)	(HasPrivilege((x), "oper:mass_notice"))
+#define IsOperRemoteBan(x)      (HasPrivilege((x), "oper:remoteban"))
+#define IsOperMassNotice(x)     (HasPrivilege((x), "oper:mass_notice"))
+#define IsOperCanSetBot(x)      (HasPrivilege((x), "oper:cansetbot"))
 
 extern struct oper_conf *make_oper_conf(void);
 extern void free_oper_conf(struct oper_conf *);

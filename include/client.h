@@ -533,6 +533,8 @@ struct ListClient
 #define IsSetRegOnlyMsg(x)	((x)->umodes & UMODE_REGONLYMSG)
 #define IsSetSslOnlyMsg(x)	((x)->umodes & UMODE_SSLONLYMSG)
 #define IsSetBot(x)             ((x)->umodes & UMODE_BOT)
+#define SetBot(x)				((x)->umodes |= UMODE_BOT)
+#define ClearBot(x)				((x)->umodes &= ~UMODE_BOT)
 
 #define SetGotId(x)             ((x)->flags |= FLAGS_GOTID)
 #define IsGotId(x)              (((x)->flags & FLAGS_GOTID) != 0)

@@ -121,6 +121,7 @@ TSRCS =                     \
   m_whowas.c				\
   m_unreject.c				\
   m_xline.c					\
+  no_oper_bot_mode.c		\
   sno_routing.c
 
 SRCS = ${TSRCS}
