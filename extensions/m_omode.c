@@ -116,11 +116,10 @@ mo_omode(struct Client *client_p, struct Client *source_p, int parc, const char 
 	ilog(L_MAIN, "OMODE called for [%s] [%s] by %s",
 	     parv[1], params, get_oper_name(source_p));
 
-	if(*chptr->chname != '&')
-		sendto_server(NULL, NULL, NOCAPS, NOCAPS, 
-			      ":%s WALLOPS :OMODE called for [%s] [%s] by %s!%s@%s",
-			      me.name, parv[1], params, source_p->name, source_p->username,
-			      source_p->host);
+	sendto_server(NULL, NULL, NOCAPS, NOCAPS, 
+			  ":%s WALLOPS :OMODE called for [%s] [%s] by %s!%s@%s",
+			  me.name, parv[1], params, source_p->name, source_p->username,
+			  source_p->host);
 
 #if 0
 	set_channel_mode(client_p, source_p->servptr, chptr, msptr, 

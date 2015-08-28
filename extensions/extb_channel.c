@@ -45,7 +45,7 @@ static int eb_channel(const char *data, struct Client *client_p,
 	if (chptr2 == NULL)
 		return EXTBAN_INVALID;
 	/* require consistent target */
-	if (chptr->chname[0] == '#' && data[0] == '&')
+	if (chptr->chname[0] == '#')
 		return EXTBAN_INVALID;
 	/* privacy! don't allow +s/+p channels to influence another channel */
 	if (!PubChannel(chptr2) && chptr2 != chptr)

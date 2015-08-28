@@ -97,17 +97,13 @@ mo_opme(struct Client *client_p, struct Client *source_p, int parc, const char *
 	ilog(L_MAIN, "OPME called for [%s] by %s",
 	     parv[1], get_oper_name(source_p));
 
-	/* dont send stuff for local channels remotely. */
-	if(*chptr->chname != '&')
-	{
-		sendto_server(NULL, NULL, NOCAPS, NOCAPS,
-			      ":%s WALLOPS :OPME called for [%s] by %s!%s@%s",
-			      me.name, parv[1], source_p->name, source_p->username, source_p->host);
-		sendto_server(NULL, chptr, CAP_TS6, NOCAPS, ":%s PART %s", source_p->id, parv[1]);
-		sendto_server(NULL, chptr, CAP_TS6, NOCAPS,
-			      ":%s SJOIN %ld %s + :@%s",
-			      me.id, (long) chptr->channelts, parv[1], source_p->id);
-	}
+	sendto_server(NULL, NULL, NOCAPS, NOCAPS,
+			  ":%s WALLOPS :OPME called for [%s] by %s!%s@%s",
+			  me.name, parv[1], source_p->name, source_p->username, source_p->host);
+	sendto_server(NULL, chptr, CAP_TS6, NOCAPS, ":%s PART %s", source_p->id, parv[1]);
+	sendto_server(NULL, chptr, CAP_TS6, NOCAPS,
+			  ":%s SJOIN %ld %s + :@%s",
+			  me.id, (long) chptr->channelts, parv[1], source_p->id);
 
 	sendto_channel_local(ALL_MEMBERS, chptr,
 			     ":%s MODE %s +o %s", me.name, parv[1], source_p->name);

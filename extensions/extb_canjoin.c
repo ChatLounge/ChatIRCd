@@ -51,7 +51,7 @@ static int eb_canjoin(const char *data, struct Client *client_p,
 	if (chptr2 == NULL || chptr2 == chptr)
 		return EXTBAN_INVALID;
 	/* require consistent target */
-	if (chptr->chname[0] == '#' && data[0] == '&')
+	if (chptr->chname[0] == '#')
 		return EXTBAN_INVALID;
 	/* this allows getting some information about ban exceptions
 	 * but +s/+p doesn't seem the right criterion */

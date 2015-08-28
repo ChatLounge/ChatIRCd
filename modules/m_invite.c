@@ -92,16 +92,6 @@ m_invite(struct Client *client_p, struct Client *source_p, int parc, const char 
 		return 0;
 	}
 
-	/* Do not send local channel invites to users if they are not on the
-	 * same server as the person sending the INVITE message. 
-	 */
-	if(parv[2][0] == '&' && !MyConnect(target_p))
-	{
-		sendto_one(source_p, form_str(ERR_USERNOTONSERV),
-			   me.name, source_p->name, target_p->name);
-		return 0;
-	}
-
 	if(((MyConnect(source_p) && !IsExemptResv(source_p)) ||
 			(MyConnect(target_p) && !IsExemptResv(target_p))) &&
 		hash_find_resv(parv[2]))

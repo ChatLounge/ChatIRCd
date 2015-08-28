@@ -797,7 +797,6 @@ set_default_conf(void)
 	ConfigChannel.channel_target_change = YES;
 	ConfigChannel.strip_topic_colors_and_formatting = NO;
 	ConfigChannel.strip_topic_colors_and_formatting_from_list = YES;
-	ConfigChannel.disable_local_channels = YES;
 	ConfigChannel.disable_join_0 = YES;
 
 	ConfigServerHide.flatten_links = 0;

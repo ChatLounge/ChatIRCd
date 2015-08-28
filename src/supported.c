@@ -251,7 +251,8 @@ isupport_chanmodes(const void *ptr)
 static const char *
 isupport_chantypes(const void *ptr)
 {
-	return ConfigChannel.disable_local_channels ? "#" : "&#";
+	/* This function is no longer "needed" but left in the event of other channel types. */
+	return "#";
 }
 
 static const char *
@@ -260,7 +261,7 @@ isupport_chanlimit(const void *ptr)
 	static char result[30];
 
 	rb_snprintf(result, sizeof result, "%s:%i",
-		ConfigChannel.disable_local_channels ? "#" : "&#", ConfigChannel.max_chans_per_user);
+		"#", ConfigChannel.max_chans_per_user);
 	return result;
 }
 

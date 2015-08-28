@@ -270,7 +270,6 @@ struct config_channel_entry
 	int channel_target_change;
 	int strip_topic_colors_and_formatting;
 	int strip_topic_colors_and_formatting_from_list;
-	int disable_local_channels;
 	int disable_join_0;
 };
 

@@ -917,7 +917,7 @@ flood_attack_channel(int p_or_n, struct Client *source_p, struct Channel *chptr,
 		{
 			if(chptr->flood_noticed == 0)
 			{
-				sendto_realops_snomask(SNO_BOTS, *chptr->chname == '&' ? L_ALL : L_NETWIDE,
+				sendto_realops_snomask(SNO_BOTS, L_NETWIDE,
 						     "Possible Flooder %s[%s@%s] on %s target: %s",
 						     source_p->name, source_p->username,
 						     source_p->orighost,
@@ -1522,8 +1522,7 @@ user_join(struct Client * client_p, struct Client * source_p, char * channels, c
 		}
 
 		/* check it begins with # or &, and local chans are disabled */
-		else if(!IsChannelName(name) ||
-			( ConfigChannel.disable_local_channels && name[0] == '&'))
+		else if(!IsChannelName(name))
 		{
 			sendto_one_numeric(source_p, ERR_NOSUCHCHANNEL,
 					   form_str(ERR_NOSUCHCHANNEL), name);
@@ -1551,7 +1550,7 @@ user_join(struct Client * client_p, struct Client * source_p, char * channels, c
 			continue;
 		}
 
-		if(splitmode && !IsOper(source_p) && (*name != '&') &&
+		if(splitmode && !IsOper(source_p) &&
 		   ConfigChannel.no_join_on_split)
 		{
 			sendto_one(source_p, form_str(ERR_UNAVAILRESOURCE),
@@ -1616,7 +1615,7 @@ user_join(struct Client * client_p, struct Client * source_p, char * channels, c
 				continue;
 			}
 
-			if(splitmode && !IsOper(source_p) && (*name != '&') &&
+			if(splitmode && !IsOper(source_p) &&
 			   ConfigChannel.no_create_on_split)
 			{
 				sendto_one(source_p, form_str(ERR_UNAVAILRESOURCE),

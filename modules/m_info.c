@@ -622,12 +622,6 @@ static struct InfoStruct info_table[] = {
 		"Remove colors and formatting from channel topics in /list."
 	},
 	{
-		"disable_local_channels",
-		OUTPUT_BOOLEAN_YN,
-		&ConfigChannel.disable_local_channels,
-		"Disable local channels (&channels)"
-	},
-	{
 		"disable_join_0",
 		OUTPUT_BOOLEAN_YN,
 		&ConfigChannel.disable_join_0,
