@@ -533,7 +533,6 @@ msg_channel(enum message_type msgtype,
 		if(result == CAN_SEND_OPV ||
 		   !flood_attack_channel(msgtype, source_p, chptr, chptr->chname))
 		{
-			//if (msgtype != MESSAGE_TYPE_PRIVMSG && chptr->mode.mode & MODE_NONOTICE && !IsService(source_p))
 			if (msgtype != MESSAGE_TYPE_PRIVMSG && !IsService(source_p))
 			{
 				if(chptr->mode.mode & MODE_NONOTICE)
@@ -556,18 +555,6 @@ msg_channel(enum message_type msgtype,
 					sendto_channel_flags(client_p, ALL_MEMBERS, source_p, chptr,
 							 "%s %s :%s", cmdname[msgtype], chptr->chname, text);
 				}
-				
-				/* if(IsSetOverride(source_p))
-				{
-					sendto_channel_flags(client_p, ALL_MEMBERS, source_p, chptr,
-					     "%s %s :%s", cmdname[msgtype], chptr->chname, text);
-				}
-				else
-				{
-					sendto_one_numeric(source_p, ERR_CANNOTSENDTOCHAN,
-							form_str(ERR_CANNOTSENDTOCHAN), chptr->chname);
-					return;
-				} */
 			}
 			else
 				sendto_channel_flags(client_p, ALL_MEMBERS, source_p, chptr,
