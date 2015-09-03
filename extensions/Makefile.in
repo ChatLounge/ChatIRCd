@@ -76,6 +76,7 @@ SRCS =                          \
   m_why.c						\
   m_remove.c					\
   no_kill_services.c			\
+  no_kill_higher_opers.c		\
   no_locops.c					\
   no_oper_invis.c				\
   restrict-unauthenticated.c	\
