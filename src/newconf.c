@@ -327,6 +327,7 @@ static struct mode_table umode_table[] = {
 	{"servnotice",	UMODE_SERVNOTICE},
 	{"wallop",	UMODE_WALLOP	},
 	{"operwall",	UMODE_OPERWALL	},
+	{"override",	UMODE_OVERRIDE	},
 	{"bot",		UMODE_BOT	},
 	{NULL, 0}
 };
@@ -2408,6 +2409,9 @@ static struct ConfEntry conf_channel_table[] =
 	{ "no_create_on_split", CF_YESNO, NULL, 0, &ConfigChannel.no_create_on_split 	},
 	{ "no_join_on_split",	CF_YESNO, NULL, 0, &ConfigChannel.no_join_on_split	},
 	{ "only_ascii_channels", CF_YESNO, NULL, 0, &ConfigChannel.only_ascii_channels },
+	{ "use_halfop", CF_YESNO, NULL, 0, &ConfigChannel.use_halfop	},
+	{ "use_admin", CF_YESNO, NULL, 0, &ConfigChannel.use_admin	},
+	{ "use_owner", CF_YESNO, NULL, 0, &ConfigChannel.use_owner	},
 	{ "use_except",		CF_YESNO, NULL, 0, &ConfigChannel.use_except		},
 	{ "use_invex",		CF_YESNO, NULL, 0, &ConfigChannel.use_invex		},
 	{ "use_forward",	CF_YESNO, NULL, 0, &ConfigChannel.use_forward		},

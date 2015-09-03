@@ -292,7 +292,7 @@ m_why(struct Client *client_p, struct Client *source_p, int parc, const char *pa
 		}
 		
 		/* The user isn't an IRC operator.  Is he a channel operator? */
-		if(!is_chanop(msptr))
+		if(!is_any_op(msptr))
 		{
 			sendto_one_numeric(source_p, ERR_CHANOPRIVSNEEDED,
 					form_str(ERR_CHANOPRIVSNEEDED), me.name, source_p->name, chptr->chname);

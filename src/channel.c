@@ -203,10 +203,24 @@ find_channel_membership(struct Channel *chptr, struct Client *client_p)
 const char *
 find_channel_status(struct membership *msptr, int combine)
 {
-	static char buffer[3];
+	static char buffer[5];
 	char *p;
 
 	p = buffer;
+
+	if(is_owner(msptr))
+	{
+		if(!combine)
+			return "~";
+		*p++ = '~';
+	}
+
+	if(is_admin(msptr))
+	{
+		if(!combine)
+			return "&";
+		*p++ = '&';
+	}
 
 	if(is_chanop(msptr))
 	{
@@ -215,11 +229,126 @@ find_channel_status(struct membership *msptr, int combine)
 		*p++ = '@';
 	}
 
+	if(is_halfop(msptr))
+	{
+		if(!combine)
+			return "%";
+		*p++ = '%';
+	}
+
 	if(is_voiced(msptr))
 		*p++ = '+';
 
 	*p = '\0';
 	return buffer;
+}
+
+/* is_halfop()
+ *
+ * input - membership to check for halfops
+ * output - 1 if the user is halfopped, 0 if the user is not or halfop
+ * is disabled.
+ * side effects -
+ *
+ */
+int
+is_halfop(struct membership *msptr)
+{
+	if(!ConfigChannel.use_halfop)
+		return 0;
+	if(is_chmode_h(msptr))
+		return 1;
+	else
+		return 0;
+}
+
+/* is_admin()
+ *
+ * input - membership to check for channel admins
+ * output - 1 if the user is halfopped, 0 if the user is not or halfop
+ * is disabled.
+ * side effects -
+ *
+ */
+int
+is_admin(struct membership *msptr)
+{
+	if(!ConfigChannel.use_admin)
+		return 0;
+	if(is_chmode_a(msptr))
+		return 1;
+	else
+		return 0;
+}
+
+/* is_owner()
+ *
+ * input - membership to check for owner
+ * output - 1 if the user is an owner, 0 if the user is not or owner
+ * is disabled.
+ * side effects -
+ *
+ */
+int
+is_owner(struct membership *msptr)
+{
+	if(!ConfigChannel.use_owner)
+		return 0;
+	if(is_chmode_y(msptr))
+		return 1;
+	else
+		return 0;
+}
+
+/* is_any_op()
+ *
+ * input - membership to check for ops
+ * output - 1 if the user is op, halfop, or owner, 0 elsewise
+ * side effects -
+ */
+int
+is_any_op(struct membership *msptr)
+{
+	if(is_chanop(msptr) || is_halfop(msptr) || is_admin(msptr) || is_owner(msptr))
+		return 1;
+	else
+		return 0;
+}
+
+/* is_chanop_voiced()
+ *
+ * input - memebership to check for status
+ * output - 1 if the user is op, halfop, owner, or voice, 0 elsewise
+ * side effects -
+ */
+int
+is_chanop_voiced(struct membership *msptr)
+{
+	if(is_chanop(msptr) || is_voiced(msptr) || is_halfop(msptr) || is_admin(msptr) || is_owner(msptr))
+		return 1;
+	else
+		return 0;
+}
+
+/* can_kick_deop()
+ *
+ * input - two memeberships
+ * output - 1 if the first memebership can kick/deop the second, 0 elsewise
+ * side effects -
+ */
+int
+can_kick_deop(struct membership *source, struct membership *target)
+{
+	if(is_admin(source) && !is_owner(target))
+		return 1;
+	else if(is_chanop(source) && (!is_admin(target) && !is_owner(target)))
+		return 1;
+	else if(is_halfop(source) && !is_any_op(target))
+		return 1;
+	else if(is_owner(source))
+		return 1;
+
+	return 0;
 }
 
 /* add_user_to_channel()
@@ -813,6 +942,13 @@ can_join(struct Client *source_p, struct Channel *chptr, const char *key, const 
 finish_join_check:
 	call_hook(h_can_join, &moduledata);
 
+	if(IsSetOverride(source_p) && moduledata.approved != 0)
+	{
+		sendto_realops_snomask(SNO_GENERAL, L_NETWIDE, "%s is using oper-override on %s (banwalking)",
+				       get_oper_name(source_p), chptr->chname);
+		moduledata.approved = 0;
+	}
+
 	return moduledata.approved;
 }
 
@@ -963,7 +1099,7 @@ find_bannickchange_channel(struct Client *client_p)
 	{
 		msptr = ptr->data;
 		chptr = msptr->chptr;
-		if (is_chanop_voiced(msptr))
+		if (is_any_op(msptr))
 			continue;
 		/* cached can_send */
 		if (msptr->bants == chptr->bants)
@@ -1624,6 +1760,9 @@ user_join(struct Client * client_p, struct Client * source_p, char * channels, c
 			}
 
 			flags = CHFL_CHANOP;
+
+			if(IsSetOverride(source_p))
+				flags |= CHFL_OVERRIDEOPER;
 		}
 
 		if((rb_dlink_list_length(&source_p->user->channel) >=
@@ -1668,6 +1807,9 @@ user_join(struct Client * client_p, struct Client * source_p, char * channels, c
 		if(flags == 0 &&
 				!IsOper(source_p) && !IsExemptSpambot(source_p))
 			check_spambot_warning(source_p, name);
+
+		if(IsSetOverride(source_p))
+			flags |= CHFL_OVERRIDEOPER;
 
 		/* add the user to the channel */
 		add_user_to_channel(chptr, source_p, flags);

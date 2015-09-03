@@ -36,6 +36,7 @@
 #include "parse.h"
 #include "hash.h"
 #include "packet.h"
+#include "s_conf.h"
 #include "s_serv.h"
 #include "hook.h"
 
@@ -60,6 +61,7 @@ DECLARE_MODULE_AV1(kick, NULL, NULL, kick_clist, NULL, NULL, "$Revision: 3317 $"
 static int
 m_kick(struct Client *client_p, struct Client *source_p, int parc, const char *parv[])
 {
+	struct membership *mssptr;
 	struct membership *msptr;
 	struct Client *who;
 	struct Channel *chptr;
@@ -90,14 +92,15 @@ m_kick(struct Client *client_p, struct Client *source_p, int parc, const char *p
 	{
 		msptr = find_channel_membership(chptr, source_p);
 
-		if((msptr == NULL) && MyConnect(source_p))
+		if((msptr == NULL) && MyConnect(source_p) && !IsSetOverride(source_p))
 		{
 			sendto_one_numeric(source_p, ERR_NOTONCHANNEL,
 					   form_str(ERR_NOTONCHANNEL), name);
 			return 0;
 		}
 
-		if(get_channel_access(source_p, msptr) < CHFL_CHANOP)
+		//if(get_channel_access(source_p, msptr) < CHFL_CHANOP)
+		if(!can_kick_deop(msptr, find_channel_membership(chptr, client_p)) && !IsSetOverride(source_p))
 		{
 			if(MyConnect(source_p))
 			{
@@ -198,6 +201,14 @@ m_kick(struct Client *client_p, struct Client *source_p, int parc, const char *p
 			      ":%s KICK %s %s :%s",
 			      use_id(source_p), chptr->chname, use_id(who), comment);
 		remove_user_from_channel(msptr);
+		
+		if(IsSetOverride(source_p))
+		{
+			mssptr = find_channel_membership(chptr, source_p);
+			if(!is_any_op(mssptr))
+				sendto_realops_snomask(SNO_GENERAL, L_NETWIDE, "%s is using oper-override to kick %s (%s@%s) on %s",
+				       get_oper_name(source_p), who->name, who->username, who->orighost, parv[1]);
+		}
 	}
 	else if (MyClient(source_p))
 		sendto_one_numeric(source_p, ERR_USERNOTINCHANNEL,

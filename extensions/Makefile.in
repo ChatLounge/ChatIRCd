@@ -78,7 +78,6 @@ SRCS =                          \
   no_kill_services.c			\
   no_locops.c					\
   no_oper_invis.c				\
-  override.c					\
   restrict-unauthenticated.c	\
   sno_farconnect.c				\
   sno_globalkline.c				\

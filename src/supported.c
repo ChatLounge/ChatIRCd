@@ -265,6 +265,21 @@ isupport_chanlimit(const void *ptr)
 	return result;
 }
 
+static const char*
+isupport_prefix(const void *ptr)
+{
+	static char result[18];
+
+	rb_snprintf(result, sizeof result, "(%s%so%sv)%s%s@%s+",
+	ConfigChannel.use_owner ? "y" : "",
+	ConfigChannel.use_admin ? "a" : "",
+	ConfigChannel.use_halfop ? "h" : "",
+	ConfigChannel.use_owner ? "~" : "",
+	ConfigChannel.use_admin ? "&" : "",
+	ConfigChannel.use_halfop ? "%" : "");
+	return result;
+}
+
 static const char *
 isupport_maxlist(const void *ptr)
 {
@@ -274,6 +289,18 @@ isupport_maxlist(const void *ptr)
 			ConfigChannel.use_except ? "e" : "",
 			ConfigChannel.use_invex ? "I" : "",
 			ConfigChannel.max_bans);
+	return result;
+}
+
+static const char *
+isupport_statusmsg(const void *ptr)
+{
+	static char result[6];
+	
+	rb_snprintf(result, sizeof result, "%s%s@%s+",
+			ConfigChannel.use_owner ? "~" : "",
+			ConfigChannel.use_admin ? "&" : "",
+			ConfigChannel.use_halfop ? "%" : "");
 	return result;
 }
 
@@ -323,12 +350,12 @@ init_isupport(void)
 	add_isupport("INVEX", isupport_boolean, &ConfigChannel.use_invex);
 	add_isupport("CHANMODES", isupport_chanmodes, NULL);
 	add_isupport("CHANLIMIT", isupport_chanlimit, NULL);
-	add_isupport("PREFIX", isupport_string, "(ov)@+");
+	add_isupport("PREFIX", isupport_prefix, NULL);
 	add_isupport("MAXLIST", isupport_maxlist, NULL);
 	add_isupport("MODES", isupport_intptr, &maxmodes);
 	add_isupport("NETWORK", isupport_stringptr, &ServerInfo.network_name);
 	add_isupport("KNOCK", isupport_boolean, &ConfigChannel.use_knock);
-	add_isupport("STATUSMSG", isupport_string, "@+");
+	add_isupport("STATUSMSG", isupport_statusmsg, NULL);
 	add_isupport("CALLERID", isupport_umode, "g");
 	add_isupport("CASEMAPPING", isupport_string, "rfc1459");
 	add_isupport("NICKLEN", isupport_nicklen, NULL);

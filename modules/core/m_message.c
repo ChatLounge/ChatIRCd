@@ -270,7 +270,7 @@ build_target_list(enum message_type msgtype, struct Client *client_p,
 		 * here plain old channel msg?
 		 */
 
-		if(IsChanPrefix(*nick))
+		if(*nick == '#')
 		{
 			/* ignore send of local channel to a server (should not happen) */
 			if(IsServer(client_p) && *nick == '&')
@@ -329,10 +329,16 @@ build_target_list(enum message_type msgtype, struct Client *client_p,
 		/*  allow %+@ if someone wants to do that */
 		for(;;)
 		{
-			if(*nick == '@')
-				type |= CHFL_CHANOP;
+			if(*nick == '~')
+				type |= ONLY_OWNERSANDUP;
+			else if(*nick == '&')
+				type |= ONLY_ADMINSANDUP;
+			else if(*nick == '@')
+				type |= ONLY_CHANOPSANDUP;
+			else if(*nick == '%')
+				type |= ONLY_HALFOPSANDUP;
 			else if(*nick == '+')
-				type |= CHFL_CHANOP | CHFL_VOICE;
+				type |= ONLY_VOICEANDUP;
 			else
 				break;
 			nick++;
@@ -358,7 +364,8 @@ build_target_list(enum message_type msgtype, struct Client *client_p,
 
 				msptr = find_channel_membership(chptr, source_p);
 
-				if(!IsServer(source_p) && !IsService(source_p) && !is_chanop_voiced(msptr))
+				if(!IsServer(source_p) && !IsService(source_p) &&
+					!is_chanop_voiced(msptr) && !IsSetOverride(source_p))
 				{
 					sendto_one(source_p, form_str(ERR_CHANOPRIVSNEEDED),
 						   get_id(&me, source_p),
@@ -480,6 +487,7 @@ msg_channel(enum message_type msgtype,
 {
 	int result;
 	hook_data_privmsg_channel hdata;
+	int override_msg = 0;
 
 	if(MyClient(source_p))
 	{
@@ -525,14 +533,45 @@ msg_channel(enum message_type msgtype,
 		if(result == CAN_SEND_OPV ||
 		   !flood_attack_channel(msgtype, source_p, chptr, chptr->chname))
 		{
-			if (msgtype != MESSAGE_TYPE_PRIVMSG && chptr->mode.mode & MODE_NONOTICE && !IsService(source_p))
+			//if (msgtype != MESSAGE_TYPE_PRIVMSG && chptr->mode.mode & MODE_NONOTICE && !IsService(source_p))
+			if (msgtype != MESSAGE_TYPE_PRIVMSG && !IsService(source_p))
 			{
-				sendto_one_numeric(source_p, ERR_CANNOTSENDTOCHAN,
-						form_str(ERR_CANNOTSENDTOCHAN), chptr->chname);
-				return;
-			}
-			sendto_channel_flags(client_p, ALL_MEMBERS, source_p, chptr,
+				if(chptr->mode.mode & MODE_NONOTICE)
+				{
+					if(IsSetOverride(source_p))
+					{
+						override_msg = 1;
+						sendto_channel_flags(client_p, ALL_MEMBERS, source_p, chptr,
+							"%s %s :%s", cmdname[msgtype], chptr->chname, text);
+					}
+					else
+					{
+						sendto_one_numeric(source_p, ERR_CANNOTSENDTOCHAN,
+								form_str(ERR_CANNOTSENDTOCHAN), chptr->chname);
+						return;
+					}
+				}
+				else
+				{
+					sendto_channel_flags(client_p, ALL_MEMBERS, source_p, chptr,
+							 "%s %s :%s", cmdname[msgtype], chptr->chname, text);
+				}
+				
+				/* if(IsSetOverride(source_p))
+				{
+					sendto_channel_flags(client_p, ALL_MEMBERS, source_p, chptr,
 					     "%s %s :%s", cmdname[msgtype], chptr->chname, text);
+				}
+				else
+				{
+					sendto_one_numeric(source_p, ERR_CANNOTSENDTOCHAN,
+							form_str(ERR_CANNOTSENDTOCHAN), chptr->chname);
+					return;
+				} */
+			}
+			else
+				sendto_channel_flags(client_p, ALL_MEMBERS, source_p, chptr,
+							 "%s %s :%s", cmdname[msgtype], chptr->chname, text);
 		}
 	}
 	else if(chptr->mode.mode & MODE_OPMODERATE &&
@@ -552,12 +591,22 @@ msg_channel(enum message_type msgtype,
 					     cmdname[msgtype], text);
 		}
 	}
+	else if(IsSetOverride(source_p))
+	{
+		override_msg = 1;
+		sendto_channel_flags(client_p, ALL_MEMBERS, source_p, chptr,
+							"%s %s :%s", cmdname[msgtype], chptr->chname, text);
+	}
 	else
 	{
 		if(msgtype != MESSAGE_TYPE_NOTICE)
 			sendto_one_numeric(source_p, ERR_CANNOTSENDTOCHAN,
 					   form_str(ERR_CANNOTSENDTOCHAN), chptr->chname);
 	}
+
+	if(override_msg && MyClient(source_p))
+		sendto_realops_snomask(SNO_GENERAL, L_NETWIDE, "%s is using oper-override on %s (forcing message)",
+							get_oper_name(source_p), chptr->chname);
 }
 /*
  * msg_channel_opmod
@@ -645,10 +694,25 @@ msg_channel_flags(enum message_type msgtype, struct Client *client_p,
 		type = ONLY_CHANOPSVOICED;
 		c = '+';
 	}
+	else if(flags & CHFL_HALFOP)
+	{
+		type = ONLY_HALFOPSANDUP;
+		c = '%';
+	}
+	else if(flags & CHFL_CHANOP)
+	{
+		type = ONLY_CHANOPSANDUP;
+		c = '@';
+	}
+	else if(flags & CHFL_ADMIN)
+	{
+		type = ONLY_ADMINSANDUP;
+		c = '&';
+	}
 	else
 	{
-		type = ONLY_CHANOPS;
-		c = '@';
+		type = ONLY_OWNERSANDUP;
+		c = '~';
 	}
 
 	if(MyClient(source_p))

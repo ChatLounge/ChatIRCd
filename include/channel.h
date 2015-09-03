@@ -114,6 +114,7 @@ struct ChModeChange
 	const char *id;
 	int dir;
 	int mems;
+	int overrided_mode;
 };
 
 typedef void (*ChannelModeFunc)(struct Client *source_p, struct Channel *chptr,
@@ -136,19 +137,37 @@ typedef int (*ExtbanFunc)(const char *data, struct Client *client_p,
 
 /* channel status flags */
 #define CHFL_PEON		0x0000	/* normal member of channel */
-#define CHFL_VOICE      	0x0001	/* the power to speak */
-#define CHFL_CHANOP	     	0x0002	/* Channel operator */
+#define CHFL_VOICE      0x0001	/* the power to speak */
+#define CHFL_HALFOP	    0x0002	/* Channel half-operator */
+#define CHFL_CHANOP     0x0004  /* Channel operator */
+#define CHFL_ADMIN      0x0008  /* Channel adminstrator */
+#define CHFL_OWNER      0x0010  /* Channel owner */
 
-#define CHFL_BANNED		0x0008  /* cached as banned */
-#define CHFL_QUIETED		0x0010  /* cached as being +q victim */
-#define ONLY_SERVERS		0x0020
+#define CHFL_OVERRIDEOPER 0x1000 /* Prefixless status like CHFL_PEON, except
+                                  * can receive messages for cmode +e/+I the way
+								  * channel operators can.  Used only for opers
+								  * with oper:override.
+								  */
+
+#define CHFL_BANNED		0x0020  /* cached as banned */
+#define CHFL_QUIETED		0x0040  /* cached as being +q victim */
+#define ONLY_SERVERS		0x0080
 #define ALL_MEMBERS		CHFL_PEON
-#define ONLY_CHANOPS		CHFL_CHANOP
-#define ONLY_CHANOPSVOICED	(CHFL_CHANOP|CHFL_VOICE)
+//#define ONLY_CHANOPS		CHFL_CHANOP
+#define ONLY_CHANOPS        (CHFL_OVERRIDEOPER|CHFL_OWNER|CHFL_ADMIN|CHFL_CHANOP|CHFL_HALFOP)
+#define ONLY_CHANOPSVOICED	(CHFL_OVERRIDEOPER|CHFL_OWNER|CHFL_ADMIN|CHFL_CHANOP|CHFL_HALFOP|CHFL_VOICE)
+#define ONLY_OWNERSANDUP    (CHFL_OVERRIDEOPER|CHFL_OWNER)
+#define ONLY_ADMINSANDUP    (CHFL_OVERRIDEOPER|CHFL_OWNER|CHFL_ADMIN)
+#define ONLY_CHANOPSANDUP   (CHFL_OVERRIDEOPER|CHFL_OWNER|CHFL_ADMIN|CHFL_CHANOP)
+#define ONLY_HALFOPSANDUP   (CHFL_OVERRIDEOPER|CHFL_OWNER|CHFL_ADMIN|CHFL_CHANOP|CHFL_HALFOP)
+#define ONLY_VOICEANDUP     (CHFL_OVERRIDEOPER|CHFL_OWNER|CHFL_ADMIN|CHFL_CHANOP|CHFL_HALFOP|CHFL_VOICE)
+
+#define is_chmode_h(x) ((x) && (x)->flags & CHFL_HALFOP)
+#define is_chmode_a(x) ((x) && (x)->flags & CHFL_ADMIN)
+#define is_chmode_y(x) ((x) && (x)->flags & CHFL_OWNER)
 
 #define is_chanop(x)	((x) && (x)->flags & CHFL_CHANOP)
 #define is_voiced(x)	((x) && (x)->flags & CHFL_VOICE)
-#define is_chanop_voiced(x) ((x) && (x)->flags & (CHFL_CHANOP|CHFL_VOICE))
 #define can_send_banned(x) ((x) && (x)->flags & (CHFL_BANNED|CHFL_QUIETED))
 
 /* channel modes ONLY */
@@ -219,6 +238,12 @@ extern int can_join(struct Client *source_p, struct Channel *chptr,
 
 extern struct membership *find_channel_membership(struct Channel *, struct Client *);
 extern const char *find_channel_status(struct membership *msptr, int combine);
+extern int is_halfop(struct membership *msptr);
+extern int is_admin(struct membership *msptr);
+extern int is_owner(struct membership *msptr);
+extern int is_any_op(struct membership *msptr);
+extern int is_chanop_voiced(struct membership *msptr);
+extern int can_kick_deop(struct membership *source, struct membership *target);
 extern void add_user_to_channel(struct Channel *, struct Client *, int flags);
 extern void remove_user_from_channel(struct membership *);
 extern void remove_user_from_channels(struct Client *);

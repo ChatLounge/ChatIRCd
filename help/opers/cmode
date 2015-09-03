@@ -3,6 +3,9 @@ MODE <channel> <+|-><modes> [parameters]
 ? designates that the cmode is provided by an extension
 and may not be present on this server.
 
+* designates that the cmode may not be available if not
+enabled in the configuration file.
+
 CHANNELMODE - DESCRIPTION
 ------------------------------------------------------------------------
 NO PARAMETERS:
@@ -51,8 +54,14 @@ WITH PARAMETERS:
               PARAMS: /mode #channel +l limit
      +v     - Voice.  Allows a user to talk in a +m channel.  Noted by +nick.
               PARAMS: /mode #channel +v nick
-     +o     - Op.  Allows a user full control over the channel.
+  *  +h     - Halfop.  Grants channel half-operator status.
+              PARAMS: /mode #channel +h nick
+     +o     - Op.  Grants channel operator status.
               PARAMS: /mode #channel +o nick
+  *  +a     - Admin.  Grants channel administrator status.
+              PARAMS: /mode #channel +a nick
+  *  +y     - Owner.  Grants channel owner status.
+              PARAMS: /mode #channel +y nick
      +b     - Ban.  Prevents a user from entering the channel, and from
               sending or changing nick if they are on it, based on a 
               nick!ident@host match.

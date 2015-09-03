@@ -176,7 +176,7 @@ can_send_part(struct Client *source_p, struct Channel *chptr, struct membership 
 	if (!can_send(chptr, source_p, msptr))
 		return 0;
 	/* Allow chanops to bypass anti_spam_exit_message_time for part messages. */
-	if (is_chanop(msptr))
+	if (is_any_op(msptr))
 		return 1;
 	return (source_p->localClient->firsttime + ConfigFileEntry.anti_spam_exit_message_time) < rb_current_time();
 }

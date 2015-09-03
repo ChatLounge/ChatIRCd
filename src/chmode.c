@@ -93,7 +93,10 @@ construct_cflags_strings(void)
 			!(chmode_table[i].set_func == chm_throttle) &&
                         !(chmode_table[i].set_func == chm_key) &&
                         !(chmode_table[i].set_func == chm_limit) &&
+						!(chmode_table[i].set_func == chm_owner) &&
+						!(chmode_table[i].set_func == chm_admin) &&
                         !(chmode_table[i].set_func == chm_op) &&
+						!(chmode_table[i].set_func == chm_halfop) &&
                         !(chmode_table[i].set_func == chm_voice))
 		{
 			chmode_flags[i] = chmode_table[i].mode_type;
@@ -183,9 +186,17 @@ get_channel_access(struct Client *source_p, struct membership *msptr)
 {
 	hook_data_channel_approval moduledata;
 
-	if(!MyClient(source_p))
+	if(!MyClient(source_p) || is_owner(msptr))
+		return CHFL_OWNER;
+	else if(is_admin(msptr))
+		return CHFL_ADMIN;
+	else if(is_chanop(msptr))
 		return CHFL_CHANOP;
-
+	else if(is_halfop(msptr))
+		return CHFL_HALFOP;
+	else
+		return CHFL_PEON;
+	
 	if (msptr == NULL)
 		return CHFL_PEON;
 
@@ -193,7 +204,16 @@ get_channel_access(struct Client *source_p, struct membership *msptr)
 	moduledata.chptr = msptr->chptr;
 	moduledata.msptr = msptr;
 	moduledata.target = NULL;
-	moduledata.approved = is_chanop(msptr) ? CHFL_CHANOP : CHFL_PEON;
+	//moduledata.approved = is_chanop(msptr) ? CHFL_CHANOP : CHFL_PEON;
+	moduledata.approved = is_owner(msptr) ? CHFL_OWNER : CHFL_PEON;
+	/* if(is_owner(msptr) && ConfigChannel.use_owner)
+		moduledata.approved = CHFL_OWNER;
+	else if(is_chanop(msptr))
+		moduledata.approved = CHFL_CHANOP;
+	else if(is_halfop(msptr))
+		moduledata.approved = CHFL_HALFOP;
+	else
+		moduledata.approved = CHFL_PEON; */
 
 	call_hook(h_get_channel_access, &moduledata);
 
@@ -225,12 +245,8 @@ allow_mode_change(struct Client *source_p, struct Channel *chptr, int alevel,
 		*errors |= SM_ERR_MLOCK;
 		return 0;
 	}
-	if(alevel != CHFL_CHANOP)
+	if(alevel != CHFL_CHANOP && alevel != CHFL_OWNER && alevel != CHFL_ADMIN && alevel != CHFL_HALFOP)
 	{
-		if(!(*errors & SM_ERR_NOOPS))
-			sendto_one(source_p, form_str(ERR_CHANOPRIVSNEEDED),
-				   me.name, source_p->name, chptr->chname);
-		*errors |= SM_ERR_NOOPS;
 		return 0;
 	}
 	return 1;
@@ -594,8 +610,26 @@ chm_simple(struct Client *source_p, struct Channel *chptr,
 	   int alevel, int parc, int *parn,
 	   const char **parv, int *errors, int dir, char c, long mode_type)
 {
+	int overrided_mode = 0;
+
 	if(!allow_mode_change(source_p, chptr, alevel, errors, c))
-		return;
+	{
+		if(IsSetOverride(source_p))
+		{
+			overrided_mode = 1;
+
+			sendto_realops_snomask(SNO_GENERAL, L_NETWIDE, "%s is using oper-override on %s (modehacking)",
+				       get_oper_name(source_p), chptr->chname);
+		}
+		else
+		{
+			if(!(*errors & SM_ERR_NOOPS))
+			sendto_one(source_p, form_str(ERR_CHANOPRIVSNEEDED),
+				   me.name, source_p->name, chptr->chname);
+			*errors |= SM_ERR_NOOPS;
+			return;
+		}
+	}
 
 	if(MyClient(source_p) && (++mode_limit_simple > MAXMODES_SIMPLE))
 		return;
@@ -614,6 +648,7 @@ chm_simple(struct Client *source_p, struct Channel *chptr,
 		mode_changes[mode_count].dir = MODE_ADD;
 		mode_changes[mode_count].id = NULL;
 		mode_changes[mode_count].mems = ALL_MEMBERS;
+		mode_changes[mode_count].overrided_mode = overrided_mode;
 		mode_changes[mode_count++].arg = NULL;
 	}
 	else if((dir == MODE_DEL) && (chptr->mode.mode & mode_type))
@@ -623,6 +658,7 @@ chm_simple(struct Client *source_p, struct Channel *chptr,
 		mode_changes[mode_count].letter = c;
 		mode_changes[mode_count].dir = MODE_DEL;
 		mode_changes[mode_count].mems = ALL_MEMBERS;
+		mode_changes[mode_count].overrided_mode = overrided_mode;
 		mode_changes[mode_count].id = NULL;
 		mode_changes[mode_count++].arg = NULL;
 	}
@@ -633,6 +669,8 @@ chm_orphaned(struct Client *source_p, struct Channel *chptr,
 	   int alevel, int parc, int *parn,
 	   const char **parv, int *errors, int dir, char c, long mode_type)
 {
+	int overrided_mode = 0;
+
 	if(MyClient(source_p))
 		return;
         
@@ -644,6 +682,7 @@ chm_orphaned(struct Client *source_p, struct Channel *chptr,
 		mode_changes[mode_count].dir = MODE_ADD;
 		mode_changes[mode_count].id = NULL;
 		mode_changes[mode_count].mems = ALL_MEMBERS;
+		mode_changes[mode_count].overrided_mode = overrided_mode;
 		mode_changes[mode_count++].arg = NULL;
 	}
 	else if((dir == MODE_DEL) && (chptr->mode.mode & mode_type))
@@ -653,6 +692,7 @@ chm_orphaned(struct Client *source_p, struct Channel *chptr,
 		mode_changes[mode_count].letter = c;
 		mode_changes[mode_count].dir = MODE_DEL;
 		mode_changes[mode_count].mems = ALL_MEMBERS;
+		mode_changes[mode_count].overrided_mode = overrided_mode;
 		mode_changes[mode_count].id = NULL;
 		mode_changes[mode_count++].arg = NULL;
 	}
@@ -663,6 +703,8 @@ chm_staff(struct Client *source_p, struct Channel *chptr,
 	  int alevel, int parc, int *parn,
 	  const char **parv, int *errors, int dir, char c, long mode_type)
 {
+	int overrided_mode = 0;
+
 	if(!IsOper(source_p) && !IsServer(source_p))
 	{
 		if(!(*errors & SM_ERR_NOPRIVS))
@@ -694,6 +736,7 @@ chm_staff(struct Client *source_p, struct Channel *chptr,
 		mode_changes[mode_count].dir = MODE_ADD;
 		mode_changes[mode_count].id = NULL;
 		mode_changes[mode_count].mems = ALL_MEMBERS;
+		mode_changes[mode_count].overrided_mode = overrided_mode;
 		mode_changes[mode_count++].arg = NULL;
 	}
 	else if((dir == MODE_DEL) && (chptr->mode.mode & mode_type))
@@ -703,16 +746,19 @@ chm_staff(struct Client *source_p, struct Channel *chptr,
 		mode_changes[mode_count].letter = c;
 		mode_changes[mode_count].dir = MODE_DEL;
 		mode_changes[mode_count].mems = ALL_MEMBERS;
+		mode_changes[mode_count].overrided_mode = overrided_mode;
 		mode_changes[mode_count].id = NULL;
 		mode_changes[mode_count++].arg = NULL;
 	}
 }
 
 void
-chm_admin(struct Client *source_p, struct Channel *chptr,
+chm_adminstaff(struct Client *source_p, struct Channel *chptr,
 	  int alevel, int parc, int *parn,
 	  const char **parv, int *errors, int dir, char c, long mode_type)
 {
+	int overrided_mode = 0;
+
 	if(!IsAdmin(source_p) && !IsServer(source_p))
 	{
 		if(!(*errors & SM_ERR_NOPRIVS))
@@ -741,6 +787,7 @@ chm_admin(struct Client *source_p, struct Channel *chptr,
 		mode_changes[mode_count].dir = MODE_ADD;
 		mode_changes[mode_count].id = NULL;
 		mode_changes[mode_count].mems = ALL_MEMBERS;
+		mode_changes[mode_count].overrided_mode = overrided_mode;
 		mode_changes[mode_count++].arg = NULL;
 	}
 	else if((dir == MODE_DEL) && (chptr->mode.mode & mode_type))
@@ -750,16 +797,19 @@ chm_admin(struct Client *source_p, struct Channel *chptr,
 		mode_changes[mode_count].letter = c;
 		mode_changes[mode_count].dir = MODE_DEL;
 		mode_changes[mode_count].mems = ALL_MEMBERS;
+		mode_changes[mode_count].overrided_mode = overrided_mode;
 		mode_changes[mode_count].id = NULL;
 		mode_changes[mode_count++].arg = NULL;
 	}
 }
 
 void
-chm_netadmin(struct Client *source_p, struct Channel *chptr,
+chm_netadminstaff(struct Client *source_p, struct Channel *chptr,
 	  int alevel, int parc, int *parn,
 	  const char **parv, int *errors, int dir, char c, long mode_type)
 {
+	int overrided_mode = 0;
+
 	if(!IsNetAdmin(source_p) && !IsServer(source_p))
 	{
 		if(!(*errors & SM_ERR_NOPRIVS))
@@ -788,6 +838,7 @@ chm_netadmin(struct Client *source_p, struct Channel *chptr,
 		mode_changes[mode_count].dir = MODE_ADD;
 		mode_changes[mode_count].id = NULL;
 		mode_changes[mode_count].mems = ALL_MEMBERS;
+		mode_changes[mode_count].overrided_mode = overrided_mode;
 		mode_changes[mode_count++].arg = NULL;
 	}
 	else if((dir == MODE_DEL) && (chptr->mode.mode & mode_type))
@@ -797,6 +848,7 @@ chm_netadmin(struct Client *source_p, struct Channel *chptr,
 		mode_changes[mode_count].letter = c;
 		mode_changes[mode_count].dir = MODE_DEL;
 		mode_changes[mode_count].mems = ALL_MEMBERS;
+		mode_changes[mode_count].overrided_mode = overrided_mode;
 		mode_changes[mode_count].id = NULL;
 		mode_changes[mode_count++].arg = NULL;
 	}
@@ -816,6 +868,7 @@ chm_ban(struct Client *source_p, struct Channel *chptr,
 	const char *rpl_list_p;
 	const char *rpl_endlist_p;
 	int mems;
+	int overrided_mode = 0;
 
 	switch (mode_type)
 	{
@@ -883,14 +936,18 @@ chm_ban(struct Client *source_p, struct Channel *chptr,
 
 		/* non-ops cant see +eI lists.. */
 		/* note that this is still permitted if +e/+I are mlocked. */
-		if(alevel != CHFL_CHANOP && mode_type != CHFL_BAN &&
-				mode_type != CHFL_QUIET)
+		if(alevel != CHFL_OWNER && alevel != CHFL_CHANOP && alevel != CHFL_HALFOP &&
+				mode_type != CHFL_BAN && mode_type != CHFL_QUIET)
 		{
-			if(!(*errors & SM_ERR_NOOPS))
-				sendto_one(source_p, form_str(ERR_CHANOPRIVSNEEDED),
-					   me.name, source_p->name, chptr->chname);
-			*errors |= SM_ERR_NOOPS;
-			return;
+			/* Controversial?  Let opers with override view +eI silently. - Ben */
+			if(!IsSetOverride(source_p))
+			{
+				if(!(*errors & SM_ERR_NOOPS))
+					sendto_one(source_p, form_str(ERR_CHANOPRIVSNEEDED),
+						   me.name, source_p->name, chptr->chname);
+				*errors |= SM_ERR_NOOPS;
+				return;
+			}
 		}
 
 		RB_DLINK_FOREACH(ptr, list->head)
@@ -911,7 +968,23 @@ chm_ban(struct Client *source_p, struct Channel *chptr,
 	}
 
 	if(!allow_mode_change(source_p, chptr, alevel, errors, c))
-		return;
+	{
+		if(IsSetOverride(source_p))
+		{
+			overrided_mode = 1;
+
+			sendto_realops_snomask(SNO_GENERAL, L_NETWIDE, "%s is using oper-override on %s (modehacking)",
+				       get_oper_name(source_p), chptr->chname);
+		}
+		else
+		{
+			if(!(*errors & SM_ERR_NOOPS))
+			sendto_one(source_p, form_str(ERR_CHANOPRIVSNEEDED),
+				   me.name, source_p->name, chptr->chname);
+			*errors |= SM_ERR_NOOPS;
+			return;
+		}
+	}
 
 
 	if(MyClient(source_p) && (++mode_limit > MAXMODEPARAMS))
@@ -1012,6 +1085,7 @@ chm_ban(struct Client *source_p, struct Channel *chptr,
 		mode_changes[mode_count].letter = c;
 		mode_changes[mode_count].dir = MODE_ADD;
 		mode_changes[mode_count].mems = mems;
+		mode_changes[mode_count].overrided_mode = overrided_mode;
 		mode_changes[mode_count].id = NULL;
 		mode_changes[mode_count++].arg = mask;
 	}
@@ -1040,8 +1114,201 @@ chm_ban(struct Client *source_p, struct Channel *chptr,
 		mode_changes[mode_count].letter = c;
 		mode_changes[mode_count].dir = MODE_DEL;
 		mode_changes[mode_count].mems = mems;
+		mode_changes[mode_count].overrided_mode = overrided_mode;
 		mode_changes[mode_count].id = NULL;
 		mode_changes[mode_count++].arg = buf + old_removed_mask_pos;
+	}
+}
+
+void
+chm_owner(struct Client *source_p, struct Channel *chptr,
+       int alevel, int parc, int *parn,
+       const char **parv, int *errors, int dir, char c, long mode_type)
+{
+	struct membership *mstptr;
+	const char *ownernick;
+	struct Client *targ_p;
+	int overrided_mode = 0;
+
+	if(alevel != CHFL_OWNER)
+	{
+		if(IsSetOverride(source_p))
+		{
+			overrided_mode = 1;
+
+			sendto_realops_snomask(SNO_GENERAL, L_NETWIDE, "%s is using oper-override on %s (modehacking)",
+				       get_oper_name(source_p), chptr->chname);
+		}
+		else
+		{
+			if(!(*errors & SM_ERR_NOOPS))
+				sendto_one(source_p, form_str(ERR_CHANOPRIVSNEEDED),
+						me.name, source_p->name, chptr->chname);
+			*errors |= SM_ERR_NOOPS;
+
+			return;
+		}
+	}
+
+	if((dir == MODE_QUERY) || (parc <= *parn))
+		return;
+
+	ownernick = parv[(*parn)];
+	(*parn)++;
+
+	/* empty nick */
+	if(EmptyString(ownernick))
+	{
+		sendto_one_numeric(source_p, ERR_NOSUCHNICK, form_str(ERR_NOSUCHNICK), "*");
+		return;
+	}
+
+	if((targ_p = find_chasing(source_p, ownernick, NULL)) == NULL)
+	{
+		return;
+	}
+
+	mstptr = find_channel_membership(chptr, targ_p);
+
+	if(mstptr == NULL)
+	{
+		if(!(*errors & SM_ERR_NOTONCHANNEL) && MyClient(source_p))
+			sendto_one_numeric(source_p, ERR_USERNOTINCHANNEL,
+					   form_str(ERR_USERNOTINCHANNEL), ownernick, chptr->chname);
+		*errors |= SM_ERR_NOTONCHANNEL;
+		return;
+	}
+
+	if(MyClient(source_p) && (++mode_limit > MAXMODEPARAMS))
+		return;
+
+	if(dir == MODE_ADD)
+	{
+		if(targ_p == source_p && mstptr->flags & CHFL_OWNER)
+			return;
+
+		mode_changes[mode_count].letter = c;
+		mode_changes[mode_count].dir = MODE_ADD;
+		mode_changes[mode_count].mems = ALL_MEMBERS;
+		mode_changes[mode_count].overrided_mode = overrided_mode;
+		mode_changes[mode_count].id = targ_p->id;
+		mode_changes[mode_count++].arg = targ_p->name;
+
+		mstptr->flags |= CHFL_OWNER;
+	}
+	else
+	{
+		if(MyClient(source_p) && IsService(targ_p))
+		{
+			sendto_one(source_p, form_str(ERR_ISCHANSERVICE),
+				   me.name, source_p->name, targ_p->name, chptr->chname);
+			return;
+		}
+
+		mode_changes[mode_count].letter = c;
+		mode_changes[mode_count].dir = MODE_DEL;
+		mode_changes[mode_count].mems = ALL_MEMBERS;
+		mode_changes[mode_count].overrided_mode = overrided_mode;
+		mode_changes[mode_count].id = targ_p->id;
+		mode_changes[mode_count++].arg = targ_p->name;
+
+		mstptr->flags &= ~CHFL_OWNER;
+	}
+}
+
+void
+chm_admin(struct Client *source_p, struct Channel *chptr,
+       int alevel, int parc, int *parn,
+       const char **parv, int *errors, int dir, char c, long mode_type)
+{
+	struct membership *mstptr;
+	const char *adminnick;
+	struct Client *targ_p;
+	int overrided_mode = 0;
+
+	if(alevel != CHFL_ADMIN && alevel != CHFL_OWNER)
+	{
+		if(IsSetOverride(source_p))
+		{
+			overrided_mode = 1;
+
+			sendto_realops_snomask(SNO_GENERAL, L_NETWIDE, "%s is using oper-override on %s (modehacking)",
+				       get_oper_name(source_p), chptr->chname);
+		}
+		else
+		{
+			if(!(*errors & SM_ERR_NOOPS))
+				sendto_one(source_p, form_str(ERR_CHANOPRIVSNEEDED),
+						me.name, source_p->name, chptr->chname);
+			*errors |= SM_ERR_NOOPS;
+
+			return;
+		}
+	}
+
+	if((dir == MODE_QUERY) || (parc <= *parn))
+		return;
+
+	adminnick = parv[(*parn)];
+	(*parn)++;
+
+	/* empty nick */
+	if(EmptyString(adminnick))
+	{
+		sendto_one_numeric(source_p, ERR_NOSUCHNICK, form_str(ERR_NOSUCHNICK), "*");
+		return;
+	}
+
+	if((targ_p = find_chasing(source_p, adminnick, NULL)) == NULL)
+	{
+		return;
+	}
+
+	mstptr = find_channel_membership(chptr, targ_p);
+
+	if(mstptr == NULL)
+	{
+		if(!(*errors & SM_ERR_NOTONCHANNEL) && MyClient(source_p))
+			sendto_one_numeric(source_p, ERR_USERNOTINCHANNEL,
+					   form_str(ERR_USERNOTINCHANNEL), adminnick, chptr->chname);
+		*errors |= SM_ERR_NOTONCHANNEL;
+		return;
+	}
+
+	if(MyClient(source_p) && (++mode_limit > MAXMODEPARAMS))
+		return;
+
+	if(dir == MODE_ADD)
+	{
+		if(targ_p == source_p && mstptr->flags & CHFL_ADMIN)
+			return;
+
+		mode_changes[mode_count].letter = c;
+		mode_changes[mode_count].dir = MODE_ADD;
+		mode_changes[mode_count].mems = ALL_MEMBERS;
+		mode_changes[mode_count].overrided_mode = overrided_mode;
+		mode_changes[mode_count].id = targ_p->id;
+		mode_changes[mode_count++].arg = targ_p->name;
+
+		mstptr->flags |= CHFL_ADMIN;
+	}
+	else
+	{
+		if(MyClient(source_p) && IsService(targ_p))
+		{
+			sendto_one(source_p, form_str(ERR_ISCHANSERVICE),
+				   me.name, source_p->name, targ_p->name, chptr->chname);
+			return;
+		}
+
+		mode_changes[mode_count].letter = c;
+		mode_changes[mode_count].dir = MODE_DEL;
+		mode_changes[mode_count].mems = ALL_MEMBERS;
+		mode_changes[mode_count].overrided_mode = overrided_mode;
+		mode_changes[mode_count].id = targ_p->id;
+		mode_changes[mode_count++].arg = targ_p->name;
+
+		mstptr->flags &= ~CHFL_ADMIN;
 	}
 }
 
@@ -1053,9 +1320,27 @@ chm_op(struct Client *source_p, struct Channel *chptr,
 	struct membership *mstptr;
 	const char *opnick;
 	struct Client *targ_p;
+	int overrided_mode = 0;
+	
+	if(alevel != CHFL_CHANOP && alevel != CHFL_ADMIN && alevel != CHFL_OWNER)
+	{
+		if(IsSetOverride(source_p))
+		{
+			overrided_mode = 1;
 
-	if(!allow_mode_change(source_p, chptr, alevel, errors, c))
-		return;
+			sendto_realops_snomask(SNO_GENERAL, L_NETWIDE, "%s is using oper-override on %s (modehacking)",
+				       get_oper_name(source_p), chptr->chname);
+		}
+		else
+		{
+			if(!(*errors & SM_ERR_NOOPS))
+				sendto_one(source_p, form_str(ERR_CHANOPRIVSNEEDED),
+						me.name, source_p->name, chptr->chname);
+			*errors |= SM_ERR_NOOPS;
+
+			return;
+		}
+	}
 
 	if((dir == MODE_QUERY) || (parc <= *parn))
 		return;
@@ -1097,6 +1382,7 @@ chm_op(struct Client *source_p, struct Channel *chptr,
 		mode_changes[mode_count].letter = c;
 		mode_changes[mode_count].dir = MODE_ADD;
 		mode_changes[mode_count].mems = ALL_MEMBERS;
+		mode_changes[mode_count].overrided_mode = overrided_mode;
 		mode_changes[mode_count].id = targ_p->id;
 		mode_changes[mode_count++].arg = targ_p->name;
 
@@ -1114,10 +1400,107 @@ chm_op(struct Client *source_p, struct Channel *chptr,
 		mode_changes[mode_count].letter = c;
 		mode_changes[mode_count].dir = MODE_DEL;
 		mode_changes[mode_count].mems = ALL_MEMBERS;
+		mode_changes[mode_count].overrided_mode = overrided_mode;
 		mode_changes[mode_count].id = targ_p->id;
 		mode_changes[mode_count++].arg = targ_p->name;
 
 		mstptr->flags &= ~CHFL_CHANOP;
+	}
+}
+
+void
+chm_halfop(struct Client *source_p, struct Channel *chptr,
+       int alevel, int parc, int *parn,
+       const char **parv, int *errors, int dir, char c, long mode_type)
+{
+	struct membership *mstptr;
+	const char *halfopnick;
+	struct Client *targ_p;
+	int overrided_mode = 0;
+
+	if(alevel != CHFL_CHANOP && alevel != CHFL_OWNER && alevel != CHFL_ADMIN && alevel != CHFL_HALFOP)
+	{
+		if(IsSetOverride(source_p))
+		{
+			overrided_mode = 1;
+
+			sendto_realops_snomask(SNO_GENERAL, L_NETWIDE, "%s is using oper-override on %s (modehacking)",
+				       get_oper_name(source_p), chptr->chname);
+		}
+		else
+		{
+			if(!(*errors & SM_ERR_NOOPS))
+				sendto_one(source_p, form_str(ERR_CHANOPRIVSNEEDED),
+						me.name, source_p->name, chptr->chname);
+			*errors |= SM_ERR_NOOPS;
+
+			return;
+		}
+	}
+
+	if((dir == MODE_QUERY) || (parc <= *parn))
+		return;
+
+	halfopnick = parv[(*parn)];
+	(*parn)++;
+
+	/* empty nick */
+	if(EmptyString(halfopnick))
+	{
+		sendto_one_numeric(source_p, ERR_NOSUCHNICK, form_str(ERR_NOSUCHNICK), "*");
+		return;
+	}
+
+	if((targ_p = find_chasing(source_p, halfopnick, NULL)) == NULL)
+	{
+		return;
+	}
+
+	mstptr = find_channel_membership(chptr, targ_p);
+
+	if(mstptr == NULL)
+	{
+		if(!(*errors & SM_ERR_NOTONCHANNEL) && MyClient(source_p))
+			sendto_one_numeric(source_p, ERR_USERNOTINCHANNEL,
+					   form_str(ERR_USERNOTINCHANNEL), halfopnick, chptr->chname);
+		*errors |= SM_ERR_NOTONCHANNEL;
+		return;
+	}
+
+	if(MyClient(source_p) && (++mode_limit > MAXMODEPARAMS))
+		return;
+
+	if(dir == MODE_ADD)
+	{
+		if(targ_p == source_p && mstptr->flags & CHFL_HALFOP)
+			return;
+
+		mode_changes[mode_count].letter = c;
+		mode_changes[mode_count].dir = MODE_ADD;
+		mode_changes[mode_count].mems = ALL_MEMBERS;
+		mode_changes[mode_count].overrided_mode = overrided_mode;
+		mode_changes[mode_count].id = targ_p->id;
+		mode_changes[mode_count++].arg = targ_p->name;
+
+		mstptr->flags |= CHFL_HALFOP;
+	}
+	else
+	{
+		if(MyClient(source_p) && IsService(targ_p))
+		{
+			sendto_one(source_p, form_str(ERR_ISCHANSERVICE),
+				   me.name, source_p->name, targ_p->name, chptr->chname);
+			return;
+		}
+
+		mode_changes[mode_count].letter = c;
+		mode_changes[mode_count].dir = MODE_DEL;
+		mode_changes[mode_count].mems = ALL_MEMBERS;
+		mode_changes[mode_count].overrided_mode = overrided_mode;
+		mode_changes[mode_count].id = targ_p->id;
+		mode_changes[mode_count++].arg = targ_p->name;
+
+		mstptr->flags &= ~CHFL_HALFOP;
 	}
 }
 
@@ -1129,9 +1512,26 @@ chm_voice(struct Client *source_p, struct Channel *chptr,
 	struct membership *mstptr;
 	const char *opnick;
 	struct Client *targ_p;
+	int overrided_mode = 0;
 
-	if(!allow_mode_change(source_p, chptr, alevel, errors, c))
-		return;
+	if(alevel != CHFL_CHANOP && alevel != CHFL_OWNER && alevel != CHFL_ADMIN && alevel != CHFL_HALFOP)
+	{
+		if(IsSetOverride(source_p))
+		{
+			overrided_mode = 1;
+
+			sendto_realops_snomask(SNO_GENERAL, L_NETWIDE, "%s is using oper-override on %s (modehacking)",
+				       get_oper_name(source_p), chptr->chname);
+		}
+		else
+		{
+			if(!(*errors & SM_ERR_NOOPS))
+				sendto_one(source_p, form_str(ERR_CHANOPRIVSNEEDED),
+						me.name, source_p->name, chptr->chname);
+				*errors |= SM_ERR_NOOPS;
+			return;
+		}
+	}
 
 	if((dir == MODE_QUERY) || parc <= *parn)
 		return;
@@ -1170,6 +1570,7 @@ chm_voice(struct Client *source_p, struct Channel *chptr,
 		mode_changes[mode_count].letter = c;
 		mode_changes[mode_count].dir = MODE_ADD;
 		mode_changes[mode_count].mems = ALL_MEMBERS;
+		mode_changes[mode_count].overrided_mode = overrided_mode;
 		mode_changes[mode_count].id = targ_p->id;
 		mode_changes[mode_count++].arg = targ_p->name;
 
@@ -1180,6 +1581,7 @@ chm_voice(struct Client *source_p, struct Channel *chptr,
 		mode_changes[mode_count].letter = 'v';
 		mode_changes[mode_count].dir = MODE_DEL;
 		mode_changes[mode_count].mems = ALL_MEMBERS;
+		mode_changes[mode_count].overrided_mode = overrided_mode;
 		mode_changes[mode_count].id = targ_p->id;
 		mode_changes[mode_count++].arg = targ_p->name;
 
@@ -1195,9 +1597,26 @@ chm_limit(struct Client *source_p, struct Channel *chptr,
 	const char *lstr;
 	static char limitstr[30];
 	int limit;
+	int overrided_mode = 0;
 
 	if(!allow_mode_change(source_p, chptr, alevel, errors, c))
-		return;
+	{
+		if(IsSetOverride(source_p))
+		{
+			overrided_mode = 1;
+
+			sendto_realops_snomask(SNO_GENERAL, L_NETWIDE, "%s is using oper-override on %s (modehacking)",
+				       get_oper_name(source_p), chptr->chname);
+		}
+		else
+		{
+			if(!(*errors & SM_ERR_NOOPS))
+			sendto_one(source_p, form_str(ERR_CHANOPRIVSNEEDED),
+				   me.name, source_p->name, chptr->chname);
+			*errors |= SM_ERR_NOOPS;
+			return;
+		}
+	}
 
 	if(dir == MODE_QUERY)
 		return;
@@ -1218,6 +1637,7 @@ chm_limit(struct Client *source_p, struct Channel *chptr,
 		mode_changes[mode_count].letter = c;
 		mode_changes[mode_count].dir = MODE_ADD;
 		mode_changes[mode_count].mems = ALL_MEMBERS;
+		mode_changes[mode_count].overrided_mode = overrided_mode;
 		mode_changes[mode_count].id = NULL;
 		mode_changes[mode_count++].arg = limitstr;
 
@@ -1233,6 +1653,7 @@ chm_limit(struct Client *source_p, struct Channel *chptr,
 		mode_changes[mode_count].letter = c;
 		mode_changes[mode_count].dir = MODE_DEL;
 		mode_changes[mode_count].mems = ALL_MEMBERS;
+		mode_changes[mode_count].overrided_mode = overrided_mode;
 		mode_changes[mode_count].id = NULL;
 		mode_changes[mode_count++].arg = NULL;
 	}
@@ -1244,9 +1665,26 @@ chm_throttle(struct Client *source_p, struct Channel *chptr,
 	     const char **parv, int *errors, int dir, char c, long mode_type)
 {
 	int joins = 0, timeslice = 0;
+	int overrided_mode = 0;
 
 	if(!allow_mode_change(source_p, chptr, alevel, errors, c))
-		return;
+	{
+		if(IsSetOverride(source_p))
+		{
+			overrided_mode = 1;
+
+			sendto_realops_snomask(SNO_GENERAL, L_NETWIDE, "%s is using oper-override on %s (modehacking)",
+				       get_oper_name(source_p), chptr->chname);
+		}
+		else
+		{
+			if(!(*errors & SM_ERR_NOOPS))
+			sendto_one(source_p, form_str(ERR_CHANOPRIVSNEEDED),
+				   me.name, source_p->name, chptr->chname);
+			*errors |= SM_ERR_NOOPS;
+			return;
+		}
+	}
 
 	if(dir == MODE_QUERY)
 		return;
@@ -1264,6 +1702,7 @@ chm_throttle(struct Client *source_p, struct Channel *chptr,
 		mode_changes[mode_count].letter = c;
 		mode_changes[mode_count].dir = MODE_ADD;
 		mode_changes[mode_count].mems = ALL_MEMBERS;
+		mode_changes[mode_count].overrided_mode = overrided_mode;
 		mode_changes[mode_count].id = NULL;
 		mode_changes[mode_count++].arg = parv[(*parn)];
 
@@ -1285,6 +1724,7 @@ chm_throttle(struct Client *source_p, struct Channel *chptr,
 		mode_changes[mode_count].letter = c;
 		mode_changes[mode_count].dir = MODE_DEL;
 		mode_changes[mode_count].mems = ALL_MEMBERS;
+		mode_changes[mode_count].overrided_mode = overrided_mode;
 		mode_changes[mode_count].id = NULL;
 		mode_changes[mode_count++].arg = NULL;
 	}
@@ -1296,6 +1736,7 @@ chm_forward(struct Client *source_p, struct Channel *chptr,
 	const char **parv, int *errors, int dir, char c, long mode_type)
 {
 	const char *forward;
+	int overrided_mode = 0;
 
 	/* if +f is disabled, ignore local attempts to set it */
 	if(!ConfigChannel.use_forward && MyClient(source_p) &&
@@ -1317,7 +1758,23 @@ chm_forward(struct Client *source_p, struct Channel *chptr,
 
 #ifndef FORWARD_OPERONLY
 	if(!allow_mode_change(source_p, chptr, alevel, errors, c))
-		return;
+	{
+		if(IsSetOverride(source_p))
+		{
+			overrided_mode = 1;
+
+			sendto_realops_snomask(SNO_GENERAL, L_NETWIDE, "%s is using oper-override on %s (modehacking)",
+				       get_oper_name(source_p), chptr->chname);
+		}
+		else
+		{
+			if(!(*errors & SM_ERR_NOOPS))
+			sendto_one(source_p, form_str(ERR_CHANOPRIVSNEEDED),
+				   me.name, source_p->name, chptr->chname);
+			*errors |= SM_ERR_NOOPS;
+			return;
+		}
+	}
 #else
 	if(!IsOper(source_p) && !IsServer(source_p))
 	{
@@ -1348,6 +1805,7 @@ chm_forward(struct Client *source_p, struct Channel *chptr,
 		mode_changes[mode_count].dir = MODE_ADD;
 		mode_changes[mode_count].mems =
 			ConfigChannel.use_forward ? ALL_MEMBERS : ONLY_SERVERS;
+		mode_changes[mode_count].overrided_mode = overrided_mode;
 		mode_changes[mode_count].id = NULL;
 		mode_changes[mode_count++].arg = forward;
 	}
@@ -1361,6 +1819,7 @@ chm_forward(struct Client *source_p, struct Channel *chptr,
 		mode_changes[mode_count].letter = c;
 		mode_changes[mode_count].dir = MODE_DEL;
 		mode_changes[mode_count].mems = ALL_MEMBERS;
+		mode_changes[mode_count].overrided_mode = overrided_mode;
 		mode_changes[mode_count].id = NULL;
 		mode_changes[mode_count++].arg = NULL;
 	}
@@ -1372,9 +1831,26 @@ chm_key(struct Client *source_p, struct Channel *chptr,
 	const char **parv, int *errors, int dir, char c, long mode_type)
 {
 	char *key;
+	int overrided_mode = 0;
 
 	if(!allow_mode_change(source_p, chptr, alevel, errors, c))
-		return;
+	{
+		if(IsSetOverride(source_p))
+		{
+			overrided_mode = 1;
+
+			sendto_realops_snomask(SNO_GENERAL, L_NETWIDE, "%s is using oper-override on %s (modehacking)",
+				       get_oper_name(source_p), chptr->chname);
+		}
+		else
+		{
+			if(!(*errors & SM_ERR_NOOPS))
+			sendto_one(source_p, form_str(ERR_CHANOPRIVSNEEDED),
+				   me.name, source_p->name, chptr->chname);
+			*errors |= SM_ERR_NOOPS;
+			return;
+		}
+	}
 
 	if(dir == MODE_QUERY)
 		return;
@@ -1401,6 +1877,7 @@ chm_key(struct Client *source_p, struct Channel *chptr,
 		mode_changes[mode_count].letter = c;
 		mode_changes[mode_count].dir = MODE_ADD;
 		mode_changes[mode_count].mems = ALL_MEMBERS;
+		mode_changes[mode_count].overrided_mode = overrided_mode;
 		mode_changes[mode_count].id = NULL;
 		mode_changes[mode_count++].arg = chptr->mode.key;
 	}
@@ -1430,6 +1907,7 @@ chm_key(struct Client *source_p, struct Channel *chptr,
 		mode_changes[mode_count].letter = c;
 		mode_changes[mode_count].dir = MODE_DEL;
 		mode_changes[mode_count].mems = ALL_MEMBERS;
+		mode_changes[mode_count].overrided_mode = overrided_mode;
 		mode_changes[mode_count].id = NULL;
 		mode_changes[mode_count++].arg = "*";
 	}
@@ -1536,14 +2014,14 @@ struct ChannelMode chmode_table[256] =
   {chm_nosuch,	0 },
   {chm_nosuch,	0 },
   {chm_nosuch,	0 },
-  {chm_nosuch,	0 },				/* a */
+  {chm_admin,	0 },				/* a */
   {chm_ban,	CHFL_BAN },				/* b */
   {chm_nosuch,	0 },				/* c */
   {chm_nosuch,	0 },				/* d */
   {chm_ban,	CHFL_EXCEPTION },		/* e */
   {chm_forward,	0 },				/* f */
   {chm_simple,	MODE_FREEINVITE },	/* g */
-  {chm_nosuch,	0 },				/* h */
+  {chm_halfop,	0 },				/* h */
   {chm_simple,	MODE_INVITEONLY },	/* i */
   {chm_throttle, 0 },				/* j */
   {chm_key,	0 },					/* k */
@@ -1560,7 +2038,7 @@ struct ChannelMode chmode_table[256] =
   {chm_voice,	0 },				/* v */
   {chm_nosuch,	0 },				/* w */
   {chm_nosuch,	0 },				/* x */
-  {chm_nosuch,	0 },				/* y */
+  {chm_owner,	0 },				/* y */
   {chm_simple,	MODE_OPMODERATE },	/* z */
 
   {chm_nosuch,  0 },			/* 0x7b */

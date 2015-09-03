@@ -110,7 +110,7 @@ int user_modes[256] = {
 	0,			/* m */
 	UMODE_NETADMIN,		/* n */
 	UMODE_OPER,		/* o */
-	0,			/* p */
+	UMODE_OVERRIDE,	/* p */
 	0,			/* q */
 	0,			/* r */
 	UMODE_SERVNOTICE,	/* s */
@@ -1158,6 +1158,46 @@ user_mode(struct Client *client_p, struct Client *source_p, int parc, const char
 		source_p->umodes &= ~UMODE_NETADMIN;
 	}
 
+	/* Oper with override unset umode +p, remove CHFL_OVERRIDEOPER from
+	 * existing channel memberships.
+	 */
+	if(MyConnect(source_p) && !(source_p->umodes & UMODE_OVERRIDE))
+	{
+		struct membership *msptr;
+		rb_dlink_node *rbptr;
+
+		RB_DLINK_FOREACH(rbptr, source_p->user->channel.head)
+		{
+			msptr = rbptr->data;
+			msptr->flags &= ~CHFL_OVERRIDEOPER;
+		}
+	}
+
+	/* Oper attempted to set umode +p.  If successful, set all existing
+	 * channel memberships CHFL_OVERRIDEOPER.  If not permitted, complain.
+	 */	
+	if(MyConnect(source_p) && (source_p->umodes & UMODE_OVERRIDE))
+	{
+		if(IsOperOverride(source_p))
+		{
+			struct membership *msptr;
+			rb_dlink_node *rbptr;
+
+			RB_DLINK_FOREACH(rbptr, source_p->user->channel.head)
+			{
+				msptr = rbptr->data;
+				msptr->flags |= CHFL_OVERRIDEOPER;
+			}
+		}
+		else // Oper doesn't have oper:override and thus, can't set umode +p.
+		{
+			sendto_one_notice(source_p, ":*** You need oper:override for umode +p");
+			source_p->umodes &= ~UMODE_OVERRIDE;
+		}
+	}
+	
+	
+
 	/* let modules providing usermodes know that we've changed our usermode --nenolod */
 	hdata.client = source_p;
 	hdata.oldumodes = setflags;
@@ -1474,9 +1514,30 @@ change_nick_user_host(struct Client *target_p,	const char *nick, const char *use
 			chptr = mscptr->chptr;
 			mptr = mode;
 
+			if(is_owner(mscptr))
+			{
+				*mptr++ = 'y';
+				strcat(modeval, nick);
+				strcat(modeval, " ");
+			}
+
+			if(is_admin(mscptr))
+			{
+				*mptr++ = 'a';
+				strcat(modeval, nick);
+				strcat(modeval, " ");
+			}
+
 			if(is_chanop(mscptr))
 			{
 				*mptr++ = 'o';
+				strcat(modeval, nick);
+				strcat(modeval, " ");
+			}
+
+			if(is_halfop(mscptr))
+			{
+				*mptr++ = 'h';
 				strcat(modeval, nick);
 				strcat(modeval, " ");
 			}

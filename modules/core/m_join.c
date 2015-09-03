@@ -498,9 +498,24 @@ ms_sjoin(struct Client *client_p, struct Client *source_p, int parc, const char 
 
 		for (i = 0; i < 2; i++)
 		{
-			if(*s == '@')
+			if(*s == '~')
+			{
+				fl |= CHFL_OWNER;
+				s++;
+			}
+			else if(*s == '&')
+			{
+				fl |= CHFL_ADMIN;
+				s++;
+			}
+			else if(*s == '@')
 			{
 				fl |= CHFL_CHANOP;
+				s++;
+			}
+			else if(*s == '%')
+			{
+				fl |= CHFL_HALFOP;
 				s++;
 			}
 			else if(*s == '+')
@@ -528,9 +543,24 @@ ms_sjoin(struct Client *client_p, struct Client *source_p, int parc, const char 
 
 		if(keep_new_modes)
 		{
+			if(fl & CHFL_OWNER)
+			{
+				*ptr_uid++ = '~';
+				len_uid++;
+			}
+			if(fl & CHFL_ADMIN)
+			{
+				*ptr_uid++ = '&';
+				len_uid++;
+			}
 			if(fl & CHFL_CHANOP)
 			{
 				*ptr_uid++ = '@';
+				len_uid++;
+			}
+			if(fl & CHFL_HALFOP)
+			{
+				*ptr_uid++ = '%';
 				len_uid++;
 			}
 			if(fl & CHFL_VOICE)
@@ -555,12 +585,202 @@ ms_sjoin(struct Client *client_p, struct Client *source_p, int parc, const char 
 			joins++;
 		}
 
-		if(fl & CHFL_CHANOP)
+		/* If anyone can think of a way to do this that doesn't make babies cry
+		 * I would love to hear it - Taros */
+
+		if(fl & CHFL_OWNER)
+		{
+			*mbuf++ = 'y';
+			para[pargs++] = target_p->name;
+
+			if(fl & CHFL_ADMIN)
+			{
+				/* its possible the +y has filled up MAXMODEPARAMS, if so, start
+				 * a new buffer
+				 */
+				if(pargs >= MAXMODEPARAMS)
+				{
+					*mbuf = '\0';
+					sendto_channel_local(ALL_MEMBERS, chptr,
+								":%s MODE %s %s %s %s %s %s",
+								fakesource_p->name, chptr->chname,
+								modebuf,
+								para[0], para[1], para[2], para[3]);
+					mbuf = modebuf;
+					*mbuf++ = '+';
+					para[0] = para[1] = para[2] = para[3] = NULL;
+					pargs = 0;
+				}
+
+				*mbuf++ = 'a';
+				para[pargs++] = target_p->name;
+			}
+			if(fl & CHFL_CHANOP)
+			{
+				/* its possible the +y has filled up MAXMODEPARAMS, if so, start
+				 * a new buffer
+				 */
+				if(pargs >= MAXMODEPARAMS)
+				{
+					*mbuf = '\0';
+					sendto_channel_local(ALL_MEMBERS, chptr,
+								":%s MODE %s %s %s %s %s %s",
+								fakesource_p->name, chptr->chname,
+								modebuf,
+								para[0], para[1], para[2], para[3]);
+					mbuf = modebuf;
+					*mbuf++ = '+';
+					para[0] = para[1] = para[2] = para[3] = NULL;
+					pargs = 0;
+				}
+
+				*mbuf++ = 'o';
+				para[pargs++] = target_p->name;
+			}
+			if(fl & CHFL_HALFOP)
+			{
+				/* its possible the +y has filled up MAXMODEPARAMS, if so, start
+				 * a new buffer
+				 */
+				if(pargs >= MAXMODEPARAMS)
+				{
+					*mbuf = '\0';
+					sendto_channel_local(ALL_MEMBERS, chptr,
+								":%s MODE %s %s %s %s %s %s",
+								fakesource_p->name, chptr->chname,
+								modebuf,
+								para[0], para[1], para[2], para[3]);
+					mbuf = modebuf;
+					*mbuf++ = '+';
+					para[0] = para[1] = para[2] = para[3] = NULL;
+					pargs = 0;
+				}
+
+				*mbuf++ = 'h';
+				para[pargs++] = target_p->name;
+			}
+			if(fl & CHFL_VOICE)
+			{
+				/* its possible the +y has filled up MAXMODEPARAMS, if so, start
+				 * a new buffer
+				 */
+				if(pargs >= MAXMODEPARAMS)
+				{
+					*mbuf = '\0';
+					sendto_channel_local(ALL_MEMBERS, chptr,
+								":%s MODE %s %s %s %s %s %s",
+								fakesource_p->name, chptr->chname,
+								modebuf,
+								para[0], para[1], para[2], para[3]);
+					mbuf = modebuf;
+					*mbuf++ = '+';
+					para[0] = para[1] = para[2] = para[3] = NULL;
+					pargs = 0;
+				}
+
+				*mbuf++ = 'v';
+				para[pargs++] = target_p->name;
+			}
+		}
+		if(fl & CHFL_ADMIN)
+		{
+			*mbuf++ = 'a';
+			para[pargs++] = target_p->name;
+
+			if(fl & CHFL_CHANOP)
+			{
+				/* its possible the +a has filled up MAXMODEPARAMS, if so, start
+				 * a new buffer
+				 */
+				if(pargs >= MAXMODEPARAMS)
+				{
+					*mbuf = '\0';
+					sendto_channel_local(ALL_MEMBERS, chptr,
+								":%s MODE %s %s %s %s %s %s",
+								fakesource_p->name, chptr->chname,
+								modebuf,
+								para[0], para[1], para[2], para[3]);
+					mbuf = modebuf;
+					*mbuf++ = '+';
+					para[0] = para[1] = para[2] = para[3] = NULL;
+					pargs = 0;
+				}
+
+				*mbuf++ = 'o';
+				para[pargs++] = target_p->name;
+			}
+			if(fl & CHFL_HALFOP)
+			{
+				/* its possible the +a has filled up MAXMODEPARAMS, if so, start
+				 * a new buffer
+				 */
+				if(pargs >= MAXMODEPARAMS)
+				{
+					*mbuf = '\0';
+					sendto_channel_local(ALL_MEMBERS, chptr,
+								":%s MODE %s %s %s %s %s %s",
+								fakesource_p->name, chptr->chname,
+								modebuf,
+								para[0], para[1], para[2], para[3]);
+					mbuf = modebuf;
+					*mbuf++ = '+';
+					para[0] = para[1] = para[2] = para[3] = NULL;
+					pargs = 0;
+				}
+
+				*mbuf++ = 'h';
+				para[pargs++] = target_p->name;
+			}
+			if(fl & CHFL_VOICE)
+			{
+				/* its possible the +a has filled up MAXMODEPARAMS, if so, start
+				 * a new buffer
+				 */
+				if(pargs >= MAXMODEPARAMS)
+				{
+					*mbuf = '\0';
+					sendto_channel_local(ALL_MEMBERS, chptr,
+								":%s MODE %s %s %s %s %s %s",
+								fakesource_p->name, chptr->chname,
+								modebuf,
+								para[0], para[1], para[2], para[3]);
+					mbuf = modebuf;
+					*mbuf++ = '+';
+					para[0] = para[1] = para[2] = para[3] = NULL;
+					pargs = 0;
+				}
+
+				*mbuf++ = 'v';
+				para[pargs++] = target_p->name;
+			}
+		}
+		else if(fl & CHFL_CHANOP)
 		{
 			*mbuf++ = 'o';
 			para[pargs++] = target_p->name;
 
-			/* a +ov user.. bleh */
+			if(fl & CHFL_HALFOP)
+			{
+				/* its possible the +o has filled up MAXMODEPARAMS, if so, start
+				 * a new buffer
+				 */
+				if(pargs >= MAXMODEPARAMS)
+				{
+					*mbuf = '\0';
+					sendto_channel_local(ALL_MEMBERS, chptr,
+								":%s MODE %s %s %s %s %s %s",
+								fakesource_p->name, chptr->chname,
+								modebuf,
+								para[0], para[1], para[2], para[3]);
+					mbuf = modebuf;
+					*mbuf++ = '+';
+					para[0] = para[1] = para[2] = para[3] = NULL;
+					pargs = 0;
+				}
+
+				*mbuf++ = 'h';
+				para[pargs++] = target_p->name;
+			}
 			if(fl & CHFL_VOICE)
 			{
 				/* its possible the +o has filled up MAXMODEPARAMS, if so, start
@@ -574,6 +794,34 @@ ms_sjoin(struct Client *client_p, struct Client *source_p, int parc, const char 
 							     fakesource_p->name, chptr->chname,
 							     modebuf,
 							     para[0], para[1], para[2], para[3]);
+					mbuf = modebuf;
+					*mbuf++ = '+';
+					para[0] = para[1] = para[2] = para[3] = NULL;
+					pargs = 0;
+				}
+
+				*mbuf++ = 'v';
+				para[pargs++] = target_p->name;
+			}
+		}
+		else if(fl & CHFL_HALFOP)
+		{
+			*mbuf++ = 'h';
+			para[pargs++] = target_p->name;
+
+			if(fl & CHFL_VOICE)
+			{
+				/* its possible the +h has filled up MAXMODEPARAMS, if so, start
+				 * a new buffer
+				 */
+				if(pargs >= MAXMODEPARAMS)
+				{
+					*mbuf = '\0';
+					sendto_channel_local(ALL_MEMBERS, chptr,
+								":%s MODE %s %s %s %s %s %s",
+								fakesource_p->name, chptr->chname,
+								modebuf,
+								para[0], para[1], para[2], para[3]);
 					mbuf = modebuf;
 					*mbuf++ = '+';
 					para[0] = para[1] = para[2] = para[3] = NULL;
@@ -802,13 +1050,256 @@ remove_our_modes(struct Channel *chptr, struct Client *source_p)
 	{
 		msptr = ptr->data;
 
-		if(is_chanop(msptr))
+		/* If anyone can think of a way to do this that doesn't make babies cry
+		 * I would love to hear it - Taros */
+
+		if(is_owner(msptr))
+		{
+			msptr->flags &= ~CHFL_OWNER;
+			lpara[count++] = msptr->client_p->name;
+			*mbuf++ = 'y';
+
+			/* Make sure it fits if +a, +o, +h, or +v are involved */
+			if(is_admin(msptr))
+			{
+				if(count >= MAXMODEPARAMS)
+				{
+					*mbuf = '\0';
+					sendto_channel_local(ALL_MEMBERS, chptr,
+								":%s MODE %s %s %s %s %s %s",
+								source_p->name, chptr->chname,
+								lmodebuf, lpara[0], lpara[1],
+								lpara[2], lpara[3]);
+
+					/* preserve the initial '-' */
+					mbuf = lmodebuf;
+					*mbuf++ = '-';
+					count = 0;
+
+					for(i = 0; i < MAXMODEPARAMS; i++)
+						lpara[i] = NULL;
+				}
+
+				msptr->flags &= ~CHFL_CHANOP;
+				lpara[count++] = msptr->client_p->name;
+				*mbuf++ = 'a';
+			}
+			if(is_chanop(msptr))
+			{
+				if(count >= MAXMODEPARAMS)
+				{
+					*mbuf = '\0';
+					sendto_channel_local(ALL_MEMBERS, chptr,
+								":%s MODE %s %s %s %s %s %s",
+								source_p->name, chptr->chname,
+								lmodebuf, lpara[0], lpara[1],
+								lpara[2], lpara[3]);
+
+					/* preserve the initial '-' */
+					mbuf = lmodebuf;
+					*mbuf++ = '-';
+					count = 0;
+
+					for(i = 0; i < MAXMODEPARAMS; i++)
+						lpara[i] = NULL;
+				}
+
+				msptr->flags &= ~CHFL_CHANOP;
+				lpara[count++] = msptr->client_p->name;
+				*mbuf++ = 'o';
+			}
+			if(is_halfop(msptr))
+			{
+				if(count >= MAXMODEPARAMS)
+				{
+					*mbuf = '\0';
+					sendto_channel_local(ALL_MEMBERS, chptr,
+								":%s MODE %s %s %s %s %s %s",
+								source_p->name, chptr->chname,
+								lmodebuf, lpara[0], lpara[1],
+								lpara[2], lpara[3]);
+
+					/* preserve the initial '-' */
+					mbuf = lmodebuf;
+					*mbuf++ = '-';
+					count = 0;
+
+					for(i = 0; i < MAXMODEPARAMS; i++)
+						lpara[i] = NULL;
+				}
+
+				msptr->flags &= ~CHFL_HALFOP;
+				lpara[count++] = msptr->client_p->name;
+				*mbuf++ = 'h';
+			}
+			if(is_voiced(msptr))
+			{
+				if(count >= MAXMODEPARAMS)
+				{
+					*mbuf = '\0';
+					sendto_channel_local(ALL_MEMBERS, chptr,
+								":%s MODE %s %s %s %s %s %s",
+								source_p->name, chptr->chname,
+								lmodebuf, lpara[0], lpara[1],
+								lpara[2], lpara[3]);
+
+					/* preserve the initial '-' */
+					mbuf = lmodebuf;
+					*mbuf++ = '-';
+					count = 0;
+
+					for(i = 0; i < MAXMODEPARAMS; i++)
+						lpara[i] = NULL;
+				}
+
+				msptr->flags &= ~CHFL_VOICE;
+				lpara[count++] = msptr->client_p->name;
+				*mbuf++ = 'v';
+			}
+		}
+		else if(is_admin(msptr))
+		{
+			msptr->flags &= ~CHFL_OWNER;
+			lpara[count++] = msptr->client_p->name;
+			*mbuf++ = 'a';
+
+			/* Make sure it fits if +h, +o, or +v are involved */
+			if(is_chanop(msptr))
+			{
+				if(count >= MAXMODEPARAMS)
+				{
+					*mbuf = '\0';
+					sendto_channel_local(ALL_MEMBERS, chptr,
+								":%s MODE %s %s %s %s %s %s",
+								source_p->name, chptr->chname,
+								lmodebuf, lpara[0], lpara[1],
+								lpara[2], lpara[3]);
+
+					/* preserve the initial '-' */
+					mbuf = lmodebuf;
+					*mbuf++ = '-';
+					count = 0;
+
+					for(i = 0; i < MAXMODEPARAMS; i++)
+						lpara[i] = NULL;
+				}
+
+				msptr->flags &= ~CHFL_CHANOP;
+				lpara[count++] = msptr->client_p->name;
+				*mbuf++ = 'o';
+			}
+			if(is_halfop(msptr))
+			{
+				if(count >= MAXMODEPARAMS)
+				{
+					*mbuf = '\0';
+					sendto_channel_local(ALL_MEMBERS, chptr,
+								":%s MODE %s %s %s %s %s %s",
+								source_p->name, chptr->chname,
+								lmodebuf, lpara[0], lpara[1],
+								lpara[2], lpara[3]);
+
+					/* preserve the initial '-' */
+					mbuf = lmodebuf;
+					*mbuf++ = '-';
+					count = 0;
+
+					for(i = 0; i < MAXMODEPARAMS; i++)
+						lpara[i] = NULL;
+				}
+
+				msptr->flags &= ~CHFL_HALFOP;
+				lpara[count++] = msptr->client_p->name;
+				*mbuf++ = 'h';
+			}
+			if(is_voiced(msptr))
+			{
+				if(count >= MAXMODEPARAMS)
+				{
+					*mbuf = '\0';
+					sendto_channel_local(ALL_MEMBERS, chptr,
+								":%s MODE %s %s %s %s %s %s",
+								source_p->name, chptr->chname,
+								lmodebuf, lpara[0], lpara[1],
+								lpara[2], lpara[3]);
+
+					/* preserve the initial '-' */
+					mbuf = lmodebuf;
+					*mbuf++ = '-';
+					count = 0;
+
+					for(i = 0; i < MAXMODEPARAMS; i++)
+						lpara[i] = NULL;
+				}
+
+				msptr->flags &= ~CHFL_VOICE;
+				lpara[count++] = msptr->client_p->name;
+				*mbuf++ = 'v';
+			}
+		}
+		else if(is_chanop(msptr))
 		{
 			msptr->flags &= ~CHFL_CHANOP;
 			lpara[count++] = msptr->client_p->name;
 			*mbuf++ = 'o';
 
-			/* +ov, might not fit so check. */
+			/* Make sure it fits if +h or +v are involved */
+			if(is_halfop(msptr))
+			{
+				if(count >= MAXMODEPARAMS)
+				{
+					*mbuf = '\0';
+					sendto_channel_local(ALL_MEMBERS, chptr,
+								":%s MODE %s %s %s %s %s %s",
+								source_p->name, chptr->chname,
+								lmodebuf, lpara[0], lpara[1],
+								lpara[2], lpara[3]);
+
+					/* preserve the initial '-' */
+					mbuf = lmodebuf;
+					*mbuf++ = '-';
+					count = 0;
+
+					for(i = 0; i < MAXMODEPARAMS; i++)
+						lpara[i] = NULL;
+				}
+
+				msptr->flags &= ~CHFL_HALFOP;
+				lpara[count++] = msptr->client_p->name;
+				*mbuf++ = 'h';
+			}
+			if(is_voiced(msptr))
+			{
+				if(count >= MAXMODEPARAMS)
+				{
+					*mbuf = '\0';
+					sendto_channel_local(ALL_MEMBERS, chptr,
+								":%s MODE %s %s %s %s %s %s",
+								source_p->name, chptr->chname,
+								lmodebuf, lpara[0], lpara[1],
+								lpara[2], lpara[3]);
+
+					/* preserve the initial '-' */
+					mbuf = lmodebuf;
+					*mbuf++ = '-';
+					count = 0;
+
+					for(i = 0; i < MAXMODEPARAMS; i++)
+						lpara[i] = NULL;
+				}
+
+				msptr->flags &= ~CHFL_VOICE;
+				lpara[count++] = msptr->client_p->name;
+				*mbuf++ = 'v';
+			}
+		}
+		else if(is_halfop(msptr))
+		{
+			msptr->flags &= ~CHFL_HALFOP;
+			lpara[count++] = msptr->client_p->name;
+			*mbuf++ = 'h';
+
+			/* +hv, might not fit so check. */
 			if(is_voiced(msptr))
 			{
 				if(count >= MAXMODEPARAMS)

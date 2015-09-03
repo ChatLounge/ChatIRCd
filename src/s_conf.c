@@ -775,6 +775,9 @@ set_default_conf(void)
 	ConfigFileEntry.oper_snomask = SNO_GENERAL;
 
 	ConfigChannel.autochanmodes = rb_strdup("nst");
+	ConfigChannel.use_halfop = NO;
+	ConfigChannel.use_admin = NO;
+	ConfigChannel.use_owner = NO;
 	ConfigChannel.use_except = YES;
 	ConfigChannel.use_invex = YES;
 	ConfigChannel.use_forward = YES;

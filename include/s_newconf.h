@@ -168,6 +168,7 @@ extern void cluster_generic(struct Client *, const char *, int cltype,
 #define IsOperNetAdmin(x)       (HasPrivilege((x), "oper:netadmin") || HasPrivilege((x),"oper:hidden_netadmin"))
 #define IsOperOperwall(x)       (HasPrivilege((x), "oper:operwall"))
 #define IsOperSpy(x)            (HasPrivilege((x), "oper:spy"))
+#define IsOperOverride(x)       (HasPrivilege((x), "oper:override"))
 #define IsOperInvis(x)          (HasPrivilege((x), "oper:hidden"))
 #define IsOperRemoteBan(x)      (HasPrivilege((x), "oper:remoteban"))
 #define IsOperMassNotice(x)     (HasPrivilege((x), "oper:mass_notice"))

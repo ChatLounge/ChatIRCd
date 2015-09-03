@@ -413,25 +413,25 @@ struct ListClient
 
 /* umodes, settable flags */
 /* lots of this moved to snomask -- jilles */
-#define UMODE_SERVNOTICE   0x0001	/* server notices */
-#define UMODE_WALLOP       0x0002	/* send wallops to them */
-#define UMODE_OPERWALL     0x0004	/* Operwalls */
-#define UMODE_INVISIBLE    0x0008	/* makes user invisible */
-#define UMODE_CALLERID     0x0010	/* block unless caller id's */
-#define UMODE_LOCOPS       0x0020	/* show locops */
-#define UMODE_SERVICE      0x0040
-#define UMODE_DEAF	   0x0080
-#define UMODE_NOFORWARD    0x0100	/* don't forward */
-#define UMODE_REGONLYMSG   0x0200	/* only allow logged in users to msg */
-#define UMODE_SSLONLYMSG   0x0800	/* only allow users using SSL to msg */
-
-#define UMODE_BOT          0x8000	/* mark as a bot in whois */
+#define UMODE_SERVNOTICE   0x00001	/* server notices */
+#define UMODE_WALLOP       0x00002	/* send wallops to them */
+#define UMODE_OPERWALL     0x00004	/* Operwalls */
+#define UMODE_INVISIBLE    0x00008	/* makes user invisible */
+#define UMODE_CALLERID     0x00010	/* block unless caller id's */
+#define UMODE_LOCOPS       0x00020	/* show locops */
+#define UMODE_SERVICE      0x00040
+#define UMODE_DEAF	       0x00080
+#define UMODE_NOFORWARD    0x00100	/* don't forward */
+#define UMODE_REGONLYMSG   0x00200	/* only allow logged in users to msg */
+#define UMODE_SSLONLYMSG   0x00800	/* only allow users using SSL to msg */
+#define UMODE_BOT          0x08000	/* mark as a bot in whois */
+#define UMODE_OVERRIDE     0x10000   /* Oper override */
 
 /* user information flags, only settable by remote mode or local oper */
-#define UMODE_OPER         0x1000	/* Operator */
-#define UMODE_ADMIN        0x2000	/* Admin on server */
-#define UMODE_NETADMIN     0x0400	/* NetAdmin on network */
-#define UMODE_SSLCLIENT    0x4000	/* using SSL */
+#define UMODE_OPER         0x01000	/* Operator */
+#define UMODE_ADMIN        0x02000	/* Admin on server */
+#define UMODE_NETADMIN     0x00400	/* NetAdmin on network */
+#define UMODE_SSLCLIENT    0x04000	/* using SSL */
 
 /* overflow flags */
 /* EARLIER FLAGS ARE IN s_newconf.h */
@@ -532,6 +532,7 @@ struct ListClient
 #define IsNoForward(x)		((x)->umodes & UMODE_NOFORWARD)
 #define IsSetRegOnlyMsg(x)	((x)->umodes & UMODE_REGONLYMSG)
 #define IsSetSslOnlyMsg(x)	((x)->umodes & UMODE_SSLONLYMSG)
+#define IsSetOverride(x)        ((x)->umodes & UMODE_OVERRIDE)
 #define IsSetBot(x)             ((x)->umodes & UMODE_BOT)
 #define SetBot(x)				((x)->umodes |= UMODE_BOT)
 #define ClearBot(x)				((x)->umodes &= ~UMODE_BOT)

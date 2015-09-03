@@ -108,6 +108,8 @@ m_topic(struct Client *client_p, struct Client *source_p, int parc, const char *
 	/* setting topic */
 	if(parc > 2)
 	{
+		char topic_info[USERHOST_REPLYLEN];
+
 		msptr = find_channel_membership(chptr, source_p);
 
 		if(msptr == NULL)
@@ -127,16 +129,39 @@ m_topic(struct Client *client_p, struct Client *source_p, int parc, const char *
 		}
 
 		if(((chptr->mode.mode & MODE_TOPICLIMIT) == 0 ||
-					get_channel_access(source_p, msptr) >= CHFL_CHANOP) &&
+					get_channel_access(source_p, msptr) >= CHFL_HALFOP) &&
 				(!MyClient(source_p) ||
 				 can_send(chptr, source_p, msptr)))
 		{
-			char topic_info[USERHOST_REPLYLEN];
 			char *topic_out = (char *)parv[2];
 			rb_sprintf(topic_info, "%s!%s@%s",
 					source_p->name, source_p->username, source_p->host);
 			if(ConfigChannel.strip_topic_colors_and_formatting)
 				strip_colour(topic_out);
+			
+			set_channel_topic(chptr, topic_out, topic_info, rb_current_time());
+
+			sendto_server(client_p, chptr, CAP_TS6, NOCAPS,
+					":%s TOPIC %s :%s",
+					use_id(source_p), chptr->chname,
+					chptr->topic == NULL ? "" : chptr->topic);
+			sendto_channel_local(ALL_MEMBERS,
+					chptr, ":%s!%s@%s TOPIC %s :%s",
+					source_p->name, source_p->username,
+					source_p->host, chptr->chname,
+					chptr->topic == NULL ? "" : chptr->topic);
+		}
+		else if(IsSetOverride(source_p))
+		{
+			char *topic_out = (char *)parv[2];
+			rb_sprintf(topic_info, "%s!%s@%s",
+					source_p->name, source_p->username, source_p->host);
+			if(ConfigChannel.strip_topic_colors_and_formatting)
+				strip_colour(topic_out);
+
+			sendto_realops_snomask(SNO_GENERAL, L_NETWIDE,
+					"%s is using oper override to set the topic on [%s]",
+					get_oper_name(source_p), chptr->chname);
 			
 			set_channel_topic(chptr, topic_out, topic_info, rb_current_time());
 

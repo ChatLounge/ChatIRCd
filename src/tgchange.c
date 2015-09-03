@@ -44,7 +44,7 @@ find_allowing_channel(struct Client *source_p, struct Client *target_p)
 	RB_DLINK_FOREACH(ptr, source_p->user->channel.head)
 	{
 		msptr = ptr->data;
-		if (is_chanop_voiced(msptr) && IsMember(target_p, msptr->chptr))
+		if ((is_chanop_voiced(msptr) && IsMember(target_p, msptr->chptr)))
 			return msptr->chptr;
 	}
 	return NULL;
