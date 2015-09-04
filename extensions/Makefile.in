@@ -71,6 +71,7 @@ SRCS =                          \
   m_okick.c						\
   m_omode.c						\
   m_opme.c						\
+  m_partall.c					\
   m_sendbans.c					\
   m_webirc.c					\
   m_why.c						\
