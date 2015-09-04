@@ -54,6 +54,8 @@ static void user_join_override(struct Client *, struct Client *, struct Client *
 
 extern int h_channel_join; /* In channel.c */
 
+#define CanForceJoin(x)		(HasPrivilege((x), "oper:force"))
+
 struct Message forcejoin_msgtab = {
 	"FORCEJOIN", 0, 0, 0, MFLG_SLOW,
 	{mg_unreg, mg_not_oper, mg_ignore, mg_ignore, {me_forcejoin, 2}, {mo_forcejoin, 2}}
@@ -82,9 +84,9 @@ mo_forcejoin(struct Client *client_p, struct Client *source_p, int parc, const c
 
 	user = parv[1];
 
-	if(!IsOper(source_p))
+	if(!IsOper(source_p) || !CanForceJoin(source_p))
 	{
-		sendto_one(source_p, form_str(ERR_NOPRIVS), me.name, source_p->name, "local_force");
+		sendto_one(source_p, form_str(ERR_NOPRIVS), me.name, source_p->name, "force");
 		return 0;
 	}
 
@@ -99,7 +101,7 @@ mo_forcejoin(struct Client *client_p, struct Client *source_p, int parc, const c
 	if((target_p = find_chasing(source_p, user, &chasing)) == NULL)
 		return 0;
 
-	if(!MyClient(target_p) && !IsOperAdmin(source_p))
+	if(!MyClient(target_p) && !CanForceJoin(source_p))
 	{
 		sendto_one_notice(source_p, ":Nick %s is not on your server and you do not have the global_force flag",
 					    target_p->name);
