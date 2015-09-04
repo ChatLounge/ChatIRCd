@@ -19,7 +19,7 @@ static int m_partall(struct Client *client_p, struct Client *source_p,
 
 struct Message partall_msgtab = {
 	"PARTALL", 0, 0, 0, MFLG_SLOW,
-	{{m_partall, 0}, {m_partall, 0}, mg_ignore, mg_ignore, mg_ignore, {m_partall, 0}}
+	{mg_unreg, {m_partall, 0}, mg_ignore, mg_ignore, mg_ignore, {m_partall, 0}}
 };
 
 mapi_clist_av1 partall_clist[] = { &partall_msgtab, NULL };
