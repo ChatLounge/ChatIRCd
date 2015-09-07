@@ -81,6 +81,7 @@ SRCS =                          \
   no_locops.c					\
   no_oper_invis.c				\
   restrict-unauthenticated.c	\
+  sno_channeljoin.c				\
   sno_farconnect.c				\
   sno_globalkline.c				\
   sno_globalnickchange.c		\

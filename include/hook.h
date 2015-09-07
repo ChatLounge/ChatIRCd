@@ -31,6 +31,7 @@ extern int h_new_remote_user;
 extern int h_introduce_client;
 extern int h_can_create_channel;
 extern int h_channel_join;
+extern int h_remote_channel_join;
 extern int h_can_kick;
 extern int h_privmsg_channel;
 extern int h_privmsg_user;
