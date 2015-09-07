@@ -498,8 +498,8 @@ do_who(struct Client *source_p, struct Client *target_p, struct membership *mspt
 	size_t pos;
 	const char *q;
 
-	rb_sprintf(status, "%c%s%s",
-		   target_p->user->away ? 'G' : 'H', IsOper(target_p) ? "*" : "", msptr ? find_channel_status(msptr, fmt->fields || IsCapable(source_p, CLICAP_MULTI_PREFIX)) : "");
+	rb_sprintf(status, "%c%s%s%s",
+		   target_p->user->away ? 'G' : 'H', IsSetBot(target_p) ? "B" : "", IsOper(target_p) ? "*" : "", msptr ? find_channel_status(msptr, fmt->fields || IsCapable(source_p, CLICAP_MULTI_PREFIX)) : "");
 
 	if (fmt->fields == 0)
 		sendto_one(source_p, form_str(RPL_WHOREPLY), me.name,
