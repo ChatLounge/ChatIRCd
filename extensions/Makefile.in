@@ -60,6 +60,7 @@ SRCS =                          \
   ip_cloaking_old.c				\
   ip_cloaking_3.0.c				\
   ip_cloaking_4.0.c				\
+  make_override_immune.c		\
   m_42.c						\
   m_adminwall.c					\
   m_forcejoin.c					\
