@@ -85,6 +85,8 @@ struct User
 	int refcnt;		/* Number of times this block is referenced */
 
 	char suser[NICKLEN+1];
+
+	char *opername;
 };
 
 struct Server

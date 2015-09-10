@@ -325,12 +325,28 @@ single_whois(struct Client *source_p, struct Client *target_p, int operspy)
 
 	if(IsOper(target_p))
 	{
+		/* Build oper string with oper block name.
+		 * I.e. "is a Network Administrator: Ben"
+		 */
+		static char operstring[BUFSIZE];
+
+		if(IsService(target_p))
+			rb_strlcpy(operstring, ConfigFileEntry.servicestring, sizeof operstring);
+		else if(IsNetAdmin(target_p))
+			rb_strlcpy(operstring, GlobalSetOptions.netadminstring, sizeof operstring);
+		else if(IsAdmin(target_p))
+			rb_strlcpy(operstring, GlobalSetOptions.adminstring, sizeof operstring);
+		else
+			rb_strlcpy(operstring, GlobalSetOptions.operstring, sizeof operstring);
+
+		if(!IsService(target_p) && (target_p->user->opername != NULL))
+		{
+			rb_strlcat(operstring, ": ", sizeof operstring);
+			rb_strlcat(operstring, target_p->user->opername, sizeof operstring);
+		}
+
 		sendto_one_numeric(source_p, RPL_WHOISOPERATOR, form_str(RPL_WHOISOPERATOR),
-				   target_p->name,
-				   IsService(target_p) ? ConfigFileEntry.servicestring :
-				   (IsNetAdmin(target_p) ? GlobalSetOptions.netadminstring :
-				   (IsAdmin(target_p) ? GlobalSetOptions.adminstring :
-				    GlobalSetOptions.operstring)));
+				   target_p->name, operstring);
 	}
 
 	if(IsSSLClient(target_p))
