@@ -230,6 +230,7 @@ struct config_file_entry
 	int collision_fnc;
 	int resv_fnc;
 	int default_umodes;
+	int global_oper_up_notices;
 	int global_snotices;
 	int operspy_dont_care_chan_info;
 	int operspy_dont_care_user_info;

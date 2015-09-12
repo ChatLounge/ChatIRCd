@@ -1404,9 +1404,9 @@ oper_up(struct Client *source_p, struct oper_conf *oper_p)
 
 	source_p->user->opername = oper_p->name;
 
-	sendto_realops_snomask(SNO_GENERAL, L_ALL,
-			     "%s (%s!%s@%s) is now an operator", oper_p->name, source_p->name,
-			     source_p->username, source_p->host);
+	sendto_realops_snomask(SNO_GENERAL, ConfigFileEntry.global_oper_up_notices ? L_NETWIDE : L_ALL,
+			     "%s (%s@%s) is now an operator, using oper block: %s", source_p->name,
+			     source_p->username, source_p->orighost, oper_p->name);
 	if(!(old & UMODE_INVISIBLE) && IsInvisible(source_p))
 		++Count.invisi;
 	if((old & UMODE_INVISIBLE) && !IsInvisible(source_p))
