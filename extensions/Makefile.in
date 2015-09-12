@@ -86,7 +86,6 @@ SRCS =                          \
   sno_farconnect.c				\
   sno_globalkline.c				\
   sno_globalnickchange.c		\
-  sno_globaloper.c				\
   sno_whois.c					\
   spy_admin_notice.c			\
   spy_info_notice.c				\
