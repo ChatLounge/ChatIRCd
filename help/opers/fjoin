@@ -4,4 +4,4 @@ FJOIN <nick> <#channel>
 
 Alias for FORCEJOIN.
 
-Requires oper priv: oper:admin
+Requires oper priv: oper:force

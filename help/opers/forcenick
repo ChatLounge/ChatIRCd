@@ -1,0 +1,5 @@
+FORCENICK <current nick> <new nick>
+
+-- Changes a user's nick to another nick.
+
+Requires oper priv: oper:force

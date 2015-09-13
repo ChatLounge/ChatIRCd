@@ -1,0 +1,7 @@
+FNICK <current nick> <new nick>
+
+-- Changes a user's nick to another nick.
+
+Alias for FORCENICK.
+
+Requires oper priv: oper:force

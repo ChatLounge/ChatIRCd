@@ -2,4 +2,4 @@ FORCEJOIN <nick> <#channel>
 
 -- Forces a user to join the specified channel.
 
-Requires oper priv: oper:admin
+Requires oper priv: oper:force
