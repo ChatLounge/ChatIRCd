@@ -533,12 +533,22 @@ check_ban_forward(struct Client *source_p, struct Channel *chptr,
 	}
 	if(MyClient(source_p) && !(targptr->mode.mode & MODE_FREETARGET))
 	{
-		if((msptr = find_channel_membership(targptr, source_p)) == NULL ||
-			get_channel_access(source_p, msptr) != CHFL_CHANOP)
+		if((msptr = find_channel_membership(targptr, source_p)) == NULL || (
+			get_channel_access(source_p, msptr) != CHFL_CHANOP &&
+			get_channel_access(source_p, msptr) != CHFL_ADMIN &&
+			get_channel_access(source_p, msptr) != CHFL_OWNER))
 		{
-			sendto_one(source_p, form_str(ERR_CHANOPRIVSNEEDED),
-				   me.name, source_p->name, targptr->chname);
-			return 0;
+			if(IsSetOverride(source_p))
+			{
+				sendto_realops_snomask(SNO_GENERAL, L_NETWIDE, "%s is using oper-override to a set a ban-forward to %s (modehacking)",
+				       get_oper_name(source_p), chptr->chname);
+			}
+			else
+			{
+				sendto_one(source_p, form_str(ERR_CHANOPRIVSNEEDED),
+					   me.name, source_p->name, targptr->chname);
+				return 0;
+			}
 		}
 	}
 	return 1;
