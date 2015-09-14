@@ -540,7 +540,7 @@ check_ban_forward(struct Client *source_p, struct Channel *chptr,
 		{
 			if(IsSetOverride(source_p))
 			{
-				sendto_realops_snomask(SNO_GENERAL, L_NETWIDE, "%s is using oper-override to a set a ban-forward to %s (modehacking)",
+				sendto_realops_snomask(SNO_GENERAL, L_NETWIDE, "%s is using oper-override to a set a forward or ban-forward to %s (modehacking)",
 				       get_oper_name(source_p), chptr->chname);
 			}
 			else
