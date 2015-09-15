@@ -22,6 +22,7 @@
  *  $Id: spy_links_notice.c 498 2006-01-15 16:40:33Z jilles $
  */
 #include "stdinc.h"
+#include "match.h"
 #include "modules.h"
 #include "hook.h"
 #include "client.h"
@@ -41,9 +42,20 @@ void
 show_links(hook_data *data)
 {
 	const char *mask = data->arg1;
+	char mask2[BUFSIZE] = "";
+
+	/* Don't use single quotes around the mask if no mask is given. */
+	if(EmptyString(mask))
+		rb_strlcpy(mask2, "", sizeof mask2);
+	else
+	{
+		rb_strlcpy(mask2, "'", sizeof mask2);
+		rb_strlcat(mask2, mask, sizeof mask2);
+		rb_strlcat(mask2, "' ", sizeof mask2);
+	}		
 
 	sendto_realops_snomask(SNO_SPY, L_NETWIDE,
-			     "LINKS '%s' requested by %s (%s@%s) [%s]",
-			     mask, data->client->name, data->client->username,
+			     "LINKS %srequested by %s (%s@%s) [%s]",
+			     mask2, data->client->name, data->client->username,
 			     data->client->host, data->client->servptr->name);
 }
