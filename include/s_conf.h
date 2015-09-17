@@ -251,6 +251,7 @@ struct config_channel_entry
 {
 	char * autochanmodes;
 	int use_halfop;
+	int halfops_can_dehalfop_others;
 	int use_admin;
 	int use_owner;
 	int use_except;

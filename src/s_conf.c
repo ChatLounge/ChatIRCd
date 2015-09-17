@@ -777,6 +777,7 @@ set_default_conf(void)
 
 	ConfigChannel.autochanmodes = rb_strdup("nst");
 	ConfigChannel.use_halfop = NO;
+	ConfigChannel.halfops_can_dehalfop_others = YES;
 	ConfigChannel.use_admin = NO;
 	ConfigChannel.use_owner = NO;
 	ConfigChannel.use_except = YES;

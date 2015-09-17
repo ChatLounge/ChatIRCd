@@ -682,6 +682,12 @@ static struct InfoStruct info_table[] = {
 		"Enable chanmode +h (halfop)",
 	},
 	{
+		"halfops_can_dehalfop_others",
+		OUTPUT_BOOLEAN_YN,
+		&ConfigChannel.halfops_can_dehalfop_others,
+		"Halfops can dehalfop other halfops",
+	},
+	{
 		"use_admin",
 		OUTPUT_BOOLEAN_YN,
 		&ConfigChannel.use_admin,

@@ -2411,6 +2411,7 @@ static struct ConfEntry conf_channel_table[] =
 	{ "no_join_on_split",	CF_YESNO, NULL, 0, &ConfigChannel.no_join_on_split	},
 	{ "only_ascii_channels", CF_YESNO, NULL, 0, &ConfigChannel.only_ascii_channels },
 	{ "use_halfop", CF_YESNO, NULL, 0, &ConfigChannel.use_halfop	},
+	{ "halfops_can_dehalfop_others", CF_YESNO, NULL, 0, &ConfigChannel.halfops_can_dehalfop_others },
 	{ "use_admin", CF_YESNO, NULL, 0, &ConfigChannel.use_admin	},
 	{ "use_owner", CF_YESNO, NULL, 0, &ConfigChannel.use_owner	},
 	{ "use_except",		CF_YESNO, NULL, 0, &ConfigChannel.use_except		},

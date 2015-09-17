@@ -1428,14 +1428,13 @@ chm_halfop(struct Client *source_p, struct Channel *chptr,
 	struct Client *targ_p;
 	int overrided_mode = 0;
 
+	halfopnick = parv[(*parn)];
+
 	if(alevel != CHFL_CHANOP && alevel != CHFL_OWNER && alevel != CHFL_ADMIN && alevel != CHFL_HALFOP)
 	{
 		if(IsSetOverride(source_p))
 		{
 			overrided_mode = 1;
-
-			sendto_realops_snomask(SNO_GENERAL, L_NETWIDE, "%s is using oper-override on %s (modehacking)",
-				       get_oper_name(source_p), chptr->chname);
 		}
 		else
 		{
@@ -1451,7 +1450,6 @@ chm_halfop(struct Client *source_p, struct Channel *chptr,
 	if((dir == MODE_QUERY) || (parc <= *parn))
 		return;
 
-	halfopnick = parv[(*parn)];
 	(*parn)++;
 
 	/* empty nick */
@@ -1475,6 +1473,24 @@ chm_halfop(struct Client *source_p, struct Channel *chptr,
 					   form_str(ERR_USERNOTINCHANNEL), halfopnick, chptr->chname);
 		*errors |= SM_ERR_NOTONCHANNEL;
 		return;
+	}
+	
+	// Always permit self dehalfop, regardless of config. setting.
+	if(!ConfigChannel.halfops_can_dehalfop_others && !(source_p == targ_p))
+	{
+		if(IsSetOverride(source_p))
+		{
+			overrided_mode = 1;
+		}
+		else
+		{
+			if(!(*errors & SM_ERR_NOOPS))
+				sendto_one(source_p, form_str(ERR_CHANOPRIVSNEEDED),
+						me.name, source_p->name, chptr->chname);
+			*errors |= SM_ERR_NOOPS;
+
+			return;
+		}
 	}
 
 	if(MyClient(source_p) && (++mode_limit > MAXMODEPARAMS))
@@ -1512,6 +1528,10 @@ chm_halfop(struct Client *source_p, struct Channel *chptr,
 
 		mstptr->flags &= ~CHFL_HALFOP;
 	}
+	
+	if(overrided_mode)
+		sendto_realops_snomask(SNO_GENERAL, L_NETWIDE, "%s is using oper-override on %s (modehacking)",
+				       get_oper_name(source_p), chptr->chname);
 }
 
 void
