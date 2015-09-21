@@ -45,6 +45,7 @@
 #include "s_assert.h"
 
 static int m_join(struct Client *, struct Client *, int, const char **);
+static int me_svsjoin(struct Client *, struct Client *, int, const char **);
 static int ms_join(struct Client *, struct Client *, int, const char **);
 static int ms_sjoin(struct Client *, struct Client *, int, const char **);
 
@@ -53,12 +54,17 @@ struct Message join_msgtab = {
 	{mg_unreg, {m_join, 2}, {ms_join, 2}, mg_ignore, mg_ignore, {m_join, 2}}
 };
 
+struct Message svsjoin_msgtab = {
+	"SVSJOIN", 0, 0, 0, MFLG_SLOW,
+	{mg_ignore, mg_ignore, mg_ignore, mg_ignore, {me_svsjoin, 3}, mg_ignore}
+};
+
 struct Message sjoin_msgtab = {
 	"SJOIN", 0, 0, 0, MFLG_SLOW,
 	{mg_unreg, mg_ignore, mg_ignore, {ms_sjoin, 4}, mg_ignore, mg_ignore}
 };
 
-mapi_clist_av1 join_clist[] = { &join_msgtab, &sjoin_msgtab, NULL };
+mapi_clist_av1 join_clist[] = { &join_msgtab, &svsjoin_msgtab, &sjoin_msgtab, NULL };
 
 DECLARE_MODULE_AV1(join, NULL, NULL, join_clist, NULL, NULL, "$Revision: 3494 $");
 
@@ -85,6 +91,29 @@ m_join(struct Client *client_p, struct Client *source_p, int parc, const char *p
 	user_join(client_p, source_p, (char *)parv[1], parc > 2 ? (char *)parv[2] : NULL); /* src/channel.c */
 
 	return 0;
+}
+
+/*
+ * me_svsjoin - small function to allow services to forcejoin clients, mainly for ns_ajoin
+ * parv[1] = user to act on (join to a channel)
+ * parv[2] = channel
+ */
+static int
+me_svsjoin(struct Client *client_p, struct Client *source_p, int parc, const char *parv[])
+{
+	struct Client *target_p;
+
+	if(!(source_p->flags & FLAGS_SERVICE))
+		return 0;
+
+	if((target_p = find_person(parv[1])) == NULL)
+		return 0;
+
+	if(!MyClient(target_p))
+		return 0;
+
+	user_join(&me, target_p, (char *)parv[2], NULL);
+		return 0;
 }
 
 /*
