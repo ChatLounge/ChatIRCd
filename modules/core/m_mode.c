@@ -47,6 +47,8 @@ static int ms_mode(struct Client *, struct Client *, int, const char **);
 static int ms_tmode(struct Client *, struct Client *, int, const char **);
 static int ms_mlock(struct Client *, struct Client *, int, const char **);
 static int ms_bmask(struct Client *, struct Client *, int, const char **);
+static int me_set_other_usermode(struct Client *client_p, struct Client *source_p,
+	int parc, const char *parv[]);
 
 struct Message mode_msgtab = {
 	"MODE", 0, 0, 0, MFLG_SLOW,
@@ -64,8 +66,12 @@ struct Message bmask_msgtab = {
 	"BMASK", 0, 0, 0, MFLG_SLOW,
 	{mg_ignore, mg_ignore, mg_ignore, {ms_bmask, 5}, mg_ignore, mg_ignore}
 };
+struct Message usermode_msgtab = {
+	"USERMODE", 0, 0, 0, MFLG_SLOW,
+	{mg_ignore, mg_ignore, mg_ignore, mg_ignore, {me_set_other_usermode, 3}, mg_ignore}
+};
 
-mapi_clist_av1 mode_clist[] = { &mode_msgtab, &tmode_msgtab, &mlock_msgtab, &bmask_msgtab, NULL };
+mapi_clist_av1 mode_clist[] = { &mode_msgtab, &tmode_msgtab, &mlock_msgtab, &bmask_msgtab, &usermode_msgtab, NULL };
 
 DECLARE_MODULE_AV1(mode, NULL, NULL, mode_clist, NULL, NULL, "$Revision: 1006 $");
 
@@ -434,3 +440,28 @@ ms_bmask(struct Client *client_p, struct Client *source_p, int parc, const char 
 	return 0;
 }
 
+static int
+me_set_other_usermode(struct Client *client_p, struct Client *source_p, int parc, const char *parv[])
+{
+	struct Client *target_p = find_id(parv[1]);
+
+	if(target_p == NULL)
+	{
+		return 0;
+	}
+	
+	/* The target client isn't on this server either.
+	 * Pass it on.
+	 */
+	if(!MyClient(target_p))
+	{
+		struct Client *cptr = target_p->servptr;
+		sendto_one(cptr, ":%s ENCAP %s USERMODE %s :%s",
+			get_id(source_p, cptr), cptr->name, get_id(target_p, cptr), (char *)parv[2]);
+		return 0;
+	}
+
+	set_other_usermode(source_p, client_p, target_p, parc, parv);
+
+	return 0;
+}

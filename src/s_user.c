@@ -56,7 +56,11 @@
 #include "chmode.h"
 #include "s_assert.h"
 
+#define CanChangeOtherUmodes(x)		(HasPrivilege((x), "oper:canchangeumodes"))
+
 static void report_and_set_user_flags(struct Client *, struct ConfItem *);
+int attempt_set_usermode(struct Client *client_p, struct Client *source_p,
+	int parc, const char *parv[]);
 void user_welcome(struct Client *source_p);
 
 char umodebuf[128];
@@ -970,6 +974,8 @@ user_mode(struct Client *client_p, struct Client *source_p, int parc, const char
 	{
 		if (MyOper(source_p) && parc < 3)
 			show_other_user_mode(source_p, target_p);
+		else if (MyOper(source_p) && parc > 2 && CanChangeOtherUmodes(source_p))
+			attempt_set_usermode(client_p, source_p, parc, parv);
 		else
 			sendto_one(source_p, form_str(ERR_USERSDONTMATCH), me.name, source_p->name);
 		return 0;
@@ -1220,6 +1226,143 @@ user_mode(struct Client *client_p, struct Client *source_p, int parc, const char
 	return (0);
 }
 
+int
+set_other_usermode(struct Client *client_p, struct Client *source_p,
+	struct Client *target_p, int parc, const char *parv[])
+{
+	const char *pm;
+	int flag, oldumodes;
+	int what = MODE_ADD;
+	int badflag = NO;
+	int showsnomask = NO;
+
+	oldumodes = target_p->umodes;
+
+	/*
+	 * parse mode change string(s)
+	 */
+	for (pm = parv[2]; *pm; pm++)
+		switch (*pm)
+		{
+		case '+':
+			what = MODE_ADD;
+			break;
+		case '-':
+			what = MODE_DEL;
+			break;
+			
+			/* (De)opering is not supported via remote
+			 * user mode changing.
+			 */
+
+		case 'a':
+		case 'n':
+		case 'o':
+			break;
+
+			/* Because oper:override isn't propagated between
+			 * servers.
+			 */
+
+		case 'p':
+			break;
+
+			/* we may not get these,
+			 * but they shouldnt be in default
+			 */
+
+		/* can only be set on burst */
+		case 'S':
+		case 'Z':
+		case ' ':
+		case '\n':
+		case '\r':
+		case '\t':
+			break;
+
+		case 's':
+			if (MyConnect(target_p))
+			{
+				if(!IsOper(target_p)
+						&& (ConfigFileEntry.oper_only_umodes & UMODE_SERVNOTICE))
+				{
+					if (what == MODE_ADD || target_p->umodes & UMODE_SERVNOTICE)
+						badflag = YES;
+					continue;
+				}
+				showsnomask = YES;
+				if(what == MODE_ADD)
+				{
+					if (parc > 3)
+						target_p->snomask = parse_snobuf_to_mask(source_p->snomask, parv[3]);
+					else
+						target_p->snomask |= SNO_GENERAL;
+				}
+				else
+					target_p->snomask = 0;
+				if (target_p->snomask != 0)
+					target_p->umodes |= UMODE_SERVNOTICE;
+				else
+					target_p->umodes &= ~UMODE_SERVNOTICE;
+				break;
+			}
+			/* FALLTHROUGH */
+		default:
+			if (MyConnect(target_p) && *pm == 'Q' && !ConfigChannel.use_forward)
+			{
+				badflag = YES;
+				break;
+			}
+
+			if((flag = user_modes[(unsigned char) *pm]))
+			{
+				if(MyConnect(target_p)
+						&& ((!IsOper(target_p)
+							&& (ConfigFileEntry.oper_only_umodes & flag))
+						|| (orphaned_umodes & flag)))
+				{
+					if (what == MODE_ADD || target_p->umodes & flag)
+						badflag = YES;
+				}
+				else
+				{
+					if(what == MODE_ADD)
+						target_p->umodes |= flag;
+					else
+						target_p->umodes &= ~flag;
+				}
+			}
+			else
+			{
+				if(MyConnect(target_p))
+					badflag = YES;
+			}
+			break;
+		}
+	if(badflag)
+		sendto_one(source_p, form_str(ERR_UMODEUNKNOWNFLAG), me.name, target_p->name);
+	
+	if (showsnomask && MyConnect(source_p))
+		sendto_one_numeric(source_p, RPL_SNOMASK, form_str(RPL_SNOMASK),
+			construct_snobuf(target_p->snomask));
+
+	send_other_umode_out(client_p, target_p, oldumodes);
+
+	char umodesbuf[BUFSIZE];
+	char *m;
+	int i;
+
+	m = umodesbuf;
+	*m++ = '+';
+
+	for (i = 0; i < 128; i++)
+		if (target_p->umodes & user_modes[i])
+			*m++ = (char) i;
+	*m = '\0';
+
+	return 0;
+}
+
 /*
  * send the MODE string for user (user) to connection client_p
  * -avalon
@@ -1272,6 +1415,55 @@ send_umode(struct Client *client_p, struct Client *source_p, int old, char *umod
 		sendto_one(client_p, ":%s MODE %s :%s", source_p->name, source_p->name, umode_buf);
 }
 
+/* Similar to send_umode but needed for constructing the umode string buffer.
+ * Eventually rename to construct_changed_umode_buf.
+ */
+
+void
+send_other_umode(struct Client *client_p, struct Client *source_p, int old, char *umode_buf)
+{
+	int i;
+	int flag;
+	char *m;
+	int what = 0;
+
+	/*
+	 * build a string in umode_buf to represent the change in the user's
+	 * mode between the new (source_p->flag) and 'old'.
+	 */
+	m = umode_buf;
+	*m = '\0';
+
+	for (i = 0; i < 128; i++)
+	{
+		flag = user_modes[i];
+
+		if((flag & old) && !(source_p->umodes & flag))
+		{
+			if(what == MODE_DEL)
+				*m++ = (char) i;
+			else
+			{
+				what = MODE_DEL;
+				*m++ = '-';
+				*m++ = (char) i;
+			}
+		}
+		else if(!(flag & old) && (source_p->umodes & flag))
+		{
+			if(what == MODE_ADD)
+				*m++ = (char) i;
+			else
+			{
+				what = MODE_ADD;
+				*m++ = '+';
+				*m++ = (char) i;
+			}
+		}
+	}
+	*m = '\0';
+}
+
 /*
  * send_umode_out
  *
@@ -1302,6 +1494,90 @@ send_umode_out(struct Client *client_p, struct Client *source_p, int old)
 
 	if(client_p && MyClient(client_p))
 		send_umode(client_p, source_p, old, buf);
+}
+
+/* Similar to send_umode_out, used for changing another
+ * client's user modes.
+ */
+void
+send_other_umode_out(struct Client *client_p, struct Client *source_p, int old)
+{
+	struct Client *target_p;
+	char buf[BUFSIZE];
+	char operstring[BUFSIZE];
+	rb_dlink_node *ptr;
+
+	send_other_umode(NULL, source_p, old, buf);
+
+	RB_DLINK_FOREACH(ptr, serv_list.head)
+	{
+		target_p = ptr->data;
+
+		if((target_p != client_p) && (target_p != source_p) && (*buf))
+		{
+			sendto_one(target_p, ":%s MODE %s :%s",
+				   get_id(source_p, target_p), 
+				   get_id(source_p, target_p), buf);
+		}
+	}
+
+	if(client_p && MyClient(client_p))
+		send_other_umode(client_p, source_p, old, buf);
+
+	sendto_one(source_p, ":%s MODE %s :%s", client_p->name, source_p->name, buf);
+
+	rb_snprintf(operstring, sizeof operstring, "%s (%s@%s)",
+		client_p->name, client_p->username, client_p->orighost);
+
+	// Send a notice to all opers online.
+	if(!IsService(client_p) && !EmptyString(buf))
+		sendto_realops_snomask(SNO_GENERAL, L_NETWIDE, "%s has set user modes %s on %s (%s@%s).",
+		operstring, buf,
+		source_p->name, source_p->username, source_p->orighost);
+
+	// Send a notice to the affected user.
+	if(!EmptyString(buf))
+		sendto_one_notice(source_p, ":*** Notice -- %s (%s@%s) has set user modes %s on you.",
+			client_p->name, client_p->username, client_p->host,
+			buf);
+}
+
+int
+attempt_set_usermode(struct Client *client_p, struct Client *source_p, int parc, const char *parv[])
+{
+	struct Client *target_p;
+	char operstring[BUFSIZE];
+	int chasing = 0;
+
+	target_p = find_chasing(source_p, parv[1], &chasing);
+	
+	if(target_p == NULL)
+	{
+		sendto_one_numeric(source_p, ERR_NOSUCHNICK, form_str(ERR_NOSUCHNICK), parv[1]);
+		return 0;
+	}
+
+	rb_snprintf(operstring, sizeof operstring, "%s (%s@%s)",
+		source_p->name, source_p->username, source_p->orighost);
+	
+	sendto_realops_snomask(SNO_GENERAL, L_NETWIDE,
+		"%s [%s] is attempting to change the user modes of %s (%s@%s).",
+		operstring, source_p->user->opername,
+		target_p->name, target_p->username, target_p->orighost);
+	
+	// Send out an ENCAP, in the event the user isn't local.
+	if(!MyClient(target_p))
+	{
+		struct Client *cptr = target_p->servptr;
+		sendto_one(cptr, ":%s ENCAP %s USERMODE %s :%s",
+			get_id(source_p, cptr), cptr->name, get_id(target_p, cptr), (char *)parv[2]);
+
+		return 0;
+	}
+
+	set_other_usermode(client_p, source_p, target_p, parc, parv);
+
+	return 0;
 }
 
 /* 

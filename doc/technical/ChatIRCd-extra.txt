@@ -1,0 +1,18 @@
+USERMODE (Services command)
+
+Description:
+Changes the user modes of another user, similar to SVSMODE/SVS2MODE in other
+IRCds.  You may not (de)oper other opers this way, nor can you set oper
+override (umode +p).
+
+Syntax: :WWWXXXXXX ENCAP server.domain.tld USERMODE YYYZZZZZZ :+iw
+
+Where WWWXXXXXX is the EUID of the source, and YYYZZZZZZ is the EUID of the
+target.
+
+Example: :101AAAAAB ENCAP test.hub2 USERMODE 111AAAAAB :+Qw
+
+Note:
+Ideally the server name should be the one the user is on, but it can also be
+the direct uplink from services.  The server will pass on the message to the
+server the user is on.

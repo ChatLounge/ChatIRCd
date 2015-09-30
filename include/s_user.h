@@ -38,8 +38,12 @@ extern int valid_hostname(const char *hostname);
 extern int valid_username(const char *username);
 
 extern int user_mode(struct Client *, struct Client *, int, const char **);
+extern int set_other_usermode(struct Client *client_p, struct Client *source_p,
+				struct Client *target_p, int parc, const char *parv[]);
 extern void send_umode(struct Client *, struct Client *, int, char *);
+extern void send_other_umode(struct Client *client_p, struct Client *source_p, int old, char *umode_buf);
 extern void send_umode_out(struct Client *, struct Client *, int);
+extern void send_other_umode_out(struct Client *client_p, struct Client *source_p, int old);
 extern int show_lusers(struct Client *source_p);
 extern int register_local_user(struct Client *, struct Client *, const char *);
 
