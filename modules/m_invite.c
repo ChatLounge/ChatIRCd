@@ -42,15 +42,24 @@
 #include "tgchange.h"
 
 static int m_invite(struct Client *, struct Client *, int, const char **);
+static int me_invitenotice(struct Client *, struct Client *, int, const char **);
 
 struct Message invite_msgtab = {
 	"INVITE", 0, 0, 0, MFLG_SLOW,
 	{mg_unreg, {m_invite, 3}, {m_invite, 3}, mg_ignore, mg_ignore, {m_invite, 3}}
 };
-mapi_clist_av1 invite_clist[] = { &invite_msgtab, NULL };
+
+struct Message invitenotice_msgtab = {
+	"INVITENOTICE", 0, 0, 0, MFLG_SLOW,
+	{mg_ignore, mg_ignore, mg_ignore, mg_ignore, {me_invitenotice, 2}, mg_ignore}
+};
+
+mapi_clist_av1 invite_clist[] = { &invite_msgtab, &invitenotice_msgtab, NULL };
+
 DECLARE_MODULE_AV1(invite, NULL, NULL, invite_clist, NULL, NULL, "$Revision: 3438 $");
 
 static void add_invite(struct Channel *, struct Client *);
+static void send_invite_notification(struct Client *, struct Client *, struct Channel *);
 
 /* m_invite()
  *      parv[1] - user to invite
@@ -218,11 +227,11 @@ m_invite(struct Client *client_p, struct Client *source_p, int parc, const char 
 		sendto_one(target_p, ":%s!%s@%s INVITE %s :%s", 
 			source_p->name, source_p->username, source_p->host, 
 			target_p->name, chptr->chname);
+		
+		send_invite_notification(source_p, target_p, chptr);
 
-		sendto_channel_local_with_capability_butone(target_p, ONLY_CHANOPS, CLICAP_INVITE_NOTIFY, NOCAPS, chptr,
-							":%s!%s@%s INVITE %s %s",
-							source_p->name, source_p->username, source_p->host,
-							target_p->name, chptr->chname);
+		sendto_match_servs(source_p, "*", CAP_ENCAP, NOCAPS, "ENCAP * INVITENOTICE %s %s",
+				target_p->name, chptr->chname);
 
 		if(store_invite)
 			add_invite(chptr, target_p);
@@ -232,6 +241,27 @@ m_invite(struct Client *client_p, struct Client *source_p, int parc, const char 
 		sendto_one_prefix(target_p, source_p, "INVITE", "%s %lu",
 				  chptr->chname, (unsigned long) chptr->channelts);
 	}
+
+	return 0;
+}
+
+static int
+me_invitenotice(struct Client *client_p, struct Client *source_p, int parc, const char *parv[])
+{
+	struct Client *inviter_p;
+	struct Client *target_p;
+	struct Channel *chptr;
+
+	if((inviter_p = find_named_person(parv[0])) == NULL)
+		return 0;
+
+	if((target_p = find_named_person(parv[1])) == NULL)
+		return 0;
+
+	if((chptr = find_channel(parv[2])) == NULL)
+		return 0;
+
+	send_invite_notification(inviter_p, target_p, chptr);
 
 	return 0;
 }
@@ -267,6 +297,47 @@ add_invite(struct Channel *chptr, struct Client *who)
 
 	/* add channel to user invite list */
 	rb_dlinkAddAlloc(chptr, &who->user->invited);
+}
+
+/* Function to send the invite notifications to others in the channel.
+ * Args:
+ *   Source - Client who invited.
+ *   Target - Client who was invited.
+ *   Channel - Channel the target was invited to.
+ */
+static void
+send_invite_notification(struct Client *source_p, struct Client *target_p, struct Channel *chptr)
+{
+	/* Full format of channel notice sent on invite:
+	 * :*** Notice -- SourceNick (SrcIdent@Source.Visible.Host) has invited TargetNick (TargIdent@Target.Visible.Host) to #Channel
+	 */
+	char invitenotice[BUFSIZE] = "";
+
+	// Ugh, limited to nine args but really need more.  " to #Channel" added in the sendto function.
+	rb_snprintf(invitenotice, sizeof(invitenotice), ":*** Notice -- %s (%s@%s) has invited %s (%s@%s)",
+		source_p->name, source_p->username, source_p->host,
+		target_p->name, target_p->username, target_p->host);
+
+	// Send messages to everyone, if everyone can invite.
+	if(chptr->mode.mode & MODE_FREEINVITE)
+		sendto_channel_local_with_capability_butone(source_p, ALL_MEMBERS, CLICAP_INVITE_NOTIFY, NOCAPS, chptr,
+								":%s!%s@%s INVITE %s %s",
+								source_p->name, source_p->username, source_p->host,
+								target_p->name, chptr->chname);
+	else
+		sendto_channel_local_with_capability_butone(source_p, ONLY_CHANOPS, CLICAP_INVITE_NOTIFY, NOCAPS, chptr,
+								":%s!%s@%s INVITE %s %s",
+								source_p->name, source_p->username, source_p->host,
+								target_p->name, chptr->chname);
+
+	if(chptr->mode.mode & MODE_FREEINVITE)
+		sendto_channel_local(ALL_MEMBERS, chptr,
+								":%s NOTICE %s %s to %s", me.name,
+								chptr->chname, invitenotice, chptr->chname);
+	else
+		sendto_channel_local(ONLY_CHANOPS, chptr,
+								":%s NOTICE %s %s to %s", me.name,
+								chptr->chname, invitenotice, chptr->chname);
 }
 
 

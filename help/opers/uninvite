@@ -1,0 +1,3 @@
+UNINVITE <nickname> <channel>
+
+UNINVITE revokes a previous channel invite.
