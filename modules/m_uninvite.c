@@ -50,8 +50,6 @@ m_uninvite(struct Client *client_p, struct Client *source_p,
 	struct Channel *chptr;
 	struct Client *target_p;
 	int chasing = 0;
-	int wasinvited = 0;
-	rb_dlink_node *ptr;
 	char *user;
 	
 	struct membership *msptr;
@@ -101,30 +99,6 @@ m_uninvite(struct Client *client_p, struct Client *source_p,
 		return 0;
 	}
 
-	/* Check to see if the user was even invited.  Bail if not.
-	 * Channel invite lists only include local users.
-	 */
-	/*RB_DLINK_FOREACH(ptr, chptr->invites.head)
-	{
-		if(ptr->data == target_p)
-			wasinvited = 1;
-	} */
-	
-	/*if(!wasinvited)
-	{
-		sendto_one_notice(source_p, "%s (%s@%s) isn't invited to %s and can't be uninvited.",
-				target_p->name, target_p->username, target_p->host, chptr->chname);
-		return 0;
-	} */
-	
-	/* The client is on our server.  Send out the respective messages before
-	 * removing the invite.
-	 */
-	/*sendto_channel_local_with_capability_butone(target_p, ONLY_CHANOPS, CLICAP_INVITE_NOTIFY, NOCAPS, chptr,
-							":%s!%s@%s UNINVITE %s %s",
-							source_p->name, source_p->username, source_p->host,
-							target_p->name, chptr->chname); */
-
 	/* Full format of notice sent to clients without invite-notify:
 		 * :Notice -- SourceNick (SrcIdent@Source.Visible.Host) has uninvited TargetNick (TargIdent@Target.Visible.Host) from #Channel
 		 */
@@ -134,11 +108,6 @@ m_uninvite(struct Client *client_p, struct Client *source_p,
 	rb_snprintf(uninvitenotice, sizeof(uninvitenotice), ":*** Notice -- %s (%s@%s) has uninvited %s (%s@%s)",
 		source_p->name, source_p->username, source_p->host,
 		target_p->name, target_p->username, target_p->host);
-
-	/*sendto_channel_local_with_capability(ONLY_CHANOPS, NOCAPS, CLICAP_INVITE_NOTIFY,
-	chptr,
-						":%s NOTICE %s %s from %s", me.name,
-						chptr->chname, uninvitenotice, chptr->chname); */
 
 	send_uninvite_notification(source_p, target_p, chptr);
 
@@ -157,8 +126,6 @@ me_uninvite(struct Client *client_p, struct Client *source_p,
 	struct Channel *chptr;
 	struct Client *target_p;
 	int chasing = 0;
-	int wasinvited = 0;
-	rb_dlink_node *ptr;
 	char *user;
 	
 	user = LOCAL_COPY(parv[1]);
@@ -177,30 +144,6 @@ me_uninvite(struct Client *client_p, struct Client *source_p,
 		return 0;
 	}
 	
-	/* Check to see if the user was even invited.  Bail if not.
-	 * Channel invite lists only include local users.
-	 */
-	/*RB_DLINK_FOREACH(ptr, chptr->invites.head)
-	{
-		if(ptr->data == target_p)
-			wasinvited = 1;
-	} */
-	
-	/*if(!wasinvited)
-	{
-		sendto_one_notice(source_p, ":%s (%s@%s) isn't invited to %s and can't be uninvited.",
-				target_p->name, target_p->username, target_p->host, chptr->chname);
-		return 0;
-	} */
-	
-	/* The client is on our server.  Send out the respective messages before
-	 * removing the invite.
-	 */
-	/*sendto_channel_local_with_capability_butone(target_p, ONLY_CHANOPS, CLICAP_INVITE_NOTIFY, NOCAPS, chptr,
-							":%s!%s@%s UNINVITE %s %s",
-							source_p->name, source_p->username, source_p->host,
-							target_p->name, chptr->chname); */
-
 	/* Full format of notice sent to clients without invite-notify:
 	 * :Notice -- SourceNick (SrcIdent@Source.Visible.Host) has uninvited TargetNick (TargIdent@Target.Visible.Host) from #Channel
 	 */
