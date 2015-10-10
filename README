@@ -8,7 +8,7 @@ Differences from Charybdis 3.5.0:
 
 - Global nick change notices (snomask +N)
 - SNO_SPY Server notices (extensions/sno_*_notice.c) are now global
-	(L_NETWIDE).
+    (L_NETWIDE).
 - Usermode +B (Mark as bot in whois)
 - Usermode +t - When enabled, only SSL/TLS users may message you.
 - Oper override does not expire.  It still generates
@@ -17,21 +17,35 @@ Differences from Charybdis 3.5.0:
 	an oper performs the whois, or a self-whois.
 - When a K-lined user connects, snomask +K shows it.
 - Initial channel modes when a channel is created are
-	now configurable with the 'autochanmodes'
-	option.
+    now configurable with the 'autochanmodes'
+    option.
 - Default initial channel modes are now +nst if not configured.
 - Extended ban type $u.  $u:nick!ident@host matches any clients
 	that are not identified to services.
-- SSLv3 is no longer supported.  SSL clients must support TLS v1.0+.
 - Higher configurable channel limit for either certain opers or auth{} blocks.
 - Network Administrator, or NetAdmin role, "higher" than "Admin."
 	NetAdmin is required to perform remote rehash, restart, and module loading.
 - Channel modes are now shown in /list and /olist.
+- Miscellaneous oper-override fixes.
+- WHO 'f' flag shows bot status.
+- Opers with umode +B (bot mode) are no longer counted in /lusers.
+- By default, opers may not (un)set umode +B.
+- Optional static part reasons.
+- Optional static quit reasons.
+- /whois shows oper block name.
+- Local channels are no longer supported.
+- /join 0 is now disabled by default; PARTALL replaces it.
+- /why command - Tells you why a user is banned, or can join a channel
+    despite restrictive modes.
+- FJOIN/SVSJOIN
+- ENCAP USERMODE (intended for a potential /ns umodesOnID feature)
+- /listinvites command - Shows what channels you have been invited to.
+- /uninvite command - Lets channel ops uninvite a user.
 
 In addition, these differences from Charybdis 3.4.2:
 - Channel mode +T blocks channel notices.
 - SSLv3 is an older encryption protocol that's no longer supported.
-  SSL clients must support at least TLS v1.0+.
+    SSL clients must support at least TLS v1.0+.
 
 Note: The list may not be exhaustive.  Refer to the commit
 	history for details.
