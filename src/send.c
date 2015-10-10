@@ -584,7 +584,7 @@ sendto_channel_opmod(struct Client *one, struct Client *source_p,
 		if(IsIOError(target_p->from) || target_p->from == one)
 			continue;
 
-		if(!is_any_op(msptr))
+		if(!(is_any_op(msptr) || IsSetOverride(target_p)))
 			continue;
 
 		if(IsDeaf(target_p))
