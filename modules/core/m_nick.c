@@ -652,7 +652,6 @@ clean_uid(const char *uid, const char *sid)
 static void
 set_initial_nick(struct Client *client_p, struct Client *source_p, char *nick)
 {
-	char buf[USERLEN + 1];
 	char note[NICKLEN + 10];
 
 	/* This had to be copied here to avoid problems.. */
@@ -666,14 +665,9 @@ set_initial_nick(struct Client *client_p, struct Client *source_p, char *nick)
 	rb_snprintf(note, sizeof(note), "Nick: %s", nick);
 	rb_note(client_p->localClient->F, note);
 
+	/* got user, heres nick. */
 	if(source_p->flags & FLAGS_SENTUSER)
-	{
-		rb_strlcpy(buf, source_p->username, sizeof(buf));
-
-		/* got user, heres nick. */
-		register_local_user(client_p, source_p, buf);
-
-	}
+		register_local_user(client_p, source_p);
 }
 
 static void
