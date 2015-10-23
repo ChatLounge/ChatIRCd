@@ -430,9 +430,9 @@ mo_unresv(struct Client *client_p, struct Client *source_p, int parc, const char
 {
 	int propagated = 1;
 
-	if(!IsOperResv(source_p))
+	if(!IsOperUnResv(source_p))
 	{
-		sendto_one(source_p, form_str(ERR_NOPRIVS), me.name, source_p->name, "resv");
+		sendto_one(source_p, form_str(ERR_NOPRIVS), me.name, source_p->name, "unresv");
 		return 0;
 	}
 

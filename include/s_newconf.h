@@ -161,6 +161,7 @@ extern void cluster_generic(struct Client *, const char *, int cltype,
 #define IsOperK(x)              (HasPrivilege((x), "oper:kline"))
 #define IsOperXline(x)          (HasPrivilege((x), "oper:xline"))
 #define IsOperResv(x)           (HasPrivilege((x), "oper:resv"))
+#define IsOperUnResv(x)         (HasPrivilege((x), "oper:unresv"))
 #define IsOperDie(x)            (HasPrivilege((x), "oper:die"))
 #define IsOperRehash(x)         (HasPrivilege((x), "oper:rehash"))
 #define IsOperHiddenAdmin(x)    (HasPrivilege((x), "oper:hidden_admin") || HasPrivilege((x), "oper:hidden_netadmin"))
