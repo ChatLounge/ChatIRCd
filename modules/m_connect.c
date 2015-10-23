@@ -5,6 +5,7 @@
  *  Copyright (C) 1990 Jarkko Oikarinen and University of Oulu, Co Center
  *  Copyright (C) 1996-2002 Hybrid Development Team
  *  Copyright (C) 2002-2005 ircd-ratbox development team
+ *  Copyright (C) 2015 Chat Lounge IRC Network Development Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -71,10 +72,17 @@ mo_connect(struct Client *client_p, struct Client *source_p, int parc, const cha
 
 	/* always privileged with handlers */
 
+	if(MyConnect(source_p) && !IsOperLocalRouting(source_p))
+	{
+		sendto_one(source_p, form_str(ERR_NOPRIVS),
+			   me.name, source_p->name, "oper:local_routing");
+		return 0;
+	}
+	
 	if(MyConnect(source_p) && !IsOperRemote(source_p) && parc > 3)
 	{
 		sendto_one(source_p, form_str(ERR_NOPRIVS),
-			   me.name, source_p->name, "remote");
+			   me.name, source_p->name, "oper:local_routing and oper:routing");
 		return 0;
 	}
 

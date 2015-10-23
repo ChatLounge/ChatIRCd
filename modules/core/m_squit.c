@@ -75,7 +75,13 @@ mo_squit(struct Client *client_p, struct Client *source_p, int parc, const char 
 
 	if((found_squit = find_squit(client_p, source_p, parv[1])))
 	{
-		if(MyConnect(found_squit->target_p))
+		if(!IsOperLocalRouting(source_p) && found_squit->target_p->hopcount < 2)
+		{
+			sendto_one(source_p, form_str(ERR_NOPRIVS),
+				   me.name, source_p->name, "oper:local_routing");
+			return 0;
+		}
+		else if(MyConnect(found_squit->target_p))
 		{
 			sendto_realops_snomask(SNO_GENERAL, L_ALL,
 					     "Received SQUIT %s from %s (%s)",
@@ -85,10 +91,10 @@ mo_squit(struct Client *client_p, struct Client *source_p, int parc, const char 
 			     found_squit->target_p->name, log_client_name(source_p, HIDE_IP),
 			     comment);
 		}
-		else if(!IsOperRemote(source_p))
+		else if(!IsOperRemote(source_p) && found_squit->target_p->hopcount > 1)
 		{
 			sendto_one(source_p, form_str(ERR_NOPRIVS),
-				   me.name, source_p->name, "remote");
+				   me.name, source_p->name, "oper:local_routing and oper:routing");
 			return 0;
 		}
 
