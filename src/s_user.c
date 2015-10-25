@@ -1598,6 +1598,8 @@ user_welcome(struct Client *source_p)
 
 	show_isupport(source_p);
 
+	sendto_one_numeric(source_p, RPL_YOURID, form_str(RPL_YOURID), source_p->id);
+
 	show_lusers(source_p);
 
 	if(ConfigFileEntry.short_motd)

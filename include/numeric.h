@@ -46,7 +46,8 @@
 #define RPL_REDIR            10
 #define RPL_MAP		     15	/* Undernet extension */
 #define RPL_MAPMORE	     16	/* Undernet extension */
-#define RPL_MAPEND	     17	/* Undernet extension */
+#define RPL_MAPEND       17	/* Undernet extension */
+#define RPL_YOURID       42 /* From IRCnet */
 #define RPL_SAVENICK         43 /* From ircnet */
 
 /*
@@ -319,6 +320,7 @@
 
 #define RPL_STARTTLS         670 /* IRCv3.1 tls-3.1 */
 #define RPL_WHOISSECURE      671 /* Unreal3.2 --nenolod */
+#define RPL_WHOISYOURID      674 /* Show EUID in WHOIS */
 
 #define ERR_STARTTLS         691 /* IRCv3.2 tls-3.2 */
 
