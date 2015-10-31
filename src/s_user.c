@@ -1570,7 +1570,7 @@ attempt_set_usermode(struct Client *client_p, struct Client *source_p, int parc,
 	
 	sendto_realops_snomask(SNO_GENERAL, L_NETWIDE,
 		"%s [%s] is attempting to change the user modes of %s (%s@%s).",
-		operstring, source_p->user->opername,
+		operstring, source_p->localClient->opername,
 		target_p->name, target_p->username, target_p->orighost);
 	
 	// Send out an ENCAP, in the event the user isn't local.
@@ -1687,8 +1687,6 @@ oper_up(struct Client *source_p, struct oper_conf *oper_p)
 	hdata.oldumodes = old;
 	hdata.oldsnomask = oldsnomask;
 	call_hook(h_umode_changed, &hdata);
-
-	source_p->user->opername = oper_p->name;
 
 	sendto_realops_snomask(SNO_GENERAL, ConfigFileEntry.global_oper_up_notices ? L_NETWIDE : L_ALL,
 			     "%s (%s@%s) is now an operator, using oper block: %s", source_p->name,

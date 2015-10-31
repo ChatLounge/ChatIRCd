@@ -339,10 +339,10 @@ single_whois(struct Client *source_p, struct Client *target_p, int operspy)
 		else
 			rb_strlcpy(operstring, GlobalSetOptions.operstring, sizeof operstring);
 
-		if(!IsService(target_p) && (target_p->user->opername != NULL))
+		if(!IsService(target_p) && (target_p->localClient->opername != NULL))
 		{
 			rb_strlcat(operstring, ": ", sizeof operstring);
-			rb_strlcat(operstring, target_p->user->opername, sizeof operstring);
+			rb_strlcat(operstring, target_p->localClient->opername, sizeof operstring);
 		}
 
 		sendto_one_numeric(source_p, RPL_WHOISOPERATOR, form_str(RPL_WHOISOPERATOR),
