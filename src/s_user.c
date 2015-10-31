@@ -1040,6 +1040,14 @@ user_mode(struct Client *client_p, struct Client *source_p, int parc, const char
 
 				Count.oper--;
 
+				if(MyClient(source_p))
+				{
+					sendto_realops_snomask(SNO_GENERAL, ConfigFileEntry.global_oper_up_notices ? L_NETWIDE : L_ALL,
+						"%s (%s@%s) is no longer an operator, was using oper block: %s",
+						source_p->name, source_p->username, source_p->orighost, source_p->localClient->opername);
+					sendto_one(source_p, form_str(RPL_NOTOPERANYMORE), me.name, source_p->name);
+				}
+
 				if(MyConnect(source_p))
 				{
 					source_p->umodes &= ~ConfigFileEntry.oper_only_umodes;
