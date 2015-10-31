@@ -174,7 +174,7 @@ mo_forcenick(struct Client *client_p, struct Client *source_p, int parc, const c
 	
 	rb_snprintf(operhostmaskstring, sizeof(operhostmaskstring), "%s (%s@%s) [Oper: %s]",
 			source_p->name, source_p->username, source_p->orighost,
-			source_p->user->opername);
+			source_p->localClient->opername);
 	
 	if(source_p != target_p) // Don't send the notice if the oper uses it on himself.
 		sendto_realops_snomask(SNO_GENERAL, L_NETWIDE,
@@ -188,7 +188,7 @@ mo_forcenick(struct Client *client_p, struct Client *source_p, int parc, const c
 	if(source_p != target_p)
 		sendto_one_notice(target_p, ":Your nick has been forcibly changed from %s to %s by %s (%s@%s) [Oper: %s]",
 				  target_p->name, newnick, source_p->name, source_p->username,
-				  source_p->host, source_p->user->opername);
+				  source_p->host, source_p->localClient->opername);
 
 	if(!MyClient(target_p))
 	{
