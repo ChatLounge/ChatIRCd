@@ -204,16 +204,7 @@ get_channel_access(struct Client *source_p, struct membership *msptr)
 	moduledata.chptr = msptr->chptr;
 	moduledata.msptr = msptr;
 	moduledata.target = NULL;
-	//moduledata.approved = is_chanop(msptr) ? CHFL_CHANOP : CHFL_PEON;
 	moduledata.approved = is_owner(msptr) ? CHFL_OWNER : CHFL_PEON;
-	/* if(is_owner(msptr) && ConfigChannel.use_owner)
-		moduledata.approved = CHFL_OWNER;
-	else if(is_chanop(msptr))
-		moduledata.approved = CHFL_CHANOP;
-	else if(is_halfop(msptr))
-		moduledata.approved = CHFL_HALFOP;
-	else
-		moduledata.approved = CHFL_PEON; */
 
 	call_hook(h_get_channel_access, &moduledata);
 
@@ -625,12 +616,7 @@ chm_simple(struct Client *source_p, struct Channel *chptr,
 	if(!allow_mode_change(source_p, chptr, alevel, errors, c))
 	{
 		if(IsSetOverride(source_p))
-		{
 			overrided_mode = 1;
-
-			sendto_realops_snomask(SNO_GENERAL, L_NETWIDE, "%s is using oper-override on %s (modehacking)",
-				       get_oper_name(source_p), chptr->chname);
-		}
 		else
 		{
 			if(!(*errors & SM_ERR_NOOPS))
@@ -980,12 +966,7 @@ chm_ban(struct Client *source_p, struct Channel *chptr,
 	if(!allow_mode_change(source_p, chptr, alevel, errors, c))
 	{
 		if(IsSetOverride(source_p))
-		{
 			overrided_mode = 1;
-
-			sendto_realops_snomask(SNO_GENERAL, L_NETWIDE, "%s is using oper-override on %s (modehacking)",
-				       get_oper_name(source_p), chptr->chname);
-		}
 		else
 		{
 			if(!(*errors & SM_ERR_NOOPS))
@@ -1143,12 +1124,7 @@ chm_owner(struct Client *source_p, struct Channel *chptr,
 	if(alevel != CHFL_OWNER)
 	{
 		if(IsSetOverride(source_p))
-		{
 			overrided_mode = 1;
-
-			sendto_realops_snomask(SNO_GENERAL, L_NETWIDE, "%s is using oper-override on %s (modehacking)",
-				       get_oper_name(source_p), chptr->chname);
-		}
 		else
 		{
 			if(!(*errors & SM_ERR_NOOPS))
@@ -1239,12 +1215,7 @@ chm_admin(struct Client *source_p, struct Channel *chptr,
 	if(alevel != CHFL_ADMIN && alevel != CHFL_OWNER)
 	{
 		if(IsSetOverride(source_p))
-		{
 			overrided_mode = 1;
-
-			sendto_realops_snomask(SNO_GENERAL, L_NETWIDE, "%s is using oper-override on %s (modehacking)",
-				       get_oper_name(source_p), chptr->chname);
-		}
 		else
 		{
 			if(!(*errors & SM_ERR_NOOPS))
@@ -1335,12 +1306,7 @@ chm_op(struct Client *source_p, struct Channel *chptr,
 	if(alevel != CHFL_CHANOP && alevel != CHFL_ADMIN && alevel != CHFL_OWNER)
 	{
 		if(IsSetOverride(source_p))
-		{
 			overrided_mode = 1;
-
-			sendto_realops_snomask(SNO_GENERAL, L_NETWIDE, "%s is using oper-override on %s (modehacking)",
-				       get_oper_name(source_p), chptr->chname);
-		}
 		else
 		{
 			if(!(*errors & SM_ERR_NOOPS))
@@ -1475,7 +1441,7 @@ chm_halfop(struct Client *source_p, struct Channel *chptr,
 		return;
 	}
 	
-	// Always permit self dehalfop, regardless of config. setting.
+	/* Always permit self dehalfop, regardless of config. setting. */
 	if(!ConfigChannel.halfops_can_dehalfop_others && !(source_p == targ_p))
 	{
 		if(IsSetOverride(source_p))
@@ -1528,10 +1494,6 @@ chm_halfop(struct Client *source_p, struct Channel *chptr,
 
 		mstptr->flags &= ~CHFL_HALFOP;
 	}
-	
-	if(overrided_mode)
-		sendto_realops_snomask(SNO_GENERAL, L_NETWIDE, "%s is using oper-override on %s (modehacking)",
-				       get_oper_name(source_p), chptr->chname);
 }
 
 void
@@ -1547,12 +1509,7 @@ chm_voice(struct Client *source_p, struct Channel *chptr,
 	if(alevel != CHFL_CHANOP && alevel != CHFL_OWNER && alevel != CHFL_ADMIN && alevel != CHFL_HALFOP)
 	{
 		if(IsSetOverride(source_p))
-		{
 			overrided_mode = 1;
-
-			sendto_realops_snomask(SNO_GENERAL, L_NETWIDE, "%s is using oper-override on %s (modehacking)",
-				       get_oper_name(source_p), chptr->chname);
-		}
 		else
 		{
 			if(!(*errors & SM_ERR_NOOPS))
@@ -1632,12 +1589,7 @@ chm_limit(struct Client *source_p, struct Channel *chptr,
 	if(!allow_mode_change(source_p, chptr, alevel, errors, c))
 	{
 		if(IsSetOverride(source_p))
-		{
 			overrided_mode = 1;
-
-			sendto_realops_snomask(SNO_GENERAL, L_NETWIDE, "%s is using oper-override on %s (modehacking)",
-				       get_oper_name(source_p), chptr->chname);
-		}
 		else
 		{
 			if(!(*errors & SM_ERR_NOOPS))
@@ -1700,12 +1652,7 @@ chm_throttle(struct Client *source_p, struct Channel *chptr,
 	if(!allow_mode_change(source_p, chptr, alevel, errors, c))
 	{
 		if(IsSetOverride(source_p))
-		{
 			overrided_mode = 1;
-
-			sendto_realops_snomask(SNO_GENERAL, L_NETWIDE, "%s is using oper-override on %s (modehacking)",
-				       get_oper_name(source_p), chptr->chname);
-		}
 		else
 		{
 			if(!(*errors & SM_ERR_NOOPS))
@@ -1790,12 +1737,7 @@ chm_forward(struct Client *source_p, struct Channel *chptr,
 	if(!allow_mode_change(source_p, chptr, alevel, errors, c))
 	{
 		if(IsSetOverride(source_p))
-		{
 			overrided_mode = 1;
-
-			sendto_realops_snomask(SNO_GENERAL, L_NETWIDE, "%s is using oper-override on %s (modehacking)",
-				       get_oper_name(source_p), chptr->chname);
-		}
 		else
 		{
 			if(!(*errors & SM_ERR_NOOPS))
@@ -1866,12 +1808,7 @@ chm_key(struct Client *source_p, struct Channel *chptr,
 	if(!allow_mode_change(source_p, chptr, alevel, errors, c))
 	{
 		if(IsSetOverride(source_p))
-		{
 			overrided_mode = 1;
-
-			sendto_realops_snomask(SNO_GENERAL, L_NETWIDE, "%s is using oper-override on %s (modehacking)",
-				       get_oper_name(source_p), chptr->chname);
-		}
 		else
 		{
 			if(!(*errors & SM_ERR_NOOPS))
@@ -2238,6 +2175,7 @@ set_channel_mode(struct Client *client_p, struct Client *source_p,
 	int parn = 1;
 	int errors = 0;
 	int alevel;
+	int override = 0; /* = 1 if any of the mode changes are the result of an oper-override action. */
 	const char *ml = parv[0];
 	char c;
 	struct Client *fakesource_p;
@@ -2353,6 +2291,9 @@ set_channel_mode(struct Client *client_p, struct Client *source_p,
 				pbuf += len;
 				paralen += len;
 			}
+			
+			if(mode_changes[i].overrided_mode)
+				override = 1;
 		}
 
 		if(paralen && parabuf[paralen - 1] == ' ')
@@ -2362,6 +2303,12 @@ set_channel_mode(struct Client *client_p, struct Client *source_p,
 		if(cur_len > mlen)
 			sendto_channel_local(flags, chptr, "%s %s", modebuf, parabuf);
 	}
+	
+	if(override && !IsService(source_p))
+		sendto_realops_snomask(SNO_GENERAL, L_NETWIDE,
+					   "%s is using oper-override on %s (modehacking)",
+				       get_oper_name(source_p), chptr->chname);
+		
 
 	/* only propagate modes originating locally, or if we're hubbing */
 	if(MyClient(source_p) || rb_dlink_list_length(&serv_list) > 1)
