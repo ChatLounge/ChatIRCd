@@ -23,9 +23,11 @@ show_channeljoin(hook_data_channel_activity *info)
 static void
 show_remotechanneljoin(hook_data_channel_activity *info)
 {
-	sendto_realops_snomask(snomask_modes['J'], L_ALL,
-		"%s (%s@%s) has joined channel %s", info->client->name,
-		info->client->username, info->client->host, info->chptr->chname);
+	/* Don't show services clients' joins. */
+	if(!IsService(info->client))
+		sendto_realops_snomask(snomask_modes['J'], L_ALL,
+			"%s (%s@%s) has joined channel %s", info->client->name,
+			info->client->username, info->client->host, info->chptr->chname);
 }
 
 mapi_hfn_list_av1 channeljoin_hfnlist[] = {
