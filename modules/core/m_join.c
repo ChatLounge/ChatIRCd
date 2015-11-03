@@ -133,8 +133,6 @@ ms_join(struct Client *client_p, struct Client *source_p, int parc, const char *
 	int isnew;
 	int keep_our_modes = YES;
 	rb_dlink_node *ptr, *next_ptr;
-	
-	hook_data_channel_activity hook_info;
 
 	/* special case for join 0 */
 	if((parv[1][0] == '0') && (parv[1][1] == '\0') && parc == 2)
@@ -243,11 +241,6 @@ ms_join(struct Client *client_p, struct Client *source_p, int parc, const char *
 		      ":%s JOIN %ld %s +",
 		      source_p->id, (long) chptr->channelts, chptr->chname);
 
-	hook_info.client = source_p;
-	hook_info.chptr = chptr;
-
-	call_hook(h_remote_channel_join, &hook_info);
-
 	return 0;
 }
 
@@ -277,8 +270,6 @@ ms_sjoin(struct Client *client_p, struct Client *source_p, int parc, const char 
 	int i, joinc = 0, timeslice = 0;
 	static char empty[] = "";
 	rb_dlink_node *ptr, *next_ptr;
-
-	hook_data_channel_activity hook_info;
 	
 	if(parc < 5)
 		return 0;
@@ -936,11 +927,6 @@ ms_sjoin(struct Client *client_p, struct Client *source_p, int parc, const char 
 	}
 
 	sendto_server(client_p->from, NULL, CAP_TS6, NOCAPS, "%s", buf_uid);
-
-	hook_info.client = target_p;
-	hook_info.chptr = chptr;
-
-	call_hook(h_remote_channel_join, &hook_info);
 
 	return 0;
 }

@@ -65,7 +65,6 @@ int h_new_remote_user;
 int h_introduce_client;
 int h_can_create_channel;
 int h_channel_join;
-int h_remote_channel_join;
 int h_can_kick;
 int h_privmsg_user;
 int h_privmsg_channel;
@@ -95,7 +94,6 @@ init_hook(void)
 	h_introduce_client = register_hook("introduce_client");
 	h_can_create_channel = register_hook("can_create_channel");
 	h_channel_join = register_hook("channel_join");
-	h_remote_channel_join = register_hook("remote_channel_join");
 	h_can_kick = register_hook("can_kick");
 	h_privmsg_user = register_hook("privmsg_user");
 	h_privmsg_channel = register_hook("privmsg_channel");
