@@ -12,15 +12,15 @@ LIST            LOCOPS          LUSERS          MAP
 MASKTRACE       MODLIST         MODLOAD         MODRELOAD
 MODRESTART      MODUNLOAD       MONITOR         MOTD
 NAMES           NICK            NOTICE          OPER
-OPERSPY         OPERWALL        PART            PASS
-PING            PONG            POST            PRIVMSG
-PRIVS           QUIT            REHASH          RESTART
-RESV            SCAN            SERVER          SET
-SJOIN           SNOMASK         SQUIT           STATS
-SVINFO          TESTGECOS       TESTLINE        TESTMASK
-TIME            TOPIC           TRACE           UHELP
-UMODE           UNDLINE         UNINVITE        UNKLINE
-UNREJECT        UNRESV          UNXLINE         USER
-USERHOST        USERS           VERSION         WALLOPS
-WHO             WHOIS           WHOWAS          WHY
-XLINE
+OPERSPY         OPERWALL        PART            PARTALL
+PASS            PING            PONG            POST
+PRIVMSG         PRIVS           QUIT            REHASH
+RESTART         RESV            SCAN            SERVER
+SET             SJOIN           SNOMASK         SQUIT
+STATS           SVINFO          TESTGECOS       TESTLINE
+TESTMASK        TIME            TOPIC           TRACE
+UHELP           UMODE           UNDLINE         UNINVITE
+UNKLINE         UNREJECT        UNRESV          UNXLINE
+USER            USERHOST        USERS           VERSION
+WALLOPS         WHO             WHOIS           WHOWAS
+WHY             XLINE
