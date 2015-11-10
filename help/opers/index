@@ -19,7 +19,8 @@ RESV            SCAN            SERVER          SET
 SJOIN           SNOMASK         SQUIT           STATS
 SVINFO          TESTGECOS       TESTLINE        TESTMASK
 TIME            TOPIC           TRACE           UHELP
-UMODE           UNDLINE         UNKLINE         UNREJECT
-UNRESV          UNXLINE         USER            USERHOST
-USERS           VERSION         WALLOPS         WHO
-WHOIS           WHOWAS          WHY             XLINE
+UMODE           UNDLINE         UNINVITE        UNKLINE
+UNREJECT        UNRESV          UNXLINE         USER
+USERHOST        USERS           VERSION         WALLOPS
+WHO             WHOIS           WHOWAS          WHY
+XLINE

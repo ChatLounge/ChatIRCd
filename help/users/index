@@ -7,8 +7,9 @@ INDEX           INFO            INVITE          ISON
 JOIN            KICK            KNOCK           LINKS
 LIST            LUSERS          MAP             MONITOR
 MOTD            NAMES           NICK            NOTICE
-OPER            PART            PASS            PING
-PONG            PRIVMSG         QUIT            STATS
-TIME            TOPIC           TRACE           UMODE
-USER            USERHOST        USERS           VERSION
-WHO             WHOIS           WHOWAS          WHY
+OPER            PART            PARTALL         PASS
+PING            PONG            PRIVMSG         QUIT
+STATS           TIME            TOPIC           TRACE
+UMODE           UNINVITE        USER            USERHOST
+USERS           VERSION         WHO             WHOIS
+WHOWAS          WHY

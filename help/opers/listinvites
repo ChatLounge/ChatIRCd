@@ -1,7 +1,0 @@
-LISTINVITES <nickname>
-
-Without the nick argument, list channels you have been
-invited to.
-
-If a nick is provided, list the channels that user has been
-invited to.
