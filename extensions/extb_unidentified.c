@@ -1,9 +1,10 @@
 /*
+ * Copyright (C) 2014-2015 ChatLounge IRC Network Development Team
+ *
  * Extended ban type "u": Unidentified users.  Bans unidentified users matching the specified n!u@h.
  * Example: +b $u:*!webchat@*
  *
- * - Ben (Ben @ irc.chatlounge.net, #ChatLounge-Dev @ irc.chatlounge.net)
- *	September 18th, 2014
+ * - Ben (Ben @ irc.chatlounge.net, #ChatIRCd @ irc.chatlounge.net)
  */
 
 #include "stdinc.h"
@@ -37,12 +38,17 @@ static int eb_unidentified(const char *data, struct Client *client_p,
 {
 
 	(void)chptr;
-	// $u alone should match all unidentified users.
+	
+	/* $u doesn't make sense for ban exceptions and invex. */
+	if(mode_type == CHFL_EXCEPTION || mode_type == CHFL_INVEX)
+		return EXTBAN_INVALID;
+
+	/* $u makes little sense without an argument, use $~a. */
 	if (data == NULL)
 	{
 		return EXTBAN_INVALID;
 	}
-	// $u has an argument, check it.  It should be n!u@h .
+	/* $u has an argument, check it.  It should be n!u@h . */
 	else
 	{
 		char buf[BUFSIZE];
