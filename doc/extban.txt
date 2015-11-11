@@ -1,16 +1,18 @@
 Extended bans
+
 Jilles Tjoelker <jilles -at- stack.nl>
+Ben <ben -at- chatlounge.net>
 --------------------------------------
 
 Extended bans (ban conditionals) allow different checks than the usual
 nick!user@host or nick!user@ip match to determine whether someone should
 be banned, quieted, exempted or invited.
 
-Extended bans are of the form $[~]<type>[:<data>]. The <type> is one
-character (case insensitive) and determines the type of match. Most types
-allow or require an extra field <data>. If the tilde (~) is present, the
+Extended bans are of the form $[~]<type>[:<data>].  The <type> is one
+character (case insensitive) and determines the type of match.  Most types
+allow or require an extra field <data>.  If the tilde (~) is present, the
 result of the comparison will be negated, unless the ban is invalid in which
-case it will never match. Invalid bans are ones where <data> is missing but
+case it will never match.  Invalid bans are ones where <data> is missing but
 required or where <data> is otherwise invalid as noted below.
 
 Unless noted below, all types can be used with +b, +q, +e and +I.
@@ -18,50 +20,53 @@ Unless noted below, all types can be used with +b, +q, +e and +I.
 If any extended ban types are loaded, they are listed in 005 (RPL_ISUPPORT)
 as EXTBAN=$,<types>.
 
-Local users cannot add extended bans of an unknown type or invalid bans. If a
+Local users cannot add extended bans of an unknown type or invalid bans.  If a
 remote user adds an extended ban of an unknown type, the mode change is
-processed normally. Furthermore, extended bans of an unknown type can always be
-listed or removed.
+processed normally.  Furthermore, extended bans of an unknown type can always
+be listed or removed.
 
 The ability to send to a channel is cached; this cache may not be updated
-if a condition for an extended ban changes. To work around this, part and
+if a condition for an extended ban changes.  To work around this, part and
 rejoin the channel, or add or remove a +b, +q or +e entry.
 
-The extban types that come with charybdis are:
+The extban types that come with ChatIRCd are:
 
 extb_account.so
-	$a
-matches all logged in users
-	$a:<mask>
-matches users logged in with a username matching the mask (* and ? wildcards)
+	$a           - matches all logged in users
+	$a:<mask>    - matches users logged in with a username matching the mask
+                   (* and ? wildcards)
 
 extb_channel.so
-	$c:<channel>
-matches users who are on the given channel; this is only valid if the channel
-exists and is not +s or +p. (The ops of the channel the ban is on cannot
-necessarily see whether the user is in the target channel, so it should not
-influence whether they can join either.)
+	$c:<channel> - matches users who are on the given channel; this is only
+                   valid if the channel exists and is not +s or +p. (The ops of
+                   the channel the ban is on cannot necessarily see whether the
+                   user is in the target channel, so it should not influence
+                   whether they can join either.)
 
 extb_oper.so
-	$o
-matches opers (most useful with +I)
+	$o           - matches opers (most useful with +I)
 
 extb_realname.so
-	$r:<mask>
-matches users with a realname (gecos) matching the mask (* and ? wildcards);
-this can only be used with +b and +q
+	$r:<mask>    - matches users with a realname (gecos) matching the mask (*
+                   and ? wildcards); this can only be used with +b and +q.
 
 extb_server.so
-	$s:<mask>
-matches users connected to a server matching the mask (* and ? wildcards);
-this can only be used with +b and +q
+	$s:<mask>    - matches users connected to a server matching the mask (* and
+                   ? wildcards); this can only be used with +b and +q
+
+extb_unidentified.so
+    $u:<mask>    - Accepts a mask in the form of nick!ident@host.  Matching
+                   users are users who match the hostmask and are NOT
+                   identified to services.
 
 Comparisons:
 
 +b $~a is similar to +r but also prevents not logged in users talking or
 changing their nick while on channel.
 
-+iI $o is the same as +O in dreamforge-derived ircds.
++b $u:*!*@* has the same effect as +b $~a.
+
++iI $o is the same as channel mode +O.
 
 Creating extban types:
 

@@ -1,6 +1,9 @@
 This IRCd is a Charybdis fork, developed by the Chat Lounge IRC Network
 Development Team.
 
+You may wish to review the INSTALL document for instructions on how to
+install and configure this software.
+
 In addition to original code, it may include some features and code from
 ShadowIRCd, ElementalIRCd, Ircd-seven, and elsewhere.
 
