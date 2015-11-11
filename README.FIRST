@@ -41,13 +41,13 @@ Feature Specific Requirements:
 - To report bugs in ChatIRCd, visit us at irc.chatlounge.net #ChatIRCd
 
 - See the INSTALL document for info on configuring and compiling
-  charybdis.
+  ChatIRCd.
 
 - Please read doc/index.txt to get an overview of the current documentation.
 
 - The files, /etc/services, /etc/protocols, and /etc/resolv.conf, SHOULD be
   readable by the user running the server in order for ircd to start with
-  the correct settings.  If these files are wrong, charybdis will try to use
+  the correct settings.  If these files are wrong, ChatIRCd will try to use
   127.0.0.1 for a resolver as a last-ditch effort.
 
 - FREEBSD USERS: if you are compiling with ipv6 you may experience
@@ -59,7 +59,7 @@ Feature Specific Requirements:
   work fine, and any gcc or SunPro compiled on 32bit.
 
 - DARWIN AND MACOS X USERS: You must be using at least the December 2001
-  Development Tools from Apple to build charybdis with shared modules.
+  Development Tools from Apple to build ChatIRCd with shared modules.
   Before then you MUST disable shared modules, as we do not have the proper
   flags for cc(1) prior to that point to produce shared modules.
 
@@ -86,4 +86,4 @@ Feature Specific Requirements:
 
 - Please read NEWS for information about what is in this release.
 
-- Other files recommended for reading: BUGS, INSTALL
+- Other files recommended for reading: INSTALL

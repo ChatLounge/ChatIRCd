@@ -5,30 +5,26 @@
    Copyright (c) 2001 by ircd-hybrid team
    Copyright (c) 2002-2004 ircd-ratbox development team
    Copyright (c) 2005-2008 charybdis development team
-   Copyright (c) 2014 Chat Lounge IRC Network Development
+   Copyright (c) 2014-2015 ChatLounge IRC Network Development
 
      ----------------------------------------------------------------------
 
                                   HOW TO BUILD
 
-   As of hybrid-4, the distribution uses GNU autoconf instead of the old
-   Config script. The Makefile has also been updated to include CFLAGS
-   defines for popular modern OSes.
-
    1. 
 
        Read the NEWS file to find out about the exciting new features in
-       this version. Other good reads are BUGS, doc/example.conf, and
-       README.FIRST.
+       this version. Other good reads are doc/example.conf, doc/reference.conf,
+	   and README.FIRST.
 
    2. 
 
-       Run the configure script. It will create include/setup.h and the
-       Makefiles to match your system. In ircd-ratbox, the paths are now handled
+       Run the configure script.  It will create include/setup.h and the
+       Makefiles to match your system.  In ircd-ratbox, the paths are now handled
        with the --prefix option to configure, not in config.h.
-       /usr/local/ircd is the default if no prefix is specified.
+       $HOME/ircd is the default if no prefix is specified.
 
-       ./configure --prefix="/usr/local/ircd"
+       ./configure --prefix="$HOME/ircd"
 
          Note: There are some special optional parameters to the configure
          script that some admins may wish to use.
@@ -36,38 +32,34 @@
           * 
 
             --enable-kqueue - Use the superior kqueue(2) system call as
-            opposed to the default poll(2). This is currently only available
+            opposed to the default poll(2).  This is currently only available
             on FreeBSD 4.1 or higher.
 
           * 
 
             --enable-devpoll - Enable the superior /dev/poll support on
-            Solaris. Linux /dev/poll is broken and will not work with this
+            Solaris.  Linux /dev/poll is broken and will not work with this
             option.
 
           * 
 
             --enable-epoll - Enable the superior Linux Edge-Triggered Polling
-            system. This is currently only available on 2.5 Linux kernel
+            system.  This is currently only available on 2.5 Linux kernel
             versions or later.
 
           * 
 
             --enable-openssl - Enable the openssl dependent crypto functions.
-            This will allow CHALLENGE to work and encrypted links. On systems
+            This will allow CHALLENGE to work and encrypted links.  On systems
             where the configure script can automatically detect OpenSSL, this
-            option is not necessary. If configure cannot find OpenSSL, you
+            option is not necessary.  If configure cannot find OpenSSL, you
             must specify a path with this option
             (--enable-openssl=/path/to/openssl)
 
           * 
 
-            --enable-ipv6 - Enable IPv6 support.
-
-          * 
-
             --enable-assert[=OPTION] - Enable some debugging code. OPTION is
-            either 'soft' or 'hard' (default: hard). 'hard' should never be
+            either 'soft' or 'hard' (default: hard).  'hard' should never be
             used on production servers as it may generate unnecessary cores.
             'soft' prevents cores from being generated but still imposes some
             additional load.
@@ -75,21 +67,26 @@
           * 
 
             --enable-small-net - Tunes the server for smaller networks by
-            reducing the startup memory footprint. This should really only be
+            reducing the startup memory footprint.  This should really only be
             used for *small* networks, as this tends to be a performance hit
             on larger networks.
 
           * 
 
-            --with-nicklen=LENGTH - Sets the maximum NICK length. Note that
-            this must be consistent across your entire network.
+            --with-nicklen=LENGTH - Sets the maximum NICK length.  Note that
+            this must be consistent across the entire network.
+
+          * 
+		  
+            --with-topiclen=LENGTH - Sets the maximum TOPIC length.  Note that
+			this must be consistent across the entire network.
    3. 
 
-       make should build ircd.
+       'make' should build ircd.
 
    4. 
 
-       make install will install the server, modules, and tools in the
+       'make install' will install the server, modules, and tools in the
        the prefix specified when configure was run.
 
    5. 
@@ -108,16 +105,17 @@
 
                                 HOW TO GET HELP
 
-   Send Check or Money Order to... just kidding! You're on your own for
-   support. Try asking other ircd-ratbox admins on EFnet if you can't fix it
-   yourself. If you do fix anything, however, please send context or unified
-   diffs to ircd-ratbox@lists.ratbox.org so the fixes can be incorporated into
-   the next release of ircd-hybrid. If ratbox crashes on you, PLEASE contact
-   ircd-ratbox@lists.ratbox.org ASAP with a backtrace of the core.
+   Send Check or Money Order to... just kidding!  You're on your own for
+   support.  You may try asking the development channel on ChatLounge if you can't
+   fix it yourself.  The channel may be found at: #ChatIRCd @ irc.chatlounge.net
+   If you do fix anything, however, please send context or unified diffs to
+   the development team at the development channel so the fixes can be incorporated
+   into the next release of ChatIRCd.  If ChatIRCd crashes on you, PLEASE contact
+   Ben @ irc.chatlounge.net ASAP with a backtrace of the core.
 
-   DISCUSSION: There is a mailing list for discussion of ratbox issues,
-    To subscribe, visit:
-       http://lists.ratbox.org/cgi-bin/mailman/listinfo/ircd-ratbox
+   DISCUSSION: There is development channel for discussion of ChatIRCd issues.
+    To join:
+       #ChatIRCd @ irc.chatlounge.net
        
      ----------------------------------------------------------------------
 
@@ -132,20 +130,20 @@
 
    2. 
 
-       Run gdb on the binary and the core file. With an unmodified ircd-ratbox
-       installation, an example command line is below (in the /usr/local/ircd
+       Run 'gdb' on the binary and the core file. With an unmodified ChatIRCd
+       installation, an example command line is below (in the $HOME/ircd
        directory)
 
- $ gdb bin/ircd ircd.core
+ $ gdb bin/ircd core
 
    3. 
 
-       At the "(gdb)" prompt, enter the command "bt"
+       At the "(gdb)" prompt, enter the command "bt full"
 
    4. 
 
-       Save the output of the backtrace command and send it to
-       ircd-ratbox@lists.ratbox.org
+       Save the output of the backtrace command and send it to the development
+       team at #ChatIRCd @ irc.chatlounge.net .
 
    5. 
 
@@ -158,11 +156,11 @@
                                  OPENSSL NOTES
 
    Older FreeBSD machines sometimes have the obsolete ports version of
-   OpenSSL libcrypto in /usr/local/lib. When configure is used with
+   OpenSSL libcrypto in /usr/local/lib.  When configure is used with
    --enable-openssl, and libintl is detected in /usr/local/lib, the
    /usr/local/lib directory will be searched BEFORE the system /usr/lib for
-   libraries by the linker. The linker may try to link to the old
-   /usr/local/lib libcrypto instead of the system /usr/lib libcrypto. Some
+   libraries by the linker.  The linker may try to link to the old
+   /usr/local/lib libcrypto instead of the system /usr/lib libcrypto.  Some
    older versions may cause error messages similar to the following:
 
  gcc -g -O2 -DIRCD_PREFIX=\"/home/wcampbel/ircd\" -Wl,-export-dynamic

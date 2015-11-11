@@ -1,4 +1,9 @@
-This has been forked into ChatIRCd 1.0.7, Copyright (c) Chat Lounge
+New version of ChatIRCd.  Please refer to README to compare the
+differences between Charybdis and ChatIRCd.
+
+-- ChatIRCd-1.1.0
+
+This has been forked into ChatIRCd, Copyright (c) Chat Lounge
 IRC Network Development
 
 -- ChatIRCd-1.0.x
