@@ -4,12 +4,12 @@ User modes:
 
      USERMODE     DESCRIPTION
 -----------------------------------------------------------------
+         +g     - "caller id" mode only allow accept clients to message you
+         +i     - Designates this client 'invisible'.
          +o     - Designates this client is an IRC Operator.
                   Use the /oper command to attain this.
-         +i     - Designates this client 'invisible'.
          +t     - Prevents non-SSL/TLS users you have not accepted from
                   messaging you.
-         +g     - "caller id" mode only allow accept clients to message you
          +w     - Can see oper wallops.
          +B     - Marks you as a bot in /whois
          +D     - Deaf - ignores all channel messages.
