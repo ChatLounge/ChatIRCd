@@ -373,7 +373,7 @@ rb_init_ssl(void)
 #endif
 
 #ifndef LRB_HAVE_TLS_METHOD_API
-	ssl_client_ctx = SSL_CTX_new(TLSv1_client_method());
+	ssl_client_ctx = SSL_CTX_new(SSLv23_client_method());
 #else
 	ssl_client_ctx = SSL_CTX_new(TLS_client_method());
 #endif
@@ -384,6 +384,10 @@ rb_init_ssl(void)
 		ret = 0;
 	}
 
+#ifndef LRB_HAVE_TLS_METHOD_API
+	SSL_CTX_set_options(ssl_client_ctx, SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3);
+#endif
+	
 #ifdef SSL_OP_NO_TICKET
 	SSL_CTX_set_options(ssl_client_ctx, SSL_OP_NO_TICKET);
 #endif
