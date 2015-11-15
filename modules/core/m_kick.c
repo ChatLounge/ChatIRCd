@@ -99,7 +99,6 @@ m_kick(struct Client *client_p, struct Client *source_p, int parc, const char *p
 			return 0;
 		}
 
-		//if(get_channel_access(source_p, msptr) < CHFL_CHANOP)
 		if(!can_kick_deop(msptr, find_channel_membership(chptr, client_p)) && !IsSetOverride(source_p))
 		{
 			if(MyConnect(source_p))
@@ -202,13 +201,12 @@ m_kick(struct Client *client_p, struct Client *source_p, int parc, const char *p
 			      use_id(source_p), chptr->chname, use_id(who), comment);
 		remove_user_from_channel(msptr);
 		
-		if(IsSetOverride(source_p))
-		{
-			mssptr = find_channel_membership(chptr, source_p);
-			if(!is_any_op(mssptr))
-				sendto_realops_snomask(SNO_GENERAL, L_NETWIDE, "%s is using oper-override to kick %s (%s@%s) on %s",
-				       get_oper_name(source_p), who->name, who->username, who->orighost, parv[1]);
-		}
+		mssptr = find_channel_membership(chptr, source_p);
+
+		if(MyClient(source_p) && IsSetOverride(source_p) && !is_any_op(mssptr))
+			sendto_realops_snomask(SNO_GENERAL, L_NETWIDE, "%s is using oper-override to kick %s (%s@%s) on %s",
+				   get_oper_name(source_p), who->name, who->username, who->orighost, parv[1]);
+
 	}
 	else if (MyClient(source_p))
 		sendto_one_numeric(source_p, ERR_USERNOTINCHANNEL,
