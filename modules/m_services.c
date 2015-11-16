@@ -1,6 +1,7 @@
 /* modules/m_services.c
  *   Copyright (C) 2005 Lee Hardy <lee -at- leeh.co.uk>
  *   Copyright (C) 2005 ircd-ratbox development team
+ *   Copyright (C) 2015 ChatLounge IRC Network Development Team
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -47,6 +48,7 @@
 #include "modules.h"
 #include "whowas.h"
 #include "monitor.h"
+#include "supported.h"
 
 static int _modinit(void);
 static void _moddeinit(void);
@@ -101,6 +103,7 @@ static int
 _modinit(void)
 {
 	mark_services();
+	add_isupport("FNC", isupport_string, "");
 	return 0;
 }
 
@@ -108,6 +111,7 @@ static void
 _moddeinit(void)
 {
 	unmark_services();
+	delete_isupport("FNC");
 }
 
 static int

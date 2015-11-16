@@ -3,6 +3,7 @@
  *  supported.c: isupport (005) numeric
  *
  * Copyright (C) 2006 Jilles Tjoelker
+ * Copyright (C) 2015 ChatLounge IRC Network Development Team
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -354,7 +355,6 @@ init_isupport(void)
 	add_isupport("MAXLIST", isupport_maxlist, NULL);
 	add_isupport("MODES", isupport_intptr, &maxmodes);
 	add_isupport("NETWORK", isupport_stringptr, &ServerInfo.network_name);
-	add_isupport("KNOCK", isupport_boolean, &ConfigChannel.use_knock);
 	add_isupport("STATUSMSG", isupport_statusmsg, NULL);
 	add_isupport("CALLERID", isupport_umode, "g");
 	add_isupport("CASEMAPPING", isupport_string, "rfc1459");
@@ -362,13 +362,8 @@ init_isupport(void)
 	add_isupport("MAXNICKLEN", isupport_intptr, &maxnicklen);
 	add_isupport("CHANNELLEN", isupport_intptr, &channellen);
 	add_isupport("TOPICLEN", isupport_intptr, &topiclen);
-	add_isupport("ETRACE", isupport_string, "");
-	add_isupport("CPRIVMSG", isupport_string, "");
-	add_isupport("CNOTICE", isupport_string, "");
 	add_isupport("DEAF", isupport_umode, "D");
-	add_isupport("FNC", isupport_string, "");
 	add_isupport("TARGMAX", isupport_targmax, NULL);
 	add_isupport("EXTBAN", isupport_extban, NULL);
-	add_isupport("WHOX", isupport_string, "");
 	add_isupport("CLIENTVER", isupport_string, "3.0");
 }

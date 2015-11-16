@@ -4,6 +4,7 @@
  *
  *  Copyright (C) 2002-2003 Lee Hardy <lee@leeh.co.uk>
  *  Copyright (C) 2002-2005 ircd-ratbox development team
+ *  Copyright (C) 2015 ChatLounge IRC Network Development Team
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -50,7 +51,10 @@
 #include "parse.h"
 #include "modules.h"
 #include "logger.h"
+#include "supported.h"
 
+static int _modinit(void);
+static void _moddeinit(void);
 static int mo_etrace(struct Client *, struct Client *, int, const char **);
 static int me_etrace(struct Client *, struct Client *, int, const char **);
 static int m_chantrace(struct Client *, struct Client *, int, const char **);
@@ -70,11 +74,22 @@ struct Message masktrace_msgtab = {
 };
 
 mapi_clist_av1 etrace_clist[] = { &etrace_msgtab, &chantrace_msgtab, &masktrace_msgtab, NULL };
-DECLARE_MODULE_AV1(etrace, NULL, NULL, etrace_clist, NULL, NULL, "$Revision: 3161 $");
+DECLARE_MODULE_AV1(etrace, _modinit, _moddeinit, etrace_clist, NULL, NULL, "$Revision: 3161 $");
 
 static void do_etrace(struct Client *source_p, int ipv4, int ipv6);
 static void do_etrace_full(struct Client *source_p);
 static void do_single_etrace(struct Client *source_p, struct Client *target_p);
+
+static int _modinit(void)
+{
+	add_isupport("ETRACE", isupport_string, "");
+	return 0;
+}
+
+static void _moddeinit(void)
+{
+	delete_isupport("ETRACE");
+}
 
 static const char *empty_sockhost = "255.255.255.255";
 static const char *spoofed_sockhost = "0";

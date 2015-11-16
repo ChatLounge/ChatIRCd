@@ -5,6 +5,7 @@
  *  Copyright (C) 1990 Jarkko Oikarinen and University of Oulu, Co Center
  *  Copyright (C) 1996-2002 Hybrid Development Team
  *  Copyright (C) 2002-2005 ircd-ratbox development team
+ *  Copyright (C) 2015 ChatLounge IRC Network Development Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -41,6 +42,7 @@
 #include "packet.h"
 #include "s_newconf.h"
 #include "ratelimit.h"
+#include "supported.h"
 
 #define FIELD_CHANNEL    0x0001
 #define FIELD_HOP        0x0002
@@ -62,6 +64,9 @@ struct who_format
 	const char *querytype;
 };
 
+static int _modinit(void);
+static void _moddeinit(void);
+
 static int m_who(struct Client *, struct Client *, int, const char **);
 
 struct Message who_msgtab = {
@@ -70,7 +75,7 @@ struct Message who_msgtab = {
 };
 
 mapi_clist_av1 who_clist[] = { &who_msgtab, NULL };
-DECLARE_MODULE_AV1(who, NULL, NULL, who_clist, NULL, NULL, "$Revision: 3350 $");
+DECLARE_MODULE_AV1(who, _modinit, _moddeinit, who_clist, NULL, NULL, "$Revision: 3350 $");
 
 static void do_who_on_channel(struct Client *source_p, struct Channel *chptr,
 			      int server_oper, int member,
@@ -82,6 +87,16 @@ static void do_who(struct Client *source_p,
 		   struct Client *target_p, struct membership *msptr,
 		   struct who_format *fmt);
 
+static int _modinit(void)
+{
+	add_isupport("WHOX", isupport_string, "");
+	return 0;
+}
+
+static void _moddeinit(void)
+{
+	delete_isupport("WHOX");
+}
 
 /*
 ** m_who

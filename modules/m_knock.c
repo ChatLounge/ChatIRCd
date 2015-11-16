@@ -4,6 +4,7 @@
  *
  *  Copyright (C) 1996-2002 Hybrid Development Team
  *  Copyright (C) 2002-2005 ircd-ratbox development team
+ *  Copyright (C) 2015 ChatLounge IRC Network Development Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -36,7 +37,10 @@
 #include "parse.h"
 #include "modules.h"
 #include "s_serv.h"
+#include "supported.h"
 
+static int _modinit(void);
+static void _moddeinit(void);
 static int m_knock(struct Client *, struct Client *, int, const char **);
 
 struct Message knock_msgtab = {
@@ -45,7 +49,18 @@ struct Message knock_msgtab = {
 };
 
 mapi_clist_av1 knock_clist[] = { &knock_msgtab, NULL };
-DECLARE_MODULE_AV1(knock, NULL, NULL, knock_clist, NULL, NULL, "$Revision: 3570 $");
+DECLARE_MODULE_AV1(knock, _modinit, _moddeinit, knock_clist, NULL, NULL, "$Revision: 3570 $");
+
+static int _modinit(void)
+{
+	add_isupport("KNOCK", isupport_boolean, &ConfigChannel.use_knock);
+	return 0;
+}
+
+static void _moddeinit(void)
+{
+	delete_isupport("KNOCK");
+}
 
 /* m_knock
  *    parv[1] = channel
