@@ -2304,7 +2304,7 @@ set_channel_mode(struct Client *client_p, struct Client *source_p,
 			sendto_channel_local(flags, chptr, "%s %s", modebuf, parabuf);
 	}
 	
-	if(override && !IsService(source_p))
+	if(override && MyClient(source_p) && !IsService(source_p))
 		sendto_realops_snomask(SNO_GENERAL, L_NETWIDE,
 					   "%s is using oper-override on %s (modehacking)",
 				       get_oper_name(source_p), chptr->chname);
