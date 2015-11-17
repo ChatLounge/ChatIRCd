@@ -204,29 +204,24 @@ send_uninvite_notification(struct Client *source_p, struct Client *target_p, str
 	 */
 	char uninvitenotice[BUFSIZE] = "";
 
-	// Send messages to everyone, if everyone can invite.
-	if(chptr->mode.mode & MODE_FREEINVITE)
-		sendto_channel_local_with_capability_butone(source_p, ALL_MEMBERS, CLICAP_INVITE_NOTIFY, NOCAPS, chptr,
-								":%s!%s@%s UNINVITE %s %s",
-								source_p->name, source_p->username, source_p->host,
-								target_p->name, chptr->chname);
-	else
-		sendto_channel_local_with_capability_butone(source_p, ONLY_CHANOPS, CLICAP_INVITE_NOTIFY, NOCAPS, chptr,
-								":%s!%s@%s UNINVITE %s %s",
-								source_p->name, source_p->username, source_p->host,
-								target_p->name, chptr->chname);
-
 	// Ugh, limited to nine args but really need more.  " from #Channel" added in the sendto function.
 	rb_snprintf(uninvitenotice, sizeof(uninvitenotice), ":*** Notice -- %s (%s@%s) has uninvited %s (%s@%s)",
 		source_p->name, source_p->username, source_p->host,
 		target_p->name, target_p->username, target_p->host);
 
-	if(chptr->mode.mode & MODE_FREEINVITE)
-		sendto_channel_local(ALL_MEMBERS, chptr,
-								":%s NOTICE %s %s from %s", me.name,
-								chptr->chname, uninvitenotice, chptr->chname);
-	else
-		sendto_channel_local(ONLY_CHANOPS, chptr,
-								":%s NOTICE %s %s from %s", me.name,
-								chptr->chname, uninvitenotice, chptr->chname);
+	// Send messages to everyone, if everyone can invite.
+	sendto_channel_local_with_capability_butone(source_p,
+		chptr->mode.mode & MODE_FREEINVITE ? ALL_MEMBERS : ONLY_CHANOPS,
+		CLICAP_INVITE_NOTIFY, NOCAPS, chptr,
+		":%s!%s@%s UNINVITE %s %s",
+		source_p->name, source_p->username, source_p->host,
+		target_p->name, chptr->chname);
+
+	
+
+	sendto_channel_local(
+		chptr->mode.mode & MODE_FREEINVITE ? ALL_MEMBERS : ONLY_CHANOPS,
+		chptr,
+		":%s NOTICE %s %s from %s", me.name,
+		chptr->chname, uninvitenotice, chptr->chname);
 }

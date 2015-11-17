@@ -319,25 +319,16 @@ send_invite_notification(struct Client *source_p, struct Client *target_p, struc
 		target_p->name, target_p->username, target_p->host);
 
 	// Send messages to everyone, if everyone can invite.
-	if(chptr->mode.mode & MODE_FREEINVITE)
-		sendto_channel_local_with_capability_butone(source_p, ALL_MEMBERS, CLICAP_INVITE_NOTIFY, NOCAPS, chptr,
-								":%s!%s@%s INVITE %s %s",
-								source_p->name, source_p->username, source_p->host,
-								target_p->name, chptr->chname);
-	else
-		sendto_channel_local_with_capability_butone(source_p, ONLY_CHANOPS, CLICAP_INVITE_NOTIFY, NOCAPS, chptr,
-								":%s!%s@%s INVITE %s %s",
-								source_p->name, source_p->username, source_p->host,
-								target_p->name, chptr->chname);
+	sendto_channel_local_with_capability_butone(source_p,
+		chptr->mode.mode & MODE_FREEINVITE ? ALL_MEMBERS : ONLY_CHANOPS,
+		CLICAP_INVITE_NOTIFY, NOCAPS, chptr,
+		":%s!%s@%s INVITE %s %s",
+		source_p->name, source_p->username, source_p->host,
+		target_p->name, chptr->chname);
 
-	if(chptr->mode.mode & MODE_FREEINVITE)
-		sendto_channel_local(ALL_MEMBERS, chptr,
-								":%s NOTICE %s %s to %s", me.name,
-								chptr->chname, invitenotice, chptr->chname);
-	else
-		sendto_channel_local(ONLY_CHANOPS, chptr,
-								":%s NOTICE %s %s to %s", me.name,
-								chptr->chname, invitenotice, chptr->chname);
+	sendto_channel_local(
+		chptr->mode.mode & MODE_FREEINVITE ? ALL_MEMBERS : ONLY_CHANOPS,
+		chptr,
+		":%s NOTICE %s %s to %s", me.name,
+		chptr->chname, invitenotice, chptr->chname);
 }
-
-
