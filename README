@@ -1,8 +1,16 @@
-This IRCd is a Charybdis fork, developed by the Chat Lounge IRC Network
+ChatIRCd was forked from Charybdis, developed by the Chat Lounge IRC Network
 Development Team.
 
 You may wish to review the INSTALL document for instructions on how to
 install and configure this software.
+
+NOTE: Do not attempt to install the software into the same directory
+as the source code.
+
+Quick instructions for the impatient:
+Standard ./configure, make, make install
+
+Contact: #ChatIRCd at irc.chatlounge.net
 
 In addition to original code, it may include some features and code from
 ShadowIRCd, ElementalIRCd, Ircd-seven, and elsewhere.
@@ -15,34 +23,35 @@ Differences from Charybdis 3.5.0:
 - Usermode +B (Mark as bot in whois)
 - Usermode +t - When enabled, only SSL/TLS users may message you.
 - Oper override does not expire.  It still generates
-	notices when used.
+    notices when used.
 - Usermodes are shown in /whois.  Only shown when
-	an oper performs the whois, or a self-whois.
+    an oper performs the whois, and/or a self-whois.
 - When a K-lined user connects, snomask +K shows it.
 - Initial channel modes when a channel is created are
     now configurable with the 'autochanmodes'
     option.
 - Default initial channel modes are now +nst if not configured.
 - Extended ban type $u.  $u:nick!ident@host matches any clients
-	that are not identified to services.
+    that are not identified to services.
 - Higher configurable channel limit for either certain opers or auth{} blocks.
 - Network Administrator, or NetAdmin role, "higher" than "Admin."
-	NetAdmin is required to perform remote rehash, restart, and module loading.
+    NetAdmin is required to perform remote rehash, restart, and module loading.
 - Channel modes are now shown in /list and /olist.
 - Miscellaneous oper-override fixes.
 - WHO 'f' flag shows bot status.
 - Opers with umode +B (bot mode) are no longer counted in /lusers.
 - By default, opers may not (un)set umode +B.
-- Optional static part reasons.
-- Optional static quit reasons.
+- Optional static part reasons. - If set, all channel part reasons are
+    the same.
+- Optional static quit reasons. - If set, all quit reasons are the same.
 - /whois shows oper block name.
 - Local channels are no longer supported.
 - /join 0 is now disabled by default; PARTALL replaces it.
 - /why command - Tells you why a user is banned, or can join a channel
-    despite restrictive modes.
+    despite restrictive modes.  Requires channel operator and/or
+    IRC operator status.
 - FJOIN/SVSJOIN
 - ENCAP USERMODE (intended for a potential /ns umodesOnID feature)
-- /listinvites command - Shows what channels you have been invited to.
 - /uninvite command - Lets channel ops uninvite a user.
 
 In addition, these differences from Charybdis 3.4.2:
