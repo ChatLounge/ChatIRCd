@@ -326,7 +326,7 @@ single_whois(struct Client *source_p, struct Client *target_p, int operspy)
 	if(IsOper(target_p))
 	{
 		/* Build oper string with oper block name.
-		 * I.e. "is a Network Administrator: Ben"
+		 * I.e. "is a Network Administrator (Ben)"
 		 */
 		static char operstring[BUFSIZE];
 
@@ -340,10 +340,8 @@ single_whois(struct Client *source_p, struct Client *target_p, int operspy)
 			rb_strlcpy(operstring, GlobalSetOptions.operstring, sizeof operstring);
 
 		if(!IsService(target_p) && (target_p->localClient->opername != NULL))
-		{
-			rb_strlcat(operstring, ": ", sizeof operstring);
-			rb_strlcat(operstring, target_p->localClient->opername, sizeof operstring);
-		}
+			rb_snprintf(operstring, sizeof(operstring), "%s (%s)",
+				operstring, target_p->localClient->opername);
 
 		sendto_one_numeric(source_p, RPL_WHOISOPERATOR, form_str(RPL_WHOISOPERATOR),
 				   target_p->name, operstring);
