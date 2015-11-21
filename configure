@@ -7448,6 +7448,7 @@ _ACEOF
 
 
 
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to modify moduledir" >&5
 $as_echo_n "checking whether to modify moduledir... " >&6; }
 
@@ -10808,36 +10809,6 @@ ac_abs_srcdir=$ac_abs_top_srcdir$ac_dir_suffix
   esac
 _ACEOF
 
-cat >>$CONFIG_STATUS <<\_ACEOF || ac_write_fail=1
-# If the template does not know about datarootdir, expand it.
-# FIXME: This hack should be removed a few years after 2.60.
-ac_datarootdir_hack=; ac_datarootdir_seen=
-ac_sed_dataroot='
-/datarootdir/ {
-  p
-  q
-}
-/@datadir@/p
-/@docdir@/p
-/@infodir@/p
-/@localedir@/p
-/@mandir@/p'
-case `eval "sed -n \"\$ac_sed_dataroot\" $ac_file_inputs"` in
-*datarootdir*) ac_datarootdir_seen=yes;;
-*@datadir@*|*@docdir@*|*@infodir@*|*@localedir@*|*@mandir@*)
-  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: $ac_file_inputs seems to ignore the --datarootdir setting" >&5
-$as_echo "$as_me: WARNING: $ac_file_inputs seems to ignore the --datarootdir setting" >&2;}
-_ACEOF
-cat >>$CONFIG_STATUS <<_ACEOF || ac_write_fail=1
-  ac_datarootdir_hack='
-  s&@datadir@&$datadir&g
-  s&@docdir@&$docdir&g
-  s&@infodir@&$infodir&g
-  s&@localedir@&$localedir&g
-  s&@mandir@&$mandir&g
-  s&\\\${datarootdir}&$datarootdir&g' ;;
-esac
-_ACEOF
 
 # Neutralize VPATH when `$srcdir' = `.'.
 # Shell code in configure.ac might set extrasub.
@@ -10860,19 +10831,10 @@ s&@builddir@&$ac_builddir&;t t
 s&@abs_builddir@&$ac_abs_builddir&;t t
 s&@abs_top_builddir@&$ac_abs_top_builddir&;t t
 s&@INSTALL@&$ac_INSTALL&;t t
-$ac_datarootdir_hack
 "
 eval sed \"\$ac_sed_extra\" "$ac_file_inputs" | $AWK -f "$ac_tmp/subs.awk" \
   >$ac_tmp/out || as_fn_error $? "could not create $ac_file" "$LINENO" 5
 
-test -z "$ac_datarootdir_hack$ac_datarootdir_seen" &&
-  { ac_out=`sed -n '/\${datarootdir}/p' "$ac_tmp/out"`; test -n "$ac_out"; } &&
-  { ac_out=`sed -n '/^[	 ]*datarootdir[	 ]*:*=/p' \
-      "$ac_tmp/out"`; test -z "$ac_out"; } &&
-  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: $ac_file contains a reference to the variable \`datarootdir'
-which seems to be undefined.  Please make sure it is defined" >&5
-$as_echo "$as_me: WARNING: $ac_file contains a reference to the variable \`datarootdir'
-which seems to be undefined.  Please make sure it is defined" >&2;}
 
   rm -f "$ac_tmp/stdin"
   case $ac_file in

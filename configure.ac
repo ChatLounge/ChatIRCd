@@ -647,6 +647,7 @@ AC_HELP_STRING([--with-helpdir=DIR],
 		 AC_MSG_RESULT(no) ])
 AC_DEFINE_DIR([HELP_DIR], [helpdir], [Prefix where help files are installed.])
 AC_SUBST_DIR([helpdir])
+AC_DEFUN([AC_DATAROOTDIR_CHECKED])
 
 dnl **********************************************************************
 dnl Check for --with-moduledir
