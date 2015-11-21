@@ -35,6 +35,9 @@ _moddeinit(void)
 static int eb_oper(const char *data, struct Client *client_p,
 		struct Channel *chptr, long mode_type)
 {
+	/* $o doesn't make sense for bans and quiets. */
+	if(mode_type == CHFL_BAN || mode_type == CHFL_QUIET)
+		return EXTBAN_INVALID;
 
 	(void)chptr;
 	(void)mode_type;
