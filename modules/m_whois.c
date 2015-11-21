@@ -339,7 +339,9 @@ single_whois(struct Client *source_p, struct Client *target_p, int operspy)
 		else
 			rb_strlcpy(operstring, GlobalSetOptions.operstring, sizeof operstring);
 
-		if(!IsService(target_p) && (target_p->localClient->opername != NULL))
+		if(!IsService(target_p) && 
+			(target_p->localClient != NULL) &&
+			(target_p->localClient->opername != NULL))
 			rb_snprintf(operstring, sizeof(operstring), "%s (%s)",
 				operstring, target_p->localClient->opername);
 
