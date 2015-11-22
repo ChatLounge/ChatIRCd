@@ -1659,6 +1659,15 @@ user_join(struct Client * client_p, struct Client * source_p, char * channels, c
 					   form_str(ERR_BADCHANNAME), (unsigned char *) name);
 			continue;
 		}
+		
+		/* Explicitly deny "/join 0" if ConfigChannel.disable_join_0 == 1 */
+		if(ConfigChannel.disable_join_0 && name[0] == '0')
+		{
+			sendto_one_numeric(source_p, ERR_NOSUCHCHANNEL,
+					   form_str(ERR_NOSUCHCHANNEL), name);
+			sendto_one_notice(source_p, ":*** Notice -- /JOIN 0 has been administratively disabled.");
+			return;
+		}
 
 		/* join 0 parts all channels */
 		if(*name == '0' && (name[1] == ',' || name[1] == '\0') && name == chanlist)
