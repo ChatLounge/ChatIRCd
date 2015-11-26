@@ -67,10 +67,8 @@ static int can_save(struct Client *);
 static void save_user(struct Client *, struct Client *, struct Client *);
 static void bad_nickname(struct Client *, const char *);
 
-// Borrowed some IRCd-7 code to allow for remote nick change notices. - Ben
 static int h_local_nick_change;
 static int h_remote_nick_change;
-// End borrow.
 
 struct Message nick_msgtab = {
 	"NICK", 0, 0, 0, MFLG_SLOW,
@@ -92,7 +90,6 @@ struct Message save_msgtab = {
 mapi_clist_av1 nick_clist[] = { &nick_msgtab, &uid_msgtab, &euid_msgtab,
 	&save_msgtab, NULL };
 
-// Borrowed more IRCd-7 code - Ben
 mapi_hlist_av1 nick_hlist[] = {
 	{ "local_nick_change", &h_local_nick_change },
 	{ "remote_nick_change", &h_remote_nick_change },
@@ -100,11 +97,6 @@ mapi_hlist_av1 nick_hlist[] = {
 };
 
 DECLARE_MODULE_AV1(nick, NULL, NULL, nick_clist, nick_hlist, NULL, "$Revision: 3518 $");
-
-// End Borrow
-
-// Don't need two declarations.
-// DECLARE_MODULE_AV1(nick, NULL, NULL, nick_clist, NULL, NULL, "$Revision: 3518 $");
 
 static int change_remote_nick(struct Client *, struct Client *, time_t,
 			      const char *, int);
@@ -202,10 +194,10 @@ m_nick(struct Client *client_p, struct Client *source_p, int parc, const char *p
 	if(!IsFloodDone(source_p))
 		flood_endgrace(source_p);
 
-	/* terminate nick to NICKLEN, we dont want clean_nick() to error! */
+	/* terminate nick to NICKLEN, we don't want clean_nick() to error! */
 	rb_strlcpy(nick, parv[1], ConfigFileEntry.nicklen);
 
-	/* check the nickname is ok */
+	/* check if the nickname is ok */
 	if(!clean_nick(nick, 1))
 	{
 		sendto_one(source_p, form_str(ERR_ERRONEUSNICKNAME), me.name, source_p->name, nick);
@@ -227,7 +219,7 @@ m_nick(struct Client *client_p, struct Client *source_p, int parc, const char *p
 
 	if((target_p = find_named_client(nick)))
 	{
-		/* If(target_p == source_p) the client is changing nicks between
+		/* If (target_p == source_p) the client is changing nicks between
 		 * equivalent nicknames ie: [nick] -> {nick}
 		 */
 		if(target_p == source_p)
@@ -267,7 +259,7 @@ mc_nick(struct Client *client_p, struct Client *source_p, int parc, const char *
 	struct Client *target_p;
 	time_t newts = 0;
 
-	/* if nicks erroneous, or too long, kill */
+	/* if the nick is erroneous or too long, kill */
 	if(!clean_nick(parv[1], 0))
 	{
 		bad_nickname(client_p, parv[1]);
@@ -277,7 +269,7 @@ mc_nick(struct Client *client_p, struct Client *source_p, int parc, const char *
 	newts = atol(parv[2]);
 	target_p = find_named_client(parv[1]);
 
-	/* if the nick doesnt exist, allow it and process like normal */
+	/* if the nick doesn't exist, allow it and process like normal */
 	if(target_p == NULL)
 	{
 		change_remote_nick(client_p, source_p, newts, parv[1], 1);
@@ -357,7 +349,7 @@ ms_uid(struct Client *client_p, struct Client *source_p, int parc, const char *p
 		return 0;
 	}
 
-	/* if nicks erroneous, or too long, kill */
+	/* if the nick is erroneous or too long, kill */
 	if(!clean_nick(parv[1], 0))
 	{
 		bad_nickname(client_p, parv[1]);
@@ -383,7 +375,7 @@ ms_uid(struct Client *client_p, struct Client *source_p, int parc, const char *p
 		return 0;
 	}
 
-	/* check length of clients gecos */
+	/* check the length of the client's gecos */
 	if(strlen(parv[9]) > REALLEN)
 	{
 		char *s = LOCAL_COPY(parv[9]);
@@ -448,7 +440,7 @@ ms_euid(struct Client *client_p, struct Client *source_p, int parc, const char *
 		return 0;
 	}
 
-	/* if nicks erroneous, or too long, kill */
+	/* if nick is erroneous or too long, kill */
 	if(!clean_nick(parv[1], 0))
 	{
 		bad_nickname(client_p, parv[1]);
@@ -484,7 +476,7 @@ ms_euid(struct Client *client_p, struct Client *source_p, int parc, const char *
 		return 0;
 	}
 
-	/* check length of clients gecos */
+	/* check the length of client's gecos */
 	if(strlen(parv[11]) > REALLEN)
 	{
 		char *s = LOCAL_COPY(parv[11]);
@@ -553,7 +545,7 @@ clean_nick(const char *nick, int loc_client)
 {
 	int len = 0;
 
-	/* nicks cant start with a digit or -, and must have a length */
+	/* nicks can't start with a digit or -, and must have a length */
 	if(*nick == '-' || *nick == '\0')
 		return 0;
 
@@ -665,7 +657,7 @@ set_initial_nick(struct Client *client_p, struct Client *source_p, char *nick)
 	rb_snprintf(note, sizeof(note), "Nick: %s", nick);
 	rb_note(client_p->localClient->F, note);
 
-	/* got user, heres nick. */
+	/* got user, here's nick. */
 	if(source_p->flags & FLAGS_SENTUSER)
 		register_local_user(client_p, source_p);
 }
@@ -680,9 +672,7 @@ change_local_nick(struct Client *client_p, struct Client *source_p,
 	char note[NICKLEN + 10];
 	int samenick;
 
-	// Borrow more IRCd-7 code - Ben
 	hook_data hook_info;
-	// End Borrow
 
 	if (dosend)
 	{
@@ -712,7 +702,7 @@ change_local_nick(struct Client *client_p, struct Client *source_p,
 
 	samenick = irccmp(source_p->name, nick) ? 0 : 1;
 
-	/* dont reset TS if theyre just changing case of nick */
+	/* don't reset TS if theyre just changing case of nick */
 	if(!samenick)
 	{
 		/* force the TS to increase -- jilles */
@@ -726,19 +716,17 @@ change_local_nick(struct Client *client_p, struct Client *source_p,
 			invalidate_bancache_user(source_p);
 	}
 
-	// Borrow more IRCD-7 code - Ben
 	hook_info.client = source_p;
 	hook_info.arg1 = source_p->name;
 	hook_info.arg2 = nick;
 	call_hook(h_local_nick_change, &hook_info);
-	// End Borrow
 
 	sendto_realops_snomask(SNO_NCHANGE, L_ALL,
 			     "Nick change: From %s to %s [%s@%s]",
 			     source_p->name, nick, source_p->username, source_p->host);
 
 	/* send the nick change to the users channels */
-	sendto_common_channels_local(source_p, NOCAPS, ":%s!%s@%s NICK :%s",
+	sendto_common_channels_local(source_p, NOCAPS, NOCAPS, ":%s!%s@%s NICK :%s",
 				     source_p->name, source_p->username, source_p->host, nick);
 
 	/* send the nick change to servers.. */
@@ -761,7 +749,7 @@ change_local_nick(struct Client *client_p, struct Client *source_p,
 	if(!samenick)
 		monitor_signon(source_p);
 
-	/* Make sure everyone that has this client on its accept list
+	/* Make sure everyone that has this client on it's accept list
 	 * loses that reference. 
 	 */
 	/* we used to call del_all_accepts() here, but theres no real reason
@@ -791,25 +779,21 @@ change_remote_nick(struct Client *client_p, struct Client *source_p,
 {
 	struct nd_entry *nd;
 	int samenick = irccmp(source_p->name, nick) ? 0 : 1;
-	// Borrow more IRCd-7 code - Ben
 	hook_data hook_info;
-	// End Borrow.
 
-	/* client changing their nick - dont reset ts if its same */
+	/* client changing their own nick - don't reset ts if its same */
 	if(!samenick)
 	{
 		source_p->tsinfo = newts ? newts : rb_current_time();
 		monitor_signoff(source_p);
 	}
 
-	// Borrow more IRCd-7 code - Ben
 	hook_info.client = source_p;
 	hook_info.arg1 = source_p->name;
 	hook_info.arg2 = nick;
 	call_hook(h_remote_nick_change, &hook_info);
-	// End Borrow.
 
-	sendto_common_channels_local(source_p, NOCAPS, ":%s!%s@%s NICK :%s",
+	sendto_common_channels_local(source_p, NOCAPS, NOCAPS, ":%s!%s@%s NICK :%s",
 				     source_p->name, source_p->username, source_p->host, nick);
 
 	if(source_p->user)
@@ -853,7 +837,7 @@ perform_nick_collides(struct Client *source_p, struct Client *client_p,
 		uid != NULL && can_save(source_p);
 	action = use_save ? "saved" : "killed";
 
-	/* if we dont have a ts, or their TS's are the same, kill both */
+	/* if we don't have a ts, or their TS's are the same, kill both */
 	if(!newts || !target_p->tsinfo || (newts == target_p->tsinfo))
 	{
 		sendto_realops_snomask(SNO_SKILL, L_ALL,
@@ -899,8 +883,8 @@ perform_nick_collides(struct Client *source_p, struct Client *client_p,
 		if((sameuser && newts < target_p->tsinfo) ||
 		   (!sameuser && newts > target_p->tsinfo))
 		{
-			/* if we have a UID, then we need to issue a KILL,
-			 * otherwise we do nothing and hope that the other
+			/* if we have a UID, we need to issue a KILL,
+			 * otherwise we do nothing and hope the other
 			 * client will collide it..
 			 */
 			if (use_save)
@@ -970,7 +954,7 @@ perform_nickchange_collides(struct Client *source_p, struct Client *client_p,
 		can_save(source_p);
 	action = use_save ? "saved" : "killed";
 
-	/* its a client changing nick and causing a collide */
+	/* its a client changing nick and causing a collision */
 	if(!newts || !target_p->tsinfo || (newts == target_p->tsinfo) || !source_p->user)
 	{
 		sendto_realops_snomask(SNO_SKILL, L_ALL,
