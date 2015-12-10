@@ -1270,5 +1270,5 @@ Configuration of ${BRANDING_NAME}-${BRANDING_VERSION}:
 	Topic length       : $TOPICLEN
 
 Use 'make' to compile $BRANDING_NAME, then 'make install' to install it.
-You make need to use 'gmake' in lieu of 'make'.
+You may need to use 'gmake' in lieu of 'make'.
 "
