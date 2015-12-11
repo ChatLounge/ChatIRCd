@@ -324,29 +324,21 @@ single_whois(struct Client *source_p, struct Client *target_p, int operspy)
 				   target_p->name, target_p->user->away);
 
 	if(IsOper(target_p))
-	{
-		/* Build oper string with oper block name.
-		 * I.e. "is a Network Administrator (Ben)"
-		 */
-		static char operstring[BUFSIZE];
-
-		if(IsService(target_p))
-			rb_strlcpy(operstring, ConfigFileEntry.servicestring, sizeof operstring);
-		else if(IsNetAdmin(target_p))
-			rb_strlcpy(operstring, GlobalSetOptions.netadminstring, sizeof operstring);
-		else if(IsAdmin(target_p))
-			rb_strlcpy(operstring, GlobalSetOptions.adminstring, sizeof operstring);
-		else
-			rb_strlcpy(operstring, GlobalSetOptions.operstring, sizeof operstring);
-
-		if(!IsService(target_p) && 
-			(target_p->localClient != NULL) &&
-			(target_p->localClient->opername != NULL))
-			rb_snprintf(operstring, sizeof(operstring), "%s (%s)",
-				operstring, target_p->localClient->opername);
-
 		sendto_one_numeric(source_p, RPL_WHOISOPERATOR, form_str(RPL_WHOISOPERATOR),
-				   target_p->name, operstring);
+					target_p->name, IsService(target_p) ? ConfigFileEntry.servicestring :
+					(IsNetAdmin(target_p) ? GlobalSetOptions.netadminstring :
+					(IsAdmin(target_p) ? GlobalSetOptions.adminstring :
+					GlobalSetOptions.operstring)));
+
+	/* Show the oper block name and the privset name used. */
+	if(MyClient(target_p) && !EmptyString(target_p->localClient->opername) &&
+		((source_p == target_p) || IsOper(source_p) || IsOperAdmin(source_p)))
+	{
+		char buf[BUFSIZE];
+		rb_snprintf(buf, sizeof(buf), "Opered as %s, using privset: %s",
+			target_p->localClient->opername, target_p->localClient->privset->name);
+		sendto_one_numeric(source_p, RPL_WHOISSPECIAL, form_str(RPL_WHOISSPECIAL),
+			target_p->name, buf);
 	}
 
 	if(IsSSLClient(target_p))
