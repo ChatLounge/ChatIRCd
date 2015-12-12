@@ -457,6 +457,7 @@ struct ListClient
 #define CLICAP_INVITE_NOTIFY		0x0040
 #define CLICAP_USERHOST_IN_NAMES	0x0080
 #define CLICAP_CAP_NOTIFY			0x0100
+#define CLICAP_CHGHOST				0x0200
 
 /*
  * flags macros.

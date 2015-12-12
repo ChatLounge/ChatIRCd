@@ -81,6 +81,7 @@ static struct clicap
 	_CLICAP("invite-notify", CLICAP_INVITE_NOTIFY, 0, 0, 0),
 	_CLICAP("userhost-in-names", CLICAP_USERHOST_IN_NAMES, 0, 0, 0),
 	_CLICAP("cap-notify", CLICAP_CAP_NOTIFY, 0, 0, 0),
+	_CLICAP("chghost", CLICAP_CHGHOST, 0, 0, 0),
 };
 
 #define CLICAP_LIST_LEN (sizeof(clicap_list) / sizeof(struct clicap))
