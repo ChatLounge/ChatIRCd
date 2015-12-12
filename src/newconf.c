@@ -869,15 +869,16 @@ conf_set_listen_port_both(void *data, int ssl)
 				("listener::port argument is not an integer " "-- ignoring.");
 			continue;
 		}
-                if(listener_address == NULL)
-                {
-			add_listener(args->v.number, listener_address, AF_INET, ssl, yy_defer_accept);
+
+		if(listener_address == NULL)
+		{
+			add_listener(args->v.number, listener_address, AF_INET, ssl, ssl || yy_defer_accept);
 #ifdef RB_IPV6
-			add_listener(args->v.number, listener_address, AF_INET6, ssl, yy_defer_accept);
+			add_listener(args->v.number, listener_address, AF_INET6, ssl, ssl || yy_defer_accept);
 #endif
-                }
+		}
 		else
-                {
+		{
 			int family;
 #ifdef RB_IPV6
 			if(strchr(listener_address, ':') != NULL)
@@ -886,10 +887,8 @@ conf_set_listen_port_both(void *data, int ssl)
 #endif
 				family = AF_INET;
 
-			add_listener(args->v.number, listener_address, family, ssl, yy_defer_accept);
-
-                }
-
+			add_listener(args->v.number, listener_address, family, ssl, ssl || yy_defer_accept);
+		}
 	}
 }
 
