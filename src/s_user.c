@@ -1239,12 +1239,15 @@ set_other_usermode(struct Client *client_p, struct Client *source_p,
 	struct Client *target_p, int parc, const char *parv[])
 {
 	const char *pm;
-	int flag, oldumodes;
+	int flag, oldumodes, oldsnomask;
 	int what = MODE_ADD;
 	int badflag = NO;
 	int showsnomask = NO;
+	hook_data_umode_changed hdata;
 
+	/* find flags already set for user */
 	oldumodes = target_p->umodes;
+	oldsnomask = target_p->snomask;
 
 	/*
 	 * parse mode change string(s)
@@ -1353,6 +1356,12 @@ set_other_usermode(struct Client *client_p, struct Client *source_p,
 	if (showsnomask && MyConnect(source_p))
 		sendto_one_numeric(source_p, RPL_SNOMASK, form_str(RPL_SNOMASK),
 			construct_snobuf(target_p->snomask));
+
+	/* Call the umode_changed_hook here since the user modes are changing. */
+	hdata.client = target_p;
+	hdata.oldumodes = oldumodes;
+	hdata.oldsnomask = oldsnomask;
+	call_hook(h_umode_changed, &hdata);
 
 	send_other_umode_out(client_p, target_p, oldumodes);
 
