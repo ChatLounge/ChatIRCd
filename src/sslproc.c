@@ -72,6 +72,7 @@ struct _ssl_ctl
 static void send_new_ssl_certs_one(ssl_ctl_t * ctl, const char *ssl_cert,
 				   const char *ssl_private_key, const char *ssl_dh_params);
 static void send_init_prng(ssl_ctl_t * ctl, prng_seed_t seedtype, const char *path);
+static void send_certfp_method(ssl_ctl_t *ctl, int method);
 
 
 static rb_dlink_list ssl_daemons;
@@ -306,10 +307,14 @@ start_ssldaemon(int count, const char *ssl_cert, const char *ssl_private_key, co
 		rb_close(P1);
 		ctl = allocate_ssl_daemon(F1, P2, pid);
 		if(ssl_ok)
+		{
 			send_init_prng(ctl, RB_PRNG_DEFAULT, NULL);
-		if(ssl_ok && ssl_cert != NULL && ssl_private_key != NULL)
-			send_new_ssl_certs_one(ctl, ssl_cert, ssl_private_key,
-					       ssl_dh_params != NULL ? ssl_dh_params : "");
+			send_certfp_method(ctl, ConfigFileEntry.certfp_method);
+
+			if(ssl_cert != NULL && ssl_private_key != NULL)
+				send_new_ssl_certs_one(ctl, ssl_cert, ssl_private_key,
+				ssl_dh_params != NULL ? ssl_dh_params : "");
+		}
 		ssl_read_ctl(ctl->F, ctl);
 		ssl_do_pipe(P2, ctl);
 
@@ -384,21 +389,23 @@ ssl_process_certfp(ssl_ctl_t * ctl, ssl_ctl_buf_t * ctl_buf)
 {
 	struct Client *client_p;
 	int32_t fd;
+	int32_t len;
 	uint8_t *certfp;
 	char *certfp_string;
 	int i;
 
-	if(ctl_buf->buflen != 5 + RB_SSL_CERTFP_LEN)
+	if(ctl_buf->buflen > 5 + RB_SSL_CERTFP_LEN)
 		return;		/* bogus message..drop it.. XXX should warn here */
 
 	fd = buf_to_int32(&ctl_buf->buf[1]);
-	certfp = (uint8_t *)&ctl_buf->buf[5];
+	len = buf_to_int32(&ctl_buf->buf[5]);
+	certfp = (uint8_t *)&ctl_buf->buf[9];
 	client_p = find_cli_fd_hash(fd);
 	if(client_p == NULL)
 		return;
 	rb_free(client_p->certfp);
-	certfp_string = rb_malloc(RB_SSL_CERTFP_LEN * 2 + 1);
-	for(i = 0; i < RB_SSL_CERTFP_LEN; i++)
+	certfp_string = rb_malloc(len * 2 + 1);
+	for(i = 0; i < len; i++)
 		rb_snprintf(certfp_string + 2 * i, 3, "%02x",
 				certfp[i]);
 	client_p->certfp = certfp_string;
@@ -623,6 +630,16 @@ send_init_prng(ssl_ctl_t * ctl, prng_seed_t seedtype, const char *path)
 	}
 	len = rb_snprintf(tmpbuf, sizeof(tmpbuf), "I%c%s%c", seed, s, nul);
 	ssl_cmd_write_queue(ctl, NULL, 0, tmpbuf, len);
+}
+
+static void
+send_certfp_method(ssl_ctl_t *ctl, int method)
+{
+	char buf[5];
+
+	buf[0] = 'F';
+	int32_to_buf(&buf[1], method);
+	ssl_cmd_write_queue(ctl, NULL, 0, buf, sizeof(buf));
 }
 
 void

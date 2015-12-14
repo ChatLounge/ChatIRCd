@@ -82,6 +82,7 @@ struct InfoStruct
 #define OUTPUT_BOOLEAN     0x0008	/* Output option as "ON" or "OFF" */
 #define OUTPUT_BOOLEAN_YN  0x0010	/* Output option as "YES" or "NO" */
 #define OUTPUT_BOOLEAN2	   0x0020	/* Output option as "YES/NO/MASKED" */
+#define OUTPUT_SHAMETHOD   0x0040   /* Output option for the SHA hash config setting. */
 
 /* *INDENT-OFF* */
 static struct InfoStruct info_table[] = {
@@ -586,6 +587,12 @@ static struct InfoStruct info_table[] = {
 		"The minimum time between aways",
 	},
 	{
+		"certfp_method",
+		OUTPUT_SHAMETHOD,
+		&ConfigFileEntry.certfp_method,
+		"SHA Hash used for computing certificate fingerprints",
+	},
+	{
 		"default_split_server_count",
 		OUTPUT_DECIMAL,
 		&ConfigChannel.default_split_server_count,
@@ -993,6 +1000,18 @@ send_conf_options(struct Client *source_p)
 							option ? ((option == 1) ? "MASK" : "YES") : "NO",
 							info_table[i].desc ? info_table[i].desc : "<none>");
 				}		/* switch (info_table[i].output_type) */
+			case OUTPUT_SHAMETHOD:
+				{
+					int option = *((int *) info_table[i].option);
+
+					sendto_one(source_p, ":%s %d %s :%-30s %-16s [%s]",
+							me.name, RPL_INFO, source_p->name,
+							info_table[i].name,
+							option == RB_SSL_CERTFP_METH_SHA1 ? "sha1" :
+							(option == RB_SSL_CERTFP_METH_SHA256 ? "sha256" :
+							(option == RB_SSL_CERTFP_METH_SHA512 ? "sha512" : "default")),
+							info_table[i].desc ? info_table[i].desc : "<none>");
+				}
 		}
 	}			/* forloop */
 
