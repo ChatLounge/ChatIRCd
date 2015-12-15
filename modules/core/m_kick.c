@@ -169,6 +169,7 @@ m_kick(struct Client *client_p, struct Client *source_p, int parc, const char *p
 			hookdata.msptr = msptr;
 			hookdata.target = who;
 			hookdata.approved = 1;
+			hookdata.dir = MODE_ADD;
 
 			call_hook(h_can_kick, &hookdata);
 

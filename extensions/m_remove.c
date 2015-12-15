@@ -108,7 +108,7 @@ m_remove(struct Client *client_p, struct Client *source_p, int parc, const char 
 			return 0;
 		}
 
-		if(get_channel_access(source_p, msptr) < CHFL_CHANOP)
+		if(get_channel_access(source_p, msptr, MODE_ADD) < CHFL_HALFOP)
 		{
 			if(MyConnect(source_p))
 			{
@@ -178,6 +178,7 @@ m_remove(struct Client *client_p, struct Client *source_p, int parc, const char 
 			hookdata.msptr = msptr;
 			hookdata.target = who;
 			hookdata.approved = 1;
+			hookdata.dir = MODE_ADD;
 
 			call_hook(h_can_kick, &hookdata);
 

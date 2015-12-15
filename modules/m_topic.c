@@ -129,7 +129,7 @@ m_topic(struct Client *client_p, struct Client *source_p, int parc, const char *
 		}
 
 		if(((chptr->mode.mode & MODE_TOPICLIMIT) == 0 ||
-					get_channel_access(source_p, msptr) >= CHFL_HALFOP) &&
+					get_channel_access(source_p, msptr, MODE_ADD) >= CHFL_HALFOP) &&
 				(!MyClient(source_p) ||
 				 can_send(chptr, source_p, msptr)))
 		{

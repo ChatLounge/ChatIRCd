@@ -964,6 +964,7 @@ can_send(struct Channel *chptr, struct Client *source_p, struct membership *mspt
 	hook_data_channel_approval moduledata;
 
 	moduledata.approved = CAN_SEND_NONOP;
+	moduledata.dir = MODE_QUERY;
 
 	if(IsServer(source_p) || IsService(source_p))
 		return CAN_SEND_OPV;
@@ -1014,6 +1015,7 @@ can_send(struct Channel *chptr, struct Client *source_p, struct membership *mspt
 	moduledata.chptr = msptr->chptr;
 	moduledata.msptr = msptr;
 	moduledata.target = NULL;
+	moduledata.dir = (moduledata.approved == CAN_SEND_NO) ? MODE_ADD : MODE_QUERY;
 
 	call_hook(h_can_send, &moduledata);
 

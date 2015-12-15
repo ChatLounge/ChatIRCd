@@ -302,7 +302,7 @@ extern void do_join_0(struct Client *client_p, struct Client *source_p);
 extern int check_channel_name_loc(struct Client *source_p, const char *name);
 extern void send_join_error(struct Client *source_p, int numeric, const char *name);
 
-extern int get_channel_access(struct Client *source_p, struct membership *msptr);
+extern int get_channel_access(struct Client *source_p, struct membership *msptr, int dir);
 
 extern void send_channel_join(struct Channel *chptr, struct Client *client_p);
 
