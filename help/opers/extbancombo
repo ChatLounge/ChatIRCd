@@ -1,0 +1,35 @@
+Extended Help for the Combination extbans $& (AND) and $| (OR).
+Please see the help for EXTBAN to see a list of all other possible
+extbans.
+
+Basic example:
+
+$&:~a,h:*!webchat@*
+Which means: match unidentified webchat users if all webchat users
+have the 'webchat' ident.
+("h" is another new extban type, which just does a normal match).
+
+More complicated example:
+
+$&:~a,|:(h:*!*@*.abusive.lusers,h:*!*@127.0.0.1)
+Which means: unidentified users connecting from either the abusive.lusers
+ISP or from 127.0.0.1 .
+
+Rules:
+
+ - Optional pair of parens around data.
+
+ - component bans are separated by commas, but commas between
+   matching pairs of parens are skipped.
+
+ - Unbalanced parens are an error.
+
+ - Parens, commas and backslashes can be escaped by backslashes.
+
+ - A backslash before any character other than a paren or backslash
+   is just a backslash (backslash and character are both used).
+
+ - Non-existant extbans are invalid.
+   This is primarily for consistency with non-combined bans:
+   the ircd does not let you set +b $f unless the 'f' extban is loaded,
+   so setting $&:f should be impossible too.

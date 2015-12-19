@@ -807,8 +807,7 @@ int
 is_banned(struct Channel *chptr, struct Client *who, struct membership *msptr,
 	  const char *s, const char *s2, const char **forward)
 {
-	return is_banned_list(chptr, &chptr->banlist, who, msptr, s, s2,
-			forward);
+		return is_banned_list(chptr, &chptr->banlist, who, msptr, s, s2, forward);
 }
 
 /* is_quieted()
@@ -822,8 +821,7 @@ int
 is_quieted(struct Channel *chptr, struct Client *who, struct membership *msptr,
 	   const char *s, const char *s2)
 {
-	return is_banned_list(chptr, &chptr->quietlist, who, msptr, s, s2,
-			NULL);
+	return is_banned_list(chptr, &chptr->quietlist, who, msptr, s, s2, NULL);
 }
 
 /* can_join()

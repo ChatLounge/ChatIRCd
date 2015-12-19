@@ -23,6 +23,9 @@ Unless noted below, all types can be used with +b, +q, +e and +I.
               of the channel the ban is on cannot necessarily see whether
               the user is in the target channel, so it should not
               influence whether they can join either.)
+  $h:<mask> - Hostmask based extban, similar to normal bans.  Intended
+              to be used with extbans $& and $|.  For more information,
+              see the help for: EXTBANCOMBO
   $j:<chan> - Matches users who are or are not banned from a specified
               channel.
      $o     - Matches opers (most useful with +I) ; this can only be
@@ -32,3 +35,5 @@ Unless noted below, all types can be used with +b, +q, +e and +I.
   $u:<mask> - Matches unidentified users who match the specified
               nick!user@host
   $x:<mask> - Bans all users with matching nick!user@host#gecos
+  $&:<mask> - AND combination.  Please see the help for: EXTBANCOMBO
+  $|:<mask> - OR combination.  Please see the help for: EXTBANCOMBO

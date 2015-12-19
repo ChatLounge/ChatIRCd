@@ -44,11 +44,13 @@ SRCS =                          \
   extb_account.c                \
   extb_canjoin.c                \
   extb_channel.c                \
+  extb_combi.c                  \
+  extb_extgecos.c               \
+  extb_hostmask.c               \
   extb_oper.c                   \
   extb_realname.c               \
   extb_unidentified.c           \
   extb_usermode.c               \
-  extb_extgecos.c               \
   force_user_invis.c            \
   hurt.c                        \
   ip_cloaking.c                 \
