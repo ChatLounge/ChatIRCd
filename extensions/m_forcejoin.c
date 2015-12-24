@@ -347,21 +347,8 @@ void user_join_override(struct Client * client_p, struct Client * source_p, stru
 					     target_p->name, target_p->username,
 					     target_p->host, chptr->chname);
 		
-			/* autochanmodes stuff */
-			if(ConfigChannel.autochanmodes)
-			{
-				char * ch;
-				for(ch = ConfigChannel.autochanmodes; *ch != '\0'; ch++)
-				{
-					chptr->mode.mode |= chmode_table[(unsigned int)*ch].mode_type;
-				}
-			}
-			else
-			{
-				chptr->mode.mode |= MODE_TOPICLIMIT;
-				chptr->mode.mode |= MODE_NOPRIVMSGS;
-				chptr->mode.mode |= MODE_SECRET;
-			}
+			/* New channel created, set modes according to the autochanmodes setting. */
+			chptr->mode.mode |= ConfigChannel.autochanmodes;
 
 			modes = channel_modes(chptr, &me);
 			sendto_channel_local(ALL_MEMBERS, chptr, ":%s MODE %s %s",
