@@ -1851,7 +1851,22 @@ user_join(struct Client * client_p, struct Client * source_p, char * channels, c
 		/* its a new channel, set +nst and burst. */
 		if(flags & CHFL_CHANOP)
 		{
-			chptr->mode.mode |= ConfigChannel.autochanmodes;
+			chptr->channelts = rb_current_time();
+
+			if(ConfigChannel.autochanmodes)
+			{
+				char * ch;
+				for(ch = ConfigChannel.autochanmodes; *ch; *ch++)
+				{
+					chptr->mode.mode |= chmode_table[*ch].mode_type;
+				}
+			}
+			else
+			{
+				chptr->mode.mode |= MODE_TOPICLIMIT;
+				chptr->mode.mode |= MODE_NOPRIVMSGS;
+				chptr->mode.mode |= MODE_SECRET;
+			}
 
 			modes = channel_modes(chptr, &me);
 
