@@ -921,7 +921,6 @@ send_conf_options(struct Client *source_p)
 							info_table[i].name,
 							option ? option : "NONE",
 							info_table[i].desc ? info_table[i].desc : "<none>");
-
 					break;
 				}
 				/*
@@ -937,7 +936,6 @@ send_conf_options(struct Client *source_p)
 							info_table[i].name,
 							EmptyString(option) ? "NONE" : option,
 							info_table[i].desc ? info_table[i].desc : "<none>");
-
 					break;
 				}
 				/*
@@ -953,10 +951,8 @@ send_conf_options(struct Client *source_p)
 							info_table[i].name,
 							option,
 							info_table[i].desc ? info_table[i].desc : "<none>");
-
 					break;
 				}
-
 				/*
 				 * Output info_table[i].option as "ON" or "OFF"
 				 */
@@ -970,7 +966,6 @@ send_conf_options(struct Client *source_p)
 							info_table[i].name,
 							option ? "ON" : "OFF",
 							info_table[i].desc ? info_table[i].desc : "<none>");
-
 					break;
 				}
 				/*
@@ -986,10 +981,8 @@ send_conf_options(struct Client *source_p)
 							info_table[i].name,
 							option ? "YES" : "NO",
 							info_table[i].desc ? info_table[i].desc : "<none>");
-
 					break;
 				}
-
 			case OUTPUT_BOOLEAN2:
 				{
 					int option = *((int *) info_table[i].option);
@@ -999,6 +992,7 @@ send_conf_options(struct Client *source_p)
 							info_table[i].name,
 							option ? ((option == 1) ? "MASK" : "YES") : "NO",
 							info_table[i].desc ? info_table[i].desc : "<none>");
+					break;
 				}		/* switch (info_table[i].output_type) */
 			case OUTPUT_SHAMETHOD:
 				{
@@ -1011,6 +1005,7 @@ send_conf_options(struct Client *source_p)
 							(option == RB_SSL_CERTFP_METH_SHA256 ? "sha256" :
 							(option == RB_SSL_CERTFP_METH_SHA512 ? "sha512" : "default")),
 							info_table[i].desc ? info_table[i].desc : "<none>");
+					break;
 				}
 		}
 	}			/* forloop */
