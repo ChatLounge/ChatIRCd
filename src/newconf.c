@@ -2444,6 +2444,7 @@ static struct ConfEntry conf_channel_table[] =
 	{ "strip_topic_colors_and_formatting_from_list", CF_YESNO, NULL, 0,
 		&ConfigChannel.strip_topic_colors_and_formatting_from_list },
 	{ "disable_join_0", CF_YESNO, NULL, 0, &ConfigChannel.disable_join_0 },
+	{ "displayed_usercount", CF_INT, NULL, 0, &ConfigChannel.displayed_usercount	},
 	{ "\0", 		0, 	  NULL, 0, NULL }
 };
 

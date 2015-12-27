@@ -815,6 +815,7 @@ set_default_conf(void)
 	ConfigChannel.strip_topic_colors_and_formatting = NO;
 	ConfigChannel.strip_topic_colors_and_formatting_from_list = YES;
 	ConfigChannel.disable_join_0 = YES;
+	ConfigChannel.displayed_usercount = 3;
 
 	ConfigServerHide.flatten_links = 0;
 	ConfigServerHide.links_delay = 300;

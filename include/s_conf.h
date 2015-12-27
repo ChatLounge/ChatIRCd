@@ -277,6 +277,7 @@ struct config_channel_entry
 	int strip_topic_colors_and_formatting;
 	int strip_topic_colors_and_formatting_from_list;
 	int disable_join_0;
+	int displayed_usercount;
 };
 
 struct config_server_hide
