@@ -108,7 +108,7 @@ mo_forcenick(struct Client *client_p, struct Client *source_p, int parc, const c
 	}
 
 	/* Nick has to be clean or we'll have a protocol violation... */
-	if(!clean_nick(newnick, 0))
+	if(!clean_nick(newnick, 1))
 	{
 		sendto_one(source_p, form_str(ERR_ERRONEUSNICKNAME), 
 			   me.name, user, newnick);
@@ -280,7 +280,7 @@ change_nick(struct Client *client_p, const char *newnick)
 
 	invalidate_bancache_user(client_p);
 
-	sendto_common_channels_local(client_p, NOCAPS, ":%s!%s@%s NICK :%s",
+	sendto_common_channels_local(client_p, NOCAPS, NOCAPS, ":%s!%s@%s NICK :%s",
 				client_p->name, client_p->username,
 				client_p->host, newnick);
 
