@@ -332,7 +332,7 @@ single_whois(struct Client *source_p, struct Client *target_p, int operspy)
 
 	/* Show the oper block name and the privset name used in a remote /whois. */
 	if(MyClient(target_p) && !EmptyString(target_p->localClient->opername) &&
-		((source_p == target_p) || IsOper(source_p) || IsOperAdmin(source_p)))
+		IsOper(source_p))
 	{
 		char buf[BUFSIZE];
 		rb_snprintf(buf, sizeof(buf), "is opered as %s, using privset: %s",
