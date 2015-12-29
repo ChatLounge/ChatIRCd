@@ -51,7 +51,6 @@
 static int me_forcenick(struct Client *, struct Client *, int, const char **);
 static int mo_forcenick(struct Client *, struct Client *, int, const char **);
 
-static int clean_nick(const char *nick);
 static int change_nick(struct Client *client_p, const char *newnick);
 
 #define CanForceNick(x)    (HasPrivilege((x), "oper:force"))
@@ -109,7 +108,7 @@ mo_forcenick(struct Client *client_p, struct Client *source_p, int parc, const c
 	}
 
 	/* Nick has to be clean or we'll have a protocol violation... */
-	if(!clean_nick(newnick))
+	if(!clean_nick(newnick, 0))
 	{
 		sendto_one(source_p, form_str(ERR_ERRONEUSNICKNAME), 
 			   me.name, user, newnick);
@@ -230,7 +229,7 @@ me_forcenick(struct Client *client_p, struct Client *source_p, int parc, const c
 		newnick = s;
 	}
 
-	if(!clean_nick(newnick))
+	if(!clean_nick(newnick, 0))
 		return 0;
 
 	if((target_p = find_person(user)) == NULL)
@@ -269,28 +268,6 @@ me_forcenick(struct Client *client_p, struct Client *source_p, int parc, const c
 
 	return 0;
 }
-
-static int
-clean_nick(const char *nick)
-{
-	int len = 0;
-
-	if(EmptyString(nick) || *nick == '-' || IsDigit(*nick) || *nick == '/')
-		return 0;
-
-	for(; *nick; nick++)
-	{
-		len++;
-		if(!IsNickChar(*nick))
-			return 0;
-	}
-
-	if(len >= NICKLEN)
-		return 0;
-
-	return 1;
-}
-
 
 static int
 change_nick(struct Client *client_p, const char *newnick)
