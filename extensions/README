@@ -1,6 +1,6 @@
 $Id: README 1622 2006-06-04 03:01:05Z beu $
 
-This directory contains extensions (modules) to charybdis ircd that
+This directory contains extensions (modules) to ChatIRCd that
 have been contributed by other people, or written by our development
 team.  Unsupported extensions live under unsupported/.
 
@@ -8,49 +8,94 @@ team.  Unsupported extensions live under unsupported/.
 Modules
 -------
 
-createauthonly.c - Only allow authenticated (identified) users to create
-                   channels.
+createauthonly.so            - Only allow authenticated (identified) users to create
+                               channels.
 
-ip_cloaking.c  - Cloak (spoof) the host for users that have umode +h.
+ip_cloaking.so               - Cloak (spoof) the host for users that have umode +h.
 
-m_42.c         - The Answer to Life, the Universe, and Everything.
-                 Syntax: 42
+m_42.so                      - The Answer to Life, the Universe, and Everything.
+                               Syntax: 42
 
-m_adminwall.c  - Sends a message to all admins network-wide (umode +a)
-                 Syntax: ADMINWALL :<message>
+m_adminwall.so               - Sends a message to all admins network-wide (umode +a)
+                               Syntax: ADMINWALL :<message>
 
-m_findforwards.c - Find channels that forward (+f) to a given channel.
-                   Syntax: FINDFORWARDS <channel>
+m_findforwards.so            - Find channels that forward (+f) to a given channel.
+                               Syntax: FINDFORWARDS <channel>
 
-m_identify.c - Identifies to NickServ or ChanServ
-               Syntax: IDENTIFY [nick|channel] <password>
+m_forcejoin.so               - Force joins the specified user to a channel.  Requires
+                               the issuing user to be an oper with the oper:force flag.
+                               Syntax: FORCEJOIN NickOfUserToJoin #ChannelToJoin
+                               Syntax: FJOIN NickOfUserToJoin #ChannelToJoin
 
-m_mkpasswd.c   - MKPASSWD - generate a DES or MD5 encryption of a password
-                 Syntax:  MKPASSWD <plaintext> [MD5|DES]
+m_forcenick.so               - Forcibly changes the nickname of the target user to the
+                               specified nick.  Requires the issuing user to be an oper
+                               with the oper:force flag.
+                               Syntax: FORCENICK OldNick NewNick
+                               Syntax: FNICK OldNick NewNick
 
-m_ojoin.c      - OJOIN - Join a channel through any modes or limits with 
-                         an optional status (@+)
-                 Syntax: OJOIN [status]<channel>
+m_identify.so                - Identifies to NickServ or ChanServ
+                               Syntax: IDENTIFY [nick|channel] <password>
 
-m_olist.c      - OLIST - Lists channels like LIST, but shows hidden
-                         channels. Oper only of course.
+m_listenoff.so               - Turns off all the listeners on all servers matching the given
+                               server mask , or the local server if no server mask is given.
+                               For local, requires the issuing user to be an admin with the
+                               oper:local_routing flag.  For remote, additionally requires
+                               the issuing user to be a NetAdmin with the oper:routing flag.
+						       Syntax: LISTENOFF [server.mask.here]
+						   
+m_mkpasswd.so                - Generate a DES or MD5 encryption of a password
+                               Syntax:  MKPASSWD <plaintext> [MD5|DES]
 
-m_opme.c       - OPME - Allows an admin to op themselves in an opless channel
-                 Syntax: OPME <channel>
+m_partall.so                 - When executed, parts the issuing user from all channels.
+                               Replaces /join 0.
+                               Syntax: PARTALL
 
-m_omode.c      - OMODE - Allows an admin to do all sorts of evil upon a
-			 channel, sets modes with extreme prejudice
+m_why.so                     - Permits channel operators, or IRCops to see if a given user
+                               matches any of the bans, quiets, ban exceptions, or invite
+                               exceptions on the channel.
+                               Syntax: WHY #Channel NickOfUserToCheck
 
-m_remove.c     - REMOVE - Implements /REMOVE, which allows a channel op to
-                          force-part a problematic user from a channel.  Most
-                          likely, you don't want this, because it is non-standard,
-                          and easily worked around for autojoin purposes.
+m_ojoin.so                   - Join a channel through any modes or limits with 
+                               an optional status (@+)
+                               Syntax: OJOIN [status]<channel>
 
-no_oper_invis.c - Disallow opers setting marking themselves as invisible
-                  (+i) unless they have the hidden_oper flag.
+m_olist.so                   - Lists channels like LIST, but shows hidden
+                               channels.  Oper only of course.
+                               Syntax: OLIST [params]
 
-example_module.c - An example module to be used for creating your own.
-                   Syntax: TEST
+m_opme.so                    - Allows an admin to op themselves in an opless channel
+                               Syntax: OPME <channel>
+
+m_omode.so                   - Allows an admin to do all sorts of evil upon a
+                               channel, sets modes with extreme prejudice
+                               Syntax: OMODE #Channel +abc-xyz [params]
+
+m_remove.so                  - Implements /REMOVE, which allows a channel op to
+                               force-part a problematic user from a channel.  Most
+                               likely, you don't want this, because it is non-standard,
+                               and easily worked around for autojoin purposes.
+                               Syntax: REMOVE #Channel LamerNick
+
+make_override_immune.so      - Provides umode +y, which prevents opers from being kicked
+                               from channels.  Will not prevent kicks from services, or
+                               other opers with umode +p (override) enabled.
+
+no_kill_higher_opers.so      - Prevents NetAdmins from being /kill'd by a non-NetAdmin.
+                               Prevents Admins from being /kill'd by an oper who is not
+                               another Admin or a NetAdmin.
+
+no_kill_services.so          - Prevents services clients from being /kill'd.
+
+no_locops.so                 - Prevents setting umode +l, and thus the usage of local wallops.
+
+no_oper_invis.so             - Disallow opers setting marking themselves as invisible
+                               (+i) unless they have the hidden_oper flag.
+
+restrict_unauthenticated.so - Prevents users from doing anything as channel op without
+                               being ID'd to NickServ.
+
+example_module.so            - An example module to be used for creating your own.
+                               Syntax: TEST
 
 
 Spy Modules
@@ -58,32 +103,37 @@ Spy Modules
 
 The following are the 'spy' parts, accessible via the +y snomask
 
-spy_admin_notice.c   - Spy on clients doing ADMIN
-spy_info_notice.c    - Spy on clients doing INFO
-spy_links_notice.c   - Spy on clients doing LINKS
-spy_motd_notice.c    - Spy on clients doing MOTD
-spy_stats_notice.c   - Spy on clients doing all STATS
-spy_stats_p_notice.c - Spy on clients doing STATS p only
-spy_trace_notice.c   - Spy on clients doing TRACE
+spy_admin_notice.so          - Spy on clients doing ADMIN
+spy_info_notice.so           - Spy on clients doing INFO
+spy_links_notice.so          - Spy on clients doing LINKS
+spy_motd_notice.so           - Spy on clients doing MOTD
+spy_stats_notice.so          - Spy on clients doing all STATS
+spy_stats_p_notice.so        - Spy on clients doing STATS p only
+spy_trace_notice.so          - Spy on clients doing TRACE
 
-Note: if you have both spy_stats_notice.c and spy_stats_p_notice.c loaded
+Note: if you have both spy_stats_notice.so and spy_stats_p_notice.so loaded
 you will get two messages.
 
 Snomask Modules
 ---------------
 
-sno_farconnect.c  - Remote client connect/exit notices (snomask +F)
-sno_globalkline.c - Global K/D/X-line activation notices
-sno_globaloper.c  - Global oper-up notices
-sno_whois.c       - Spy on clients who WHOIS you seeing idle time (snomask +W).
+sno_channeljoin.so           - Generates notices when users join channels, and what channels they joined.
+sno_farconnect.so            - Remote client connect/exit notices (snomask +F)
+sno_globalkline.so           - Global K/D/X-line activation notices
+sno_globalnickchange.so      - Global nick change notices (snomask +N)
+sno_whois.so                 - Spy on clients who WHOIS you seeing idle time (snomask +W).
 
-Extban Modules
---------------
+Extban Modules - Different matching criteria for +beIq
+------------------------------------------------------
 
-extb_account.so  - Account bans (+b $a[:mask])
-extb_canjoin.so  - Banned from another channel (+b $j:mask)
-extb_channel.so  - Other-channel bans (+b $c:mask)
-extb_extgecos.so - Extended ban (+b $x:mask)
-extb_oper.so     - Oper bans (+b $o)
-extb_realname.so - Realname (gecos) bans (+b $r:mask)
-extb_server.so   - Server bans (+b $s:mask)
+extb_account.so              - Account bans (+b $a[:mask])
+extb_canjoin.so              - Banned from another channel (+b $j:mask)
+extb_channel.so              - Other-channel bans (+b $c:mask)
+extb_combi.so                - Combination extbans, provides AND ($&) and OR ($|) logic.
+                               (+b $&($~a,$h:*!webchat@*))
+extb_extgecos.so             - Extended ban (+b $x:mask)
+extb_hostmask.so             - Hostmasks.  Equivalent to no extban, intended to be used with extb_combi. (+b $h:n!u@h)
+extb_oper.so                 - Oper bans, only works with +e and +I. (+I $o)
+extb_realname.so             - Realname (gecos) bans (+b $r:mask)
+extb_unidentified.so         - Unidentified users matching the given hostmask (+b $u: *!webchat@*)
+extb_usermode.so             - Matches users with the given usermode. (+b $m:xB)
