@@ -1,6 +1,7 @@
 /*   contrib/m_ojoin.c
  *   Copyright (C) 2002 Hybrid Development Team
  *   Copyright (C) 2004 ircd-ratbox Development Team
+ *   Copyright (C) 2015 ChatLounge IRC Network Development Team
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -66,7 +67,7 @@ mo_ojoin(struct Client *client_p, struct Client *source_p, int parc, const char 
 		return 0;
 	}
 
-	if(*parv[1] == '@' || *parv[1] == '+')
+	if(*parv[1] == '~' || *parv[1] == '&' || *parv[1] == '@' || *parv[1] == '%' || *parv[1] == '+')
 	{
 		parv[1]++;
 		move_me = 1;
@@ -99,7 +100,42 @@ mo_ojoin(struct Client *client_p, struct Client *source_p, int parc, const char 
 			me.name, parv[1],
 			source_p->name, source_p->username, source_p->host);
 
-	if(*parv[1] == '@')
+	if(*parv[1] == '~')
+	{
+		add_user_to_channel(chptr, source_p,
+			ConfigChannel.use_owner ? CHFL_OWNER :
+			(ConfigChannel.use_admin ? CHFL_ADMIN : CHFL_CHANOP));
+		sendto_server(client_p, chptr, CAP_TS6, NOCAPS,
+			      ":%s SJOIN %ld %s + :%s%s",
+			      me.id, (long) chptr->channelts, chptr->chname,
+				  ConfigChannel.use_owner ? "~" :
+				  (ConfigChannel.use_admin ? "&" : "@"),
+				  source_p->id);
+		send_channel_join(chptr, source_p);
+		sendto_channel_local(ALL_MEMBERS, chptr, ":%s MODE %s +%s %s",
+				     me.name, chptr->chname,
+					 ConfigChannel.use_owner ? "y" :
+					(ConfigChannel.use_admin ? "a" : "o"),
+					 source_p->name);
+
+	}
+	else if(*parv[1] == '&')
+	{
+		add_user_to_channel(chptr, source_p,
+			ConfigChannel.use_admin ? CHFL_ADMIN : CHFL_CHANOP);
+		sendto_server(client_p, chptr, CAP_TS6, NOCAPS,
+			      ":%s SJOIN %ld %s + :%s%s",
+			      me.id, (long) chptr->channelts, chptr->chname,
+				  ConfigChannel.use_admin ? "&" : "@",
+				  source_p->id);
+		send_channel_join(chptr, source_p);
+		sendto_channel_local(ALL_MEMBERS, chptr, ":%s MODE %s +%s %s",
+				     me.name, chptr->chname,
+					 ConfigChannel.use_admin ? "a" : "o",
+					 source_p->name);
+
+	}	
+	else if(*parv[1] == '@')
 	{
 		add_user_to_channel(chptr, source_p, CHFL_CHANOP);
 		sendto_server(client_p, chptr, CAP_TS6, NOCAPS,
@@ -108,6 +144,22 @@ mo_ojoin(struct Client *client_p, struct Client *source_p, int parc, const char 
 		send_channel_join(chptr, source_p);
 		sendto_channel_local(ALL_MEMBERS, chptr, ":%s MODE %s +o %s",
 				     me.name, chptr->chname, source_p->name);
+
+	}
+	else if(*parv[1] == '%')
+	{
+		add_user_to_channel(chptr, source_p,
+			ConfigChannel.use_halfop ? CHFL_HALFOP : CHFL_VOICE);
+		sendto_server(client_p, chptr, CAP_TS6, NOCAPS,
+			      ":%s SJOIN %ld %s + :%s%s",
+			      me.id, (long) chptr->channelts, chptr->chname,
+				  ConfigChannel.use_halfop ? "%" : "+",
+				  source_p->id);
+		send_channel_join(chptr, source_p);
+		sendto_channel_local(ALL_MEMBERS, chptr, ":%s MODE %s +%s %s",
+				     me.name, chptr->chname,
+					 ConfigChannel.use_halfop ? "h" : "v",
+					 source_p->name);
 
 	}
 	else if(*parv[1] == '+')
