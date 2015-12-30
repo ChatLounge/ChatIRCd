@@ -63,13 +63,10 @@ mo_listenoff(struct Client *client_p, struct Client *source_p, int parc, const c
         if (match(target_server, me.name) == 0)
             return 0;
     }
-	else
-		sendto_match_servs(source_p, me.name, CAP_ENCAP, NOCAPS,
-				"ENCAP %s LISTENOFF", me.name);
-	//sendto_realops_snomask(SNO_GENERAL, L_NETWIDE, "%s is closing listeners on: %s",
-	//	get_oper_name(source_p), me.name);
-    //close_listeners();
-    //sendto_one_notice(source_p, ":*** Listeners have been closed.");
+	sendto_realops_snomask(SNO_GENERAL, L_NETWIDE, "%s is closing listeners on: %s",
+		get_oper_name(source_p), me.name);
+	close_listeners();
+	sendto_one_notice(source_p, ":*** Listeners have been closed.");
 
     return 0;
 }
