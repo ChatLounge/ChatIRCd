@@ -1681,6 +1681,14 @@ chm_throttle(struct Client *source_p, struct Channel *chptr,
 		if(!joins || !timeslice)
 			return;
 
+		/* Somewhat arbitrary, but enforce some kind of "sanity" check. */
+		if(joins < 1 || joins > 255)
+			return;
+
+		/* Somewhat arbitrary, but enforce some kind of "sanity" check. */
+		if(timeslice < 1 || timeslice > 999)
+			return;
+
 		mode_changes[mode_count].letter = c;
 		mode_changes[mode_count].dir = MODE_ADD;
 		mode_changes[mode_count].mems = ALL_MEMBERS;
