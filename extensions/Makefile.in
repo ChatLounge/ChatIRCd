@@ -60,6 +60,7 @@ SRCS =                          \
   make_override_immune.c        \
   m_42.c                        \
   m_adminwall.c                 \
+  m_extendchans.c               \
   m_forcejoin.c                 \
   m_forcenick.c                 \
   m_findforwards.c              \

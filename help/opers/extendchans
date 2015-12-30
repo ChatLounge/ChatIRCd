@@ -1,0 +1,8 @@
+EXTENDCHANS <nick>
+
+Extends the channel limit of the user up from
+channel::max_chans_per_user configuration setting
+to channel::max_chans_per_user_large.
+
+Requires either NetAdmin status or the
+oper:extendchans flag.
