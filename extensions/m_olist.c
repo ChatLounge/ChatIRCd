@@ -7,7 +7,7 @@
  *
  *  Copyright (C) 2002 by the past and present ircd coders, and others.
  *  Copyright (C) 2004 ircd-ratbox Development Team
- *  Copyright (C) 2015 Chat Lounge IRC Network Development Team
+ *  Copyright (C) 2015-2016 ChatLounge IRC Network Development Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by

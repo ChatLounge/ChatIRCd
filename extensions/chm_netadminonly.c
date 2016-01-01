@@ -3,8 +3,7 @@
  *  Network Administrators (NetAdmins) may join the
  *  channel.
  *
- *  Copyright 2015 - The Chat Lounge IRC Network
- *		     Development Team
+ *  Copyright (C) 2015-2016 - ChatLounge IRC Network Development Team
  *
  */
 

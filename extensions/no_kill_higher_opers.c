@@ -8,7 +8,7 @@
  *    privsets are often configured being inclusive of lower
  *    privsets, making this module effective.
  *
- * Copyright 2015 - Chat Lounge IRC Network Development
+ * Copyright (C) 2015-2016 - ChatLounge IRC Network Development Team
  */
 
 #include "stdinc.h"

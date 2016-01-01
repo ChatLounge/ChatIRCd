@@ -6,7 +6,7 @@
  *  Copyright (C) 1996-2002 Hybrid Development Team
  *  Copyright (C) 2002-2004 ircd-ratbox development team
  *  Copyright (C) 2008 charybdis development team
- *  Copyright (C) 2015 Chat Lounge IRC Network Development Team
+ *  Copyright (C) 2015-2016 ChatLounge IRC Network Development Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by

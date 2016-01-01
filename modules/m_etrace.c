@@ -4,7 +4,7 @@
  *
  *  Copyright (C) 2002-2003 Lee Hardy <lee@leeh.co.uk>
  *  Copyright (C) 2002-2005 ircd-ratbox development team
- *  Copyright (C) 2015 ChatLounge IRC Network Development Team
+ *  Copyright (C) 2015-2016 ChatLounge IRC Network Development Team
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are

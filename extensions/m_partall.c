@@ -6,7 +6,7 @@
  *
  *     - Ben
  *
- * Copyright (c) 2015 - Chat Lounge IRC Network Development
+ * Copyright (c) 2015-2016 - ChatLounge IRC Network Development Team
  */
 
 #include "stdinc.h"

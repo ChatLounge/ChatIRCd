@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2015 ChatLounge IRC Network Development Team
+ * Copyright (C) 2014-2016 ChatLounge IRC Network Development Team
  *
  * Extended ban type "u": Unidentified users.  Bans unidentified users matching the specified n!u@h.
  * Example: +b $u:*!webchat@*

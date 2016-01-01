@@ -3,7 +3,7 @@
  * m_forcenick.c: Forces a user's nickname to change
  *
  * Copyright (C) 2010 Elizabeth Jennifer Myers. All rights reserved.
- * Copyright (C) 2015 Chat Lounge IRC Network Development
+ * Copyright (C) 2015-2016 ChatLounge IRC Network Development Team
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
