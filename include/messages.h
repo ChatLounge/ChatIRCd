@@ -30,7 +30,7 @@
 #define FORM_STR1(n)         NUMERIC_STR_##n
 #define form_str(n)          FORM_STR1(n)
 
-#define NUMERIC_STR_1        ":Welcome to the %s Internet Relay Chat Network %s"
+#define NUMERIC_STR_1        ":Welcome to the %s Internet Relay Chat Network %s!%s@%s"
 #define NUMERIC_STR_2        ":Your host is %s, running version %s"
 #define NUMERIC_STR_3        ":This server was created %s"
 #define NUMERIC_STR_4        "%s %s %s %s bkloveqjfI"

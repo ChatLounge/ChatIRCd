@@ -1611,7 +1611,8 @@ attempt_set_usermode(struct Client *client_p, struct Client *source_p, int parc,
 void
 user_welcome(struct Client *source_p)
 {
-	sendto_one_numeric(source_p, RPL_WELCOME, form_str(RPL_WELCOME), ServerInfo.network_name, source_p->name);
+	sendto_one_numeric(source_p, RPL_WELCOME, form_str(RPL_WELCOME), ServerInfo.network_name,
+		source_p->name, source_p->username, source_p->orighost);
 	sendto_one_numeric(source_p, RPL_YOURHOST, form_str(RPL_YOURHOST),
 		   get_listener_name(source_p->localClient->listener), ircd_version);
 	sendto_one_numeric(source_p, RPL_CREATED, form_str(RPL_CREATED), creation);
