@@ -216,7 +216,7 @@ show_result(struct Client *source_p, struct Channel *chptr, struct Client *targe
 
 		didmatch = 0;
 
-		RB_DLINK_FOREACH(rb_dlink, chptr->exceptlist.head)
+		RB_DLINK_FOREACH(rb_dlink, chptr->invexlist.head)
 		{
 			actualBan = rb_dlink->data;
 			if(match(actualBan->banstr, s) ||
