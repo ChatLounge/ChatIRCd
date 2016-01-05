@@ -70,6 +70,7 @@ static int removed_mask_pos;
 
 char cflagsbuf[256];
 char cflagsmyinfo[256];
+char cflagsparaminfo[256];
 
 int chmode_flags[256];
 
@@ -80,10 +81,10 @@ void
 construct_cflags_strings(void)
 {
 	int i;
-        char *ptr = cflagsbuf;
+	char *ptr = cflagsbuf;
 	char *ptr2 = cflagsmyinfo;
-        
-        *ptr = '\0';
+
+	*ptr = '\0';
 	*ptr2 = '\0';
 
 	for(i = 0; i < 256; i++)
@@ -129,6 +130,19 @@ construct_cflags_strings(void)
         
         *ptr++ = '\0';
 	*ptr2++ = '\0';
+}
+
+void
+construct_cflags_param_string(void)
+{
+	*cflagsparaminfo = '\0';
+	rb_snprintf(cflagsparaminfo, sizeof cflagsparaminfo, "%sb%s%s%sjklovq%s%s",
+			ConfigChannel.use_admin ? "a" : "",
+			ConfigChannel.use_except ? "e" : "",
+			ConfigChannel.use_forward ? "f" : "",
+			ConfigChannel.use_halfop ? "h" : "",
+			ConfigChannel.use_owner ? "y" : "",
+			ConfigChannel.use_invex ? "I" : "");
 }
 
 /*

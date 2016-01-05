@@ -872,6 +872,7 @@ read_conf(void)
 	check_class();		/* Make sure classes are valid */
 	privilegeset_delete_all_illegal();
 	construct_cflags_strings();
+	construct_cflags_param_string();
 }
 
 static void
