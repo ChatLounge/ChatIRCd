@@ -80,6 +80,7 @@ m_remove(struct Client *client_p, struct Client *source_p, int parc, const char 
 	char *p = NULL;
 	const char *user;
 	static char buf[BUFSIZE];
+	int override = 0;
 
 	if(MyClient(source_p) && !IsFloodDone(source_p))
 		flood_endgrace(source_p);
@@ -97,32 +98,49 @@ m_remove(struct Client *client_p, struct Client *source_p, int parc, const char 
 		return 0;
 	}
 
+	if((p = strchr(parv[2], ',')))
+		*p = '\0';
+
+	user = parv[2];		/* strtoken(&p2, parv[2], ","); */
+
+	if(!(who = find_chasing(source_p, user, &chasing)))
+	{
+		return 0;
+	}
+
 	if(!IsServer(source_p))
 	{
 		msptr = find_channel_membership(chptr, source_p);
 
-		if((msptr == NULL) && MyConnect(source_p))
+		if((msptr == NULL) && MyConnect(source_p) && !IsSetOverride(source_p))
 		{
 			sendto_one_numeric(source_p, ERR_NOTONCHANNEL,
 					   form_str(ERR_NOTONCHANNEL), name);
 			return 0;
 		}
 
-		if(get_channel_access(source_p, msptr, MODE_ADD) < CHFL_HALFOP)
+		if(!can_kick_deop(msptr, find_channel_membership(chptr, who)))
 		{
-			if(MyConnect(source_p))
+			if(IsSetOverride(source_p))
 			{
-				sendto_one(source_p, form_str(ERR_CHANOPRIVSNEEDED),
-					   me.name, source_p->name, name);
-				return 0;
+				override = 1;
 			}
-
-			/* If its a TS 0 channel, do it the old way */
-			if(chptr->channelts == 0)
+			else
 			{
-				sendto_one(source_p, form_str(ERR_CHANOPRIVSNEEDED),
-					   get_id(&me, source_p), get_id(source_p, source_p), name);
-				return 0;
+				if(MyConnect(source_p))
+				{
+					sendto_one(source_p, form_str(ERR_CHANOPRIVSNEEDED),
+						   me.name, source_p->name, name);
+					return 0;
+				}
+
+				/* If its a TS 0 channel, do it the old way */
+				if(chptr->channelts == 0)
+				{
+					sendto_one(source_p, form_str(ERR_CHANOPRIVSNEEDED),
+						   get_id(&me, source_p), get_id(source_p, source_p), name);
+					return 0;
+				}
 			}
 		}
 
@@ -146,16 +164,6 @@ m_remove(struct Client *client_p, struct Client *source_p, int parc, const char 
 		 *
 		 *     -Dianora
 		 */
-	}
-
-	if((p = strchr(parv[2], ',')))
-		*p = '\0';
-
-	user = parv[2];		/* strtoken(&p2, parv[2], ","); */
-
-	if(!(who = find_chasing(source_p, user, &chasing)))
-	{
-		return 0;
 	}
 
 	msptr = find_channel_membership(chptr, who);
@@ -210,6 +218,10 @@ m_remove(struct Client *client_p, struct Client *source_p, int parc, const char 
 			      use_id(source_p), chptr->chname, use_id(who), comment);
 
 		remove_user_from_channel(msptr);
+		
+		if(MyClient(source_p) && override)
+			sendto_realops_snomask(SNO_GENERAL, L_NETWIDE, "%s is using oper-override to remove %s (%s@%s) from %s",
+				   get_oper_name(source_p), who->name, who->username, who->orighost, parv[1]);
 	}
 	else if (MyClient(source_p))
 		sendto_one_numeric(source_p, ERR_USERNOTINCHANNEL,
@@ -217,4 +229,3 @@ m_remove(struct Client *client_p, struct Client *source_p, int parc, const char 
 
 	return 0;
 }
-

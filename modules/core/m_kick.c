@@ -61,7 +61,6 @@ DECLARE_MODULE_AV1(kick, NULL, NULL, kick_clist, NULL, NULL, "$Revision: 3317 $"
 static int
 m_kick(struct Client *client_p, struct Client *source_p, int parc, const char *parv[])
 {
-	struct membership *mssptr;
 	struct membership *msptr;
 	struct Client *who;
 	struct Channel *chptr;
@@ -71,6 +70,7 @@ m_kick(struct Client *client_p, struct Client *source_p, int parc, const char *p
 	char *p = NULL;
 	const char *user;
 	static char buf[BUFSIZE];
+	int override = 0;
 
 	if(MyClient(source_p) && !IsFloodDone(source_p))
 		flood_endgrace(source_p);
@@ -88,6 +88,16 @@ m_kick(struct Client *client_p, struct Client *source_p, int parc, const char *p
 		return 0;
 	}
 
+	if((p = strchr(parv[2], ',')))
+		*p = '\0';
+
+	user = parv[2];		/* strtoken(&p2, parv[2], ","); */
+
+	if(!(who = find_chasing(source_p, user, &chasing)))
+	{
+		return 0;
+	}
+
 	if(!IsServer(source_p))
 	{
 		msptr = find_channel_membership(chptr, source_p);
@@ -99,21 +109,28 @@ m_kick(struct Client *client_p, struct Client *source_p, int parc, const char *p
 			return 0;
 		}
 
-		if(!can_kick_deop(msptr, find_channel_membership(chptr, client_p)) && !IsSetOverride(source_p))
+		if(!can_kick_deop(msptr, find_channel_membership(chptr, who)))
 		{
-			if(MyConnect(source_p))
+			if(IsSetOverride(source_p))
 			{
-				sendto_one(source_p, form_str(ERR_CHANOPRIVSNEEDED),
-					   me.name, source_p->name, name);
-				return 0;
+				override = 1;
 			}
-
-			/* If its a TS 0 channel, do it the old way */
-			if(chptr->channelts == 0)
+			else
 			{
-				sendto_one(source_p, form_str(ERR_CHANOPRIVSNEEDED),
-					   get_id(&me, source_p), get_id(source_p, source_p), name);
-				return 0;
+				if(MyConnect(source_p))
+				{
+					sendto_one(source_p, form_str(ERR_CHANOPRIVSNEEDED),
+						   me.name, source_p->name, name);
+					return 0;
+				}
+
+				/* If its a TS 0 channel, do it the old way */
+				if(chptr->channelts == 0)
+				{
+					sendto_one(source_p, form_str(ERR_CHANOPRIVSNEEDED),
+						   get_id(&me, source_p), get_id(source_p, source_p), name);
+					return 0;
+				}
 			}
 		}
 
@@ -137,16 +154,6 @@ m_kick(struct Client *client_p, struct Client *source_p, int parc, const char *p
 		 *
 		 *     -Dianora
 		 */
-	}
-
-	if((p = strchr(parv[2], ',')))
-		*p = '\0';
-
-	user = parv[2];		/* strtoken(&p2, parv[2], ","); */
-
-	if(!(who = find_chasing(source_p, user, &chasing)))
-	{
-		return 0;
 	}
 
 	msptr = find_channel_membership(chptr, who);
@@ -202,12 +209,9 @@ m_kick(struct Client *client_p, struct Client *source_p, int parc, const char *p
 			      use_id(source_p), chptr->chname, use_id(who), comment);
 		remove_user_from_channel(msptr);
 		
-		mssptr = find_channel_membership(chptr, source_p);
-
-		if(MyClient(source_p) && IsSetOverride(source_p) && !is_any_op(mssptr))
-			sendto_realops_snomask(SNO_GENERAL, L_NETWIDE, "%s is using oper-override to kick %s (%s@%s) on %s",
+		if(MyClient(source_p) && override)
+			sendto_realops_snomask(SNO_GENERAL, L_NETWIDE, "%s is using oper-override to kick %s (%s@%s) from %s",
 				   get_oper_name(source_p), who->name, who->username, who->orighost, parv[1]);
-
 	}
 	else if (MyClient(source_p))
 		sendto_one_numeric(source_p, ERR_USERNOTINCHANNEL,

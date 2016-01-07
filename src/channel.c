@@ -303,7 +303,7 @@ is_owner(struct membership *msptr)
 /* is_any_op()
  *
  * input - membership to check for ops
- * output - 1 if the user is op, halfop, or owner, 0 elsewise
+ * output - 1 if the user is op, halfop, admin, or owner, 0 elsewise
  * side effects -
  */
 int
@@ -318,7 +318,7 @@ is_any_op(struct membership *msptr)
 /* is_chanop_voiced()
  *
  * input - membership to check for status
- * output - 1 if the user is op, halfop, owner, or voice, 0 elsewise
+ * output - 1 if the user is op, halfop, admin, owner, or voice, 0 elsewise
  * side effects -
  */
 int
@@ -339,14 +339,31 @@ is_chanop_voiced(struct membership *msptr)
 int
 can_kick_deop(struct membership *source, struct membership *target)
 {
-	if(is_admin(source) && !is_owner(target))
+	if(is_owner(source)) /* Owners can kick anyone. */
 		return 1;
-	else if(is_chanop(source) && (!is_admin(target) && !is_owner(target)))
+
+	if(is_owner(target)) /* Source isn't an owner.  Owners can't be kicked by non-owners. */
+		return 0;
+
+	if(is_admin(source)) /* Target isn't an owner.  Admins can kick anyone else. */
 		return 1;
-	else if(is_halfop(source) && !is_any_op(target))
+
+	if(is_admin(target)) /* Source isn't an admin or owner.  Admins can't be kicked by ops and lower. */
+		return 0;
+
+	if(is_chanop(source)) /* Target isn't an admin or owner.  Ops can kick anyone else.	*/
 		return 1;
-	else if(is_owner(source))
-		return 1;
+
+	if(is_chanop(target)) /* Source isn't an admin, op, or owner.  Halfops can't kick ops. */
+		return 0;
+	
+	if(is_halfop(source)) /* Halfops can't kick anyone with a prefix, except voices. */
+	{
+		if(is_halfop(target))
+			return 0;
+		else
+			return 1;
+	}
 
 	return 0;
 }
