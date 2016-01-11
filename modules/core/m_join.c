@@ -270,6 +270,7 @@ ms_sjoin(struct Client *client_p, struct Client *source_p, int parc, const char 
 	int i, joinc = 0, timeslice = 0;
 	static char empty[] = "";
 	rb_dlink_node *ptr, *next_ptr;
+	int prefixmaxlength;
 	
 	if(parc < 5)
 		return 0;
@@ -521,12 +522,17 @@ ms_sjoin(struct Client *client_p, struct Client *source_p, int parc, const char 
 	}
 
 	*mbuf++ = '+';
+	
+	/* Number depends on whether admin, halfop, and/or owner is enabled.
+	 * At least two since op and voice are always available.
+	 */
+	prefixmaxlength = 2 + ConfigChannel.use_owner + ConfigChannel.use_admin + ConfigChannel.use_halfop;
 
 	while (s)
 	{
 		fl = 0;
 
-		for (i = 0; i < 2; i++)
+		for (i = 0; i < prefixmaxlength; i++)
 		{
 			if(*s == '~')
 			{
@@ -712,7 +718,7 @@ ms_sjoin(struct Client *client_p, struct Client *source_p, int parc, const char 
 				para[pargs++] = target_p->name;
 			}
 		}
-		if(fl & CHFL_ADMIN)
+		else if(fl & CHFL_ADMIN)
 		{
 			*mbuf++ = 'a';
 			para[pargs++] = target_p->name;
