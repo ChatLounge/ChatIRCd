@@ -641,6 +641,12 @@ static struct InfoStruct info_table[] = {
 		"Disable the /join 0 shortcut."
 	},
 	{
+		"displayed_usercount",
+		OUTPUT_DECIMAL,
+		&ConfigChannel.displayed_usercount,
+		"Default minimum number of channel members before showing up in /list."
+	},
+	{
 		"max_bans",
 		OUTPUT_DECIMAL,
 		&ConfigChannel.max_bans,
