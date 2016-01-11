@@ -346,7 +346,7 @@ single_whois(struct Client *source_p, struct Client *target_p, int operspy)
 		((source_p == target_p) || IsOper(source_p) || IsOperAdmin(source_p)))
 	{
 		char buf[BUFSIZE];
-		rb_snprintf(buf, sizeof(buf), "Using class block: %s",
+		rb_snprintf(buf, sizeof(buf), "is using class block: %s",
 			get_client_class(target_p));
 		sendto_one_numeric(source_p, RPL_WHOISSPECIAL, form_str(RPL_WHOISSPECIAL),
 			target_p->name, buf);
