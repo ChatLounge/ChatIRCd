@@ -1412,10 +1412,8 @@ chm_halfop(struct Client *source_p, struct Channel *chptr,
 	const char *halfopnick;
 	struct Client *targ_p;
 	int overrided_mode = 0;
-
-	halfopnick = parv[(*parn)];
-
-	if(alevel != CHFL_CHANOP && alevel != CHFL_OWNER && alevel != CHFL_ADMIN && alevel != CHFL_HALFOP)
+	
+	if(!(alevel & CHFL_CHANOP) && !(alevel & CHFL_OWNER) && !(alevel & CHFL_ADMIN) && !(alevel & CHFL_HALFOP) && !IsService(source_p))
 	{
 		if(IsSetOverride(source_p))
 		{
@@ -1435,6 +1433,7 @@ chm_halfop(struct Client *source_p, struct Channel *chptr,
 	if((dir == MODE_QUERY) || (parc <= *parn))
 		return;
 
+	halfopnick = parv[(*parn)];
 	(*parn)++;
 
 	/* empty nick */
@@ -1461,7 +1460,7 @@ chm_halfop(struct Client *source_p, struct Channel *chptr,
 	}
 	
 	/* Always permit self dehalfop, regardless of config. setting. */
-	if(!ConfigChannel.halfops_can_dehalfop_others && !(source_p == targ_p))
+	if(!ConfigChannel.halfops_can_dehalfop_others && alevel == CHFL_HALFOP && !(source_p == targ_p))
 	{
 		if(IsSetOverride(source_p))
 		{
