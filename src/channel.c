@@ -359,7 +359,8 @@ can_kick_deop(struct membership *source, struct membership *target)
 	
 	if(is_halfop(source)) /* Halfops can't kick anyone with a prefix, except voices. */
 	{
-		if(is_halfop(target))
+		/* If halfops can (de)halfop others, they should be able to kick them too. */
+		if(is_halfop(target) && !ConfigChannel.halfops_can_dehalfop_others)
 			return 0;
 		else
 			return 1;
