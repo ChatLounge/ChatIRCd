@@ -644,7 +644,7 @@ static struct InfoStruct info_table[] = {
 		"displayed_usercount",
 		OUTPUT_DECIMAL,
 		&ConfigChannel.displayed_usercount,
-		"Default minimum number of channel members before showing up in /list."
+		"Default minimum number of channel members before a channel shows in /list."
 	},
 	{
 		"max_bans",
