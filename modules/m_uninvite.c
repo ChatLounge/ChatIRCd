@@ -99,15 +99,9 @@ m_uninvite(struct Client *client_p, struct Client *source_p,
 		return 0;
 	}
 
-	/* Full format of notice sent to clients without invite-notify:
-		 * :Notice -- SourceNick (SrcIdent@Source.Visible.Host) has uninvited TargetNick (TargIdent@Target.Visible.Host) from #Channel
-		 */
-	char uninvitenotice[BUFSIZE] = "";
-
-	// Ugh, limited to nine args but really need more.  " to #Channel" added in the sendto function.
-	rb_snprintf(uninvitenotice, sizeof(uninvitenotice), ":*** Notice -- %s (%s@%s) has uninvited %s (%s@%s)",
-		source_p->name, source_p->username, source_p->host,
-		target_p->name, target_p->username, target_p->host);
+	sendto_one(target_p, ":%s!%s@%s UNINVITE %s :%s", 
+			source_p->name, source_p->username, source_p->host, 
+			target_p->name, chptr->chname);
 
 	send_uninvite_notification(source_p, target_p, chptr);
 
@@ -143,21 +137,10 @@ me_uninvite(struct Client *client_p, struct Client *source_p,
 				get_id(source_p, cptr), cptr->name, get_id(target_p, cptr), chptr->chname);
 		return 0;
 	}
-	
-	/* Full format of notice sent to clients without invite-notify:
-	 * :Notice -- SourceNick (SrcIdent@Source.Visible.Host) has uninvited TargetNick (TargIdent@Target.Visible.Host) from #Channel
-	 */
-	char uninvitenotice[BUFSIZE] = "";
 
-	// Ugh, limited to nine args but really need more.  " to #Channel" added in the sendto function.
-	rb_snprintf(uninvitenotice, sizeof(uninvitenotice), ":*** Notice -- %s (%s@%s) has uninvited %s (%s@%s)",
-		source_p->name, source_p->username, source_p->host,
-		target_p->name, target_p->username, target_p->host);
-
-	/*sendto_channel_local_with_capability(ONLY_CHANOPS, NOCAPS, CLICAP_INVITE_NOTIFY,
-	chptr,
-						":%s NOTICE %s %s from %s", me.name,
-						chptr->chname, uninvitenotice, chptr->chname); */
+	sendto_one(target_p, ":%s!%s@%s UNINVITE %s :%s", 
+			source_p->name, source_p->username, source_p->host, 
+			target_p->name, chptr->chname);
 
 	send_uninvite_notification(source_p, target_p, chptr);
 
