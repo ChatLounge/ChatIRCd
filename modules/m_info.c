@@ -401,6 +401,10 @@ static struct InfoStruct info_table[] = {
 		"Network name"
 	},
 	{
+		/* Note: String generated in newconf.c at config read time.
+		 *   This is better than generating the string every time the
+		 *   /info command is used. - Ben
+		 */
 		"autochanmodes",
 		OUTPUT_STRING,
 		&ConfigChannel.autochanmodestring,

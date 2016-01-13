@@ -1837,6 +1837,26 @@ conf_set_channel_autochanmodes(void *data)
 			break;
 		}
 	}
+
+	/* Construct ConfigChannel.autochanmodestring .
+	 * Yeah, I just ripped this from channel.c - channel_modes(),
+	 * minus the code for modes taking an argument, since those aren't
+	 * presently supported in autochanmodes.
+	 *   - Ben
+	 */
+	int i;
+	char buf1[BUFSIZE];
+	char *mbuf = buf1;
+
+	*mbuf++ = '+';
+
+	for (i = 0; i < 256; i++)
+		if(ConfigChannel.autochanmodes & chmode_flags[i])
+			*mbuf++ = i;
+
+	*mbuf = '\0';
+
+	rb_strlcpy(ConfigChannel.autochanmodestring, buf1, BUFSIZE);
 }
 
 /* XXX for below */
@@ -2452,7 +2472,7 @@ static struct ConfEntry conf_general_table[] =
 
 static struct ConfEntry conf_channel_table[] =
 {
-	{ "autochanmodes", CF_QSTRING, conf_set_channel_autochanmodes, 0, &ConfigChannel.autochanmodestring },
+	{ "autochanmodes", CF_QSTRING, conf_set_channel_autochanmodes, 0, NULL },
 	{ "default_split_user_count",	CF_INT,  NULL, 0, &ConfigChannel.default_split_user_count	 },
 	{ "default_split_server_count",	CF_INT,	 NULL, 0, &ConfigChannel.default_split_server_count },
 	{ "burst_topicwho",	CF_YESNO, NULL, 0, &ConfigChannel.burst_topicwho	},

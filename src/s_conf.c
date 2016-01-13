@@ -788,7 +788,7 @@ set_default_conf(void)
 	ConfigFileEntry.oper_snomask = SNO_GENERAL;
 
 	ConfigChannel.autochanmodes = MODE_NOPRIVMSGS | MODE_SECRET | MODE_TOPICLIMIT;
-	ConfigChannel.autochanmodestring = "nst";
+	ConfigChannel.autochanmodestring = rb_strdup("+nst");
 	ConfigChannel.use_halfop = NO;
 	ConfigChannel.halfops_can_dehalfop_others = YES;
 	ConfigChannel.use_admin = NO;
