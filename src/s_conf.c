@@ -787,7 +787,8 @@ set_default_conf(void)
 	ConfigFileEntry.oper_only_umodes = UMODE_SERVNOTICE;
 	ConfigFileEntry.oper_snomask = SNO_GENERAL;
 
-	ConfigChannel.autochanmodes = rb_strdup("nst");
+	ConfigChannel.autochanmodes = MODE_NOPRIVMSGS | MODE_SECRET | MODE_TOPICLIMIT;
+	ConfigChannel.autochanmodestring = "nst";
 	ConfigChannel.use_halfop = NO;
 	ConfigChannel.halfops_can_dehalfop_others = YES;
 	ConfigChannel.use_admin = NO;

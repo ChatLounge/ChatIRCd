@@ -403,7 +403,7 @@ static struct InfoStruct info_table[] = {
 	{
 		"autochanmodes",
 		OUTPUT_STRING,
-		&ConfigChannel.autochanmodes,
+		&ConfigChannel.autochanmodestring,
 		"Channelmodes set on channel creation"
 	},
 	{

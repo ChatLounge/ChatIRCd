@@ -250,7 +250,8 @@ struct config_file_entry
 
 struct config_channel_entry
 {
-	char * autochanmodes;
+	char * autochanmodestring;
+	unsigned int autochanmodes;
 	int use_halfop;
 	int halfops_can_dehalfop_others;
 	int use_admin;
