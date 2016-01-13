@@ -1047,7 +1047,7 @@ user_mode(struct Client *client_p, struct Client *source_p, int parc, const char
 				if(MyClient(source_p))
 				{
 					sendto_realops_snomask(SNO_GENERAL, ConfigFileEntry.global_oper_up_notices ? L_NETWIDE : L_ALL,
-						"%s (%s@%s) is no longer an operator, was using oper block: %s",
+						"%s (%s@%s) is no longer an operator, was opered as: %s",
 						source_p->name, source_p->username, source_p->orighost, source_p->localClient->opername);
 					sendto_one(source_p, form_str(RPL_NOTOPERANYMORE), me.name, source_p->name);
 				}
@@ -1703,7 +1703,7 @@ oper_up(struct Client *source_p, struct oper_conf *oper_p)
 	call_hook(h_umode_changed, &hdata);
 
 	sendto_realops_snomask(SNO_GENERAL, ConfigFileEntry.global_oper_up_notices ? L_NETWIDE : L_ALL,
-			     "%s (%s@%s) is now an operator, using oper block: %s", source_p->name,
+			     "%s (%s@%s) is now an operator, opered as: %s", source_p->name,
 			     source_p->username, source_p->orighost, oper_p->name);
 	if(!(old & UMODE_INVISIBLE) && IsInvisible(source_p))
 		++Count.invisi;
