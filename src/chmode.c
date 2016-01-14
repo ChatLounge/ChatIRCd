@@ -646,9 +646,9 @@ chm_simple(struct Client *source_p, struct Channel *chptr,
 		}
 	}
 	
-	/* Special case since +F and +Q can't be set by halfops. - Ben
+	/* Special case since +g, +F, and +Q can't be set by halfops. - Ben
 	 */
-	if((c == 'F' || c == 'Q') &&
+	if((c == 'g' || c == 'F' || c == 'Q') &&
 		!(alevel & CHFL_CHANOP || alevel & CHFL_ADMIN || alevel & CHFL_OWNER))
 	{
 		if(IsSetOverride(source_p))

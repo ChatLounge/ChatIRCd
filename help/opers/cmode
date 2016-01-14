@@ -25,7 +25,7 @@ NO PARAMETERS:
               may join.
      +c     - No color.  All markup (color, bold, underline, etc.) in
               messages is stripped.
-     +g     - Free invite.  Everyone may invite users.  Significantly
+ @   +g     - Free invite.  Everyone may invite users.  Significantly
               weakens +i control.
      +z     - Op moderated.  Messages blocked by +m, +b and +q are instead
               sent to all channel operators, halfop and up.
