@@ -1621,7 +1621,7 @@ chm_limit(struct Client *source_p, struct Channel *chptr,
 	int limit;
 	int overrided_mode = 0;
 
-	if(!allow_mode_change(source_p, chptr, alevel, errors, c))
+	if(!(alevel & CHFL_CHANOP || alevel & CHFL_ADMIN || alevel & CHFL_OWNER))
 	{
 		if(IsSetOverride(source_p))
 			overrided_mode = 1;
@@ -1848,7 +1848,7 @@ chm_key(struct Client *source_p, struct Channel *chptr,
 	char *key;
 	int overrided_mode = 0;
 
-	if(!allow_mode_change(source_p, chptr, alevel, errors, c))
+	if(!(alevel & CHFL_CHANOP || alevel & CHFL_ADMIN || alevel & CHFL_OWNER))
 	{
 		if(IsSetOverride(source_p))
 			overrided_mode = 1;
