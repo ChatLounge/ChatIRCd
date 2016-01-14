@@ -1,15 +1,15 @@
 Help topics available to users:
 
-ACCEPT          ADMIN           AWAY            CHALLENGE
-CHANTRACE       CMODE           CNOTICE         CPRIVMSG
-CREDITS         ERROR           EXTBAN          EXTBANCOMBO
-HELP            INDEX           INFO            INVITE
-ISON            JOIN            KICK            KNOCK
-LINKS           LIST            LUSERS          MAP
-MONITOR         MOTD            NAMES           NICK
-NOTICE          OPER            PART            PARTALL
-PASS            PING            PONG            PRIVMSG
-QUIT            STATS           TIME            TOPIC
-TRACE           UMODE           UNINVITE        USER
-USERHOST        USERS           VERSION         WHO
-WHOIS           WHOWAS          WHY
+ACCEPT          ADMIN           AWAY            BANFORWARD
+CHALLENGE       CHANTRACE       CMODE           CNOTICE
+CPRIVMSG        CREDITS         ERROR           EXTBAN
+EXTBANCOMBO     HELP            INDEX           INFO
+INVITE          ISON            JOIN            KICK
+KNOCK           LINKS           LIST            LUSERS
+MAP             MONITOR         MOTD            NAMES
+NICK            NOTICE          OPER            PART
+PARTALL         PASS            PING            PONG
+PRIVMSG         QUIT            STATS           TIME
+TOPIC           TRACE           UMODE           UNINVITE
+USER            USERHOST        USERS           VERSION
+WHO             WHOIS           WHOWAS          WHY

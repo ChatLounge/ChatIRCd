@@ -14,12 +14,12 @@ helpdir=	@helpdir@
 uhelpdir=	${helpdir}/users
 ohelpdir=	${helpdir}/opers
 
-SYMLINKS=	accept admin away challenge chantrace cmode cnotice cprivmsg \
-		credits error extban extbancombo extendchans help invite ison \
-		join kick knock links list lusers map monitor \
-		motd names nick oper part partall pass ping \
-		pong quit time topic trace userhost user users \
-		version who whois whowas
+SYMLINKS=	accept admin away banforward challenge chantrace cmode cnotice \
+		cprivmsg credits error extban extbancombo extendchans help invite \
+		ison join kick knock links list lusers map \
+		monitor motd names nick oper part partall pass \
+		ping pong quit time topic trace userhost user \
+		users version who whois whowas
 
 all:
 build:

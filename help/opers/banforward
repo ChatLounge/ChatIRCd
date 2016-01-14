@@ -1,0 +1,22 @@
+Extended help for ban forwards.  For more information on channel
+bans, please see CMODE.
+
+Ban forwards are a mechanism by which users who match
+a given channel ban will be forwarded to the specified channel.
+
+In order to set such a ban, one or more of following criteria
+needs to be met:
+
+- The setter needs to be channel operator or higher on
+  the *target* channel.
+- Alternatively, the *target* channel may be set +F.  If so,
+  there's no need to be op on the target channel.
+
+Syntax:
+
+/mode #Source +b banmask$#TargetChannel
+
+Examples:
+
+/mode #Source +b TooMany!Excess@Flood.Quits.tld$#FixYourConnection
+/mode #Source +b *!Lamer@2.many.leet.kiddiots.tld$#PenaltyBox
