@@ -645,6 +645,23 @@ chm_simple(struct Client *source_p, struct Channel *chptr,
 			return;
 		}
 	}
+	
+	/* Special case since +F and +Q can't be set by halfops. - Ben
+	 */
+	if((c == 'F' || c == 'Q') &&
+		!(alevel & CHFL_CHANOP || alevel & CHFL_ADMIN || alevel & CHFL_OWNER))
+	{
+		if(IsSetOverride(source_p))
+			overrided_mode = 1;
+		else
+		{
+			if(!(*errors & SM_ERR_NOOPS))
+			sendto_one(source_p, form_str(ERR_CHANOPRIVSNEEDED),
+				   me.name, source_p->name, chptr->chname);
+			*errors |= SM_ERR_NOOPS;
+			return;
+		}
+	}
 
 	if(MyClient(source_p) && (++mode_limit_simple > MAXMODES_SIMPLE))
 		return;
@@ -1760,7 +1777,7 @@ chm_forward(struct Client *source_p, struct Channel *chptr,
 	}
 
 #ifndef FORWARD_OPERONLY
-	if(!allow_mode_change(source_p, chptr, alevel, errors, c))
+	if(!(alevel & CHFL_CHANOP || alevel & CHFL_ADMIN || alevel & CHFL_OWNER))
 	{
 		if(IsSetOverride(source_p))
 			overrided_mode = 1;
