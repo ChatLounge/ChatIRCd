@@ -1209,6 +1209,9 @@ chm_owner(struct Client *source_p, struct Channel *chptr,
 		if(targ_p == source_p && mstptr->flags & CHFL_OWNER)
 			return;
 
+		if(!IsServer(source_p) && mstptr->flags & CHFL_OWNER)
+			return;
+
 		mode_changes[mode_count].letter = c;
 		mode_changes[mode_count].dir = MODE_ADD;
 		mode_changes[mode_count].mems = ALL_MEMBERS;
@@ -1226,6 +1229,9 @@ chm_owner(struct Client *source_p, struct Channel *chptr,
 				   me.name, source_p->name, targ_p->name, chptr->chname);
 			return;
 		}
+
+		if(!IsServer(source_p) && !(mstptr->flags & CHFL_OWNER))
+			return;
 
 		mode_changes[mode_count].letter = c;
 		mode_changes[mode_count].dir = MODE_DEL;
@@ -1300,6 +1306,9 @@ chm_admin(struct Client *source_p, struct Channel *chptr,
 		if(targ_p == source_p && mstptr->flags & CHFL_ADMIN)
 			return;
 
+		if(!IsServer(source_p) && mstptr->flags & CHFL_ADMIN)
+			return;
+
 		mode_changes[mode_count].letter = c;
 		mode_changes[mode_count].dir = MODE_ADD;
 		mode_changes[mode_count].mems = ALL_MEMBERS;
@@ -1317,6 +1326,9 @@ chm_admin(struct Client *source_p, struct Channel *chptr,
 				   me.name, source_p->name, targ_p->name, chptr->chname);
 			return;
 		}
+
+		if(!IsServer(source_p) && !(mstptr->flags & CHFL_ADMIN))
+			return;
 
 		mode_changes[mode_count].letter = c;
 		mode_changes[mode_count].dir = MODE_DEL;
@@ -1391,6 +1403,9 @@ chm_op(struct Client *source_p, struct Channel *chptr,
 		if(targ_p == source_p && mstptr->flags & CHFL_CHANOP)
 			return;
 
+		if(!IsServer(source_p) && mstptr->flags & CHFL_CHANOP)
+			return;
+
 		mode_changes[mode_count].letter = c;
 		mode_changes[mode_count].dir = MODE_ADD;
 		mode_changes[mode_count].mems = ALL_MEMBERS;
@@ -1408,6 +1423,9 @@ chm_op(struct Client *source_p, struct Channel *chptr,
 				   me.name, source_p->name, targ_p->name, chptr->chname);
 			return;
 		}
+
+		if(!IsServer(source_p) && !(mstptr->flags & CHFL_CHANOP))
+			return;
 
 		mode_changes[mode_count].letter = c;
 		mode_changes[mode_count].dir = MODE_DEL;
@@ -1502,6 +1520,9 @@ chm_halfop(struct Client *source_p, struct Channel *chptr,
 		if(targ_p == source_p && mstptr->flags & CHFL_HALFOP)
 			return;
 
+		if(!IsServer(source_p) && mstptr->flags & CHFL_HALFOP)
+			return;
+
 		mode_changes[mode_count].letter = c;
 		mode_changes[mode_count].dir = MODE_ADD;
 		mode_changes[mode_count].mems = ALL_MEMBERS;
@@ -1519,6 +1540,9 @@ chm_halfop(struct Client *source_p, struct Channel *chptr,
 				   me.name, source_p->name, targ_p->name, chptr->chname);
 			return;
 		}
+
+		if(!IsServer(source_p) && !(mstptr->flags & CHFL_HALFOP))
+			return;
 
 		mode_changes[mode_count].letter = c;
 		mode_changes[mode_count].dir = MODE_DEL;
@@ -1620,6 +1644,9 @@ chm_voice(struct Client *source_p, struct Channel *chptr,
 	{
 		if(targ_p == source_p && mstptr->flags & CHFL_VOICE)
 			return;
+		
+		if(!IsServer(source_p) && mstptr->flags & CHFL_VOICE)
+			return;
 
 		mode_changes[mode_count].letter = c;
 		mode_changes[mode_count].dir = MODE_ADD;
@@ -1632,7 +1659,10 @@ chm_voice(struct Client *source_p, struct Channel *chptr,
 	}
 	else
 	{
-		mode_changes[mode_count].letter = 'v';
+		if(!IsServer(source_p) && !(mstptr->flags & CHFL_VOICE))
+			return;
+
+		mode_changes[mode_count].letter = c;
 		mode_changes[mode_count].dir = MODE_DEL;
 		mode_changes[mode_count].mems = ALL_MEMBERS;
 		mode_changes[mode_count].overrided_mode = overrided_mode;
