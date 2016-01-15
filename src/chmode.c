@@ -1536,12 +1536,23 @@ chm_voice(struct Client *source_p, struct Channel *chptr,
 	  int alevel, int parc, int *parn,
 	  const char **parv, int *errors, int dir, char c, long mode_type)
 {
+	struct membership *msptr;
 	struct membership *mstptr;
 	const char *opnick;
 	struct Client *targ_p;
 	int overrided_mode = 0;
 
-	if(alevel != CHFL_CHANOP && alevel != CHFL_OWNER && alevel != CHFL_ADMIN && alevel != CHFL_HALFOP)
+	if((msptr = find_channel_membership(chptr, source_p)) == NULL)
+	{
+		if(IsSetOverride(source_p))
+			overrided_mode = 1;
+		else
+			return;
+	}
+
+	if(!(alevel & CHFL_CHANOP) && !(alevel & CHFL_HALFOP) &&
+		!(alevel & CHFL_ADMIN) && !(alevel & CHFL_OWNER) &&
+		!(msptr != NULL && msptr->flags & CHFL_VOICE))
 	{
 		if(IsSetOverride(source_p))
 			overrided_mode = 1;
@@ -1584,11 +1595,32 @@ chm_voice(struct Client *source_p, struct Channel *chptr,
 		return;
 	}
 
+	/* Permit self-devoice regardless of op status, while still not permitting
+	 * voices to set any other modes.
+	 */	
+	if(msptr != NULL && msptr->flags & CHFL_VOICE && !(msptr->flags & CHFL_HALFOP || msptr->flags & CHFL_CHANOP ||
+		msptr->flags & CHFL_ADMIN || msptr->flags & CHFL_OWNER) && source_p != targ_p)
+	{
+		if(IsSetOverride(source_p))
+			overrided_mode = 1;
+		else
+		{
+			if(!(*errors & SM_ERR_NOOPS))
+				sendto_one(source_p, form_str(ERR_CHANOPRIVSNEEDED),
+						me.name, source_p->name, chptr->chname);
+				*errors |= SM_ERR_NOOPS;
+			return;
+		}
+	}
+
 	if(MyClient(source_p) && (++mode_limit > MAXMODEPARAMS))
 		return;
 
 	if(dir == MODE_ADD)
 	{
+		if(targ_p == source_p && mstptr->flags & CHFL_VOICE)
+			return;
+
 		mode_changes[mode_count].letter = c;
 		mode_changes[mode_count].dir = MODE_ADD;
 		mode_changes[mode_count].mems = ALL_MEMBERS;
