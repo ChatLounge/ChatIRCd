@@ -793,6 +793,7 @@ set_default_conf(void)
 	ConfigChannel.halfops_can_dehalfop_others = YES;
 	ConfigChannel.use_admin = NO;
 	ConfigChannel.use_owner = NO;
+	ConfigChannel.can_self_devoice = YES;
 	ConfigChannel.use_except = YES;
 	ConfigChannel.use_invex = YES;
 	ConfigChannel.use_forward = YES;

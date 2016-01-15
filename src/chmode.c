@@ -1552,7 +1552,7 @@ chm_voice(struct Client *source_p, struct Channel *chptr,
 
 	if(!(alevel & CHFL_CHANOP) && !(alevel & CHFL_HALFOP) &&
 		!(alevel & CHFL_ADMIN) && !(alevel & CHFL_OWNER) &&
-		!(msptr != NULL && msptr->flags & CHFL_VOICE))
+		!(msptr != NULL && ConfigChannel.can_self_devoice && msptr->flags & CHFL_VOICE))
 	{
 		if(IsSetOverride(source_p))
 			overrided_mode = 1;
@@ -1598,7 +1598,7 @@ chm_voice(struct Client *source_p, struct Channel *chptr,
 	/* Permit self-devoice regardless of op status, while still not permitting
 	 * voices to set any other modes.
 	 */	
-	if(msptr != NULL && msptr->flags & CHFL_VOICE && !(msptr->flags & CHFL_HALFOP || msptr->flags & CHFL_CHANOP ||
+	if(ConfigChannel.can_self_devoice && msptr != NULL && msptr->flags & CHFL_VOICE && !(msptr->flags & CHFL_HALFOP || msptr->flags & CHFL_CHANOP ||
 		msptr->flags & CHFL_ADMIN || msptr->flags & CHFL_OWNER) && source_p != targ_p)
 	{
 		if(IsSetOverride(source_p))

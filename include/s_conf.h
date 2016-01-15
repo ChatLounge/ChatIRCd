@@ -256,6 +256,7 @@ struct config_channel_entry
 	int halfops_can_dehalfop_others;
 	int use_admin;
 	int use_owner;
+	int can_self_devoice;
 	int use_except;
 	int use_invex;
 	int use_forward;

@@ -717,6 +717,12 @@ static struct InfoStruct info_table[] = {
 		"Enable chanmode +y (owner)",
 	},
 	{
+		"can_self_devoice",
+		OUTPUT_BOOLEAN_YN,
+		&ConfigChannel.can_self_devoice,
+		"Voiced users can self devoice without ops.",
+	},
+	{
 		"use_except",
 		OUTPUT_BOOLEAN_YN,
 		&ConfigChannel.use_except,

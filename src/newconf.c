@@ -2490,6 +2490,7 @@ static struct ConfEntry conf_channel_table[] =
 	{ "halfops_can_dehalfop_others", CF_YESNO, NULL, 0, &ConfigChannel.halfops_can_dehalfop_others },
 	{ "use_admin", CF_YESNO, NULL, 0, &ConfigChannel.use_admin	},
 	{ "use_owner", CF_YESNO, NULL, 0, &ConfigChannel.use_owner	},
+	{ "can_self_devoice", CF_YESNO, NULL, 0, &ConfigChannel.can_self_devoice	},
 	{ "use_except",		CF_YESNO, NULL, 0, &ConfigChannel.use_except		},
 	{ "use_invex",		CF_YESNO, NULL, 0, &ConfigChannel.use_invex		},
 	{ "use_forward",	CF_YESNO, NULL, 0, &ConfigChannel.use_forward		},
