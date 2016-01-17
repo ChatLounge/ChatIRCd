@@ -11,7 +11,7 @@ dnl Sneaky way to get an Id tag into the configure script
 AC_COPYRIGHT([$Id: configure.ac 2014-2016 ChatLounge IRC Network Development Team $])
 AC_COPYRIGHT([$Id: configure.ac 3516 2007-06-10 16:14:03Z jilles $])
 
-AC_INIT([ChatIRCd], [1.1.0])
+AC_INIT([ChatIRCd], [1.2.0-dev])
 
 AC_CONFIG_HEADER(include/setup.h)
 
