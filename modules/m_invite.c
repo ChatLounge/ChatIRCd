@@ -326,9 +326,9 @@ send_invite_notification(struct Client *source_p, struct Client *target_p, struc
 		source_p->name, source_p->username, source_p->host,
 		target_p->name, chptr->chname);
 
-	sendto_channel_local(
+	sendto_channel_local_with_capability(
 		chptr->mode.mode & MODE_FREEINVITE ? ALL_MEMBERS : ONLY_CHANOPS,
-		chptr,
+		NOCAPS, CLICAP_INVITE_NOTIFY, chptr,
 		":%s NOTICE %s %s to %s", me.name,
 		chptr->chname, invitenotice, chptr->chname);
 }
