@@ -77,12 +77,40 @@ DECLARE_MODULE_AV1(privs, NULL, NULL, privs_clist, NULL, NULL, "");
 
 static void show_privs(struct Client *source_p, struct Client *target_p)
 {
-	char buf[512];
+	char buf[BUFSIZE];
 	struct mode_table *p;
+	int i = 0; /* Priv count per line. */
 
 	buf[0] = '\0';
 	if (target_p->localClient->privset)
-		rb_strlcat(buf, target_p->localClient->privset->privs, sizeof buf);
+	{
+		const char *privname;
+		char *tmp;
+		char *priv;
+		
+		tmp = LOCAL_COPY(target_p->localClient->privset->privs);
+		
+		for(privname = rb_strtok_r(tmp, " ", &priv); privname; privname = rb_strtok_r(NULL, " ", &priv))
+		{
+			rb_strlcat(buf, privname, sizeof buf);
+			rb_strlcat(buf, " ", sizeof buf);
+			i++;
+
+			if(i == 10)
+			{
+				sendto_one_numeric(source_p, RPL_PRIVS, form_str(RPL_PRIVS),
+					target_p->name, buf);
+				rb_strlcpy(buf, "\0", sizeof buf);
+				i = 0;
+			}
+		}
+		
+		/* Show operator flags perform the operator block name and privset name. */
+		sendto_one_numeric(source_p, RPL_PRIVS, form_str(RPL_PRIVS),
+			target_p->name, buf);
+		rb_strlcpy(buf, "\0", sizeof buf);
+	}
+
 	if (IsOper(target_p))
 	{
 		if (buf[0] != '\0')
@@ -98,7 +126,15 @@ static void show_privs(struct Client *source_p, struct Client *target_p)
 			rb_strlcat(buf, target_p->localClient->privset->name, sizeof buf);
 		}
 	}
+	
+	/* Show the operator block name and privset before showing the other oper privs. */
+	sendto_one_numeric(source_p, RPL_PRIVS, form_str(RPL_PRIVS),
+			target_p->name, buf);
+	rb_strlcpy(buf, "\0", sizeof buf);
+	
 	p = &auth_client_table[0];
+	
+	i = 0; /* Reset i back to 0. */
 	while (p->name != NULL)
 	{
 		if (target_p->flags2 & p->mode)
@@ -106,9 +142,21 @@ static void show_privs(struct Client *source_p, struct Client *target_p)
 			if (buf[0] != '\0')
 				rb_strlcat(buf, " ", sizeof buf);
 			rb_strlcat(buf, p->name, sizeof buf);
+
+			/* Show up to 10 privs per line. */
+			if(i == 10)
+			{
+				sendto_one_numeric(source_p, RPL_PRIVS, form_str(RPL_PRIVS),
+						target_p->name, buf);
+				rb_strlcpy(buf, "\0", sizeof buf);
+				i = 0;
+			}
+			i++;
 		}
 		p++;
 	}
+
+	/* Send whatever is left, since there would be fewer than 10. */
 	sendto_one_numeric(source_p, RPL_PRIVS, form_str(RPL_PRIVS),
 			target_p->name, buf);
 }

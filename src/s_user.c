@@ -1714,7 +1714,34 @@ oper_up(struct Client *source_p, struct oper_conf *oper_p)
 		   construct_snobuf(source_p->snomask));
 	sendto_one(source_p, form_str(RPL_YOUREOPER), me.name, source_p->name);
 	sendto_one_notice(source_p, ":*** Oper privilege set is %s", oper_p->privset->name);
-	sendto_one_notice(source_p, ":*** Oper privs are %s", oper_p->privset->privs);
+
+	/* List oper privs 10 at a time. */
+	int i = 0; /* Priv count per line. */
+	const char *privname;
+	char buf[BUFSIZE];
+	char *priv;
+	char *tmp;
+
+	tmp = LOCAL_COPY(oper_p->privset->privs);
+	rb_strlcpy(buf, "\0", sizeof buf);
+
+	for(privname = rb_strtok_r(tmp, " ", &priv); privname; privname = rb_strtok_r(NULL, " ", &priv))
+	{
+		rb_strlcat(buf, privname, sizeof buf);
+		rb_strlcat(buf, " ", sizeof buf);
+		i++;
+		
+		if(i == 10)
+		{
+			sendto_one_notice(source_p, ":*** Oper privs are %s", buf);
+			rb_strlcpy(buf, "\0", sizeof buf);
+			i = 0;
+		}
+	}
+
+	/* Send remaining oper privs. */
+	sendto_one_notice(source_p, ":*** Oper privs are %s", buf);
+
 	send_oper_motd(source_p);
 
 	return (1);
