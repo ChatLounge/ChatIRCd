@@ -17,6 +17,8 @@ libratbox/libtool
 libratbox/src/.deps/
 libratbox/src/.libs/
 libratbox/src/libratbox.la
+libratbox/src/version.c
+libratbox/src/version.c.last
 src/ircd
 src/lex.yy.c
 src/version.c.last
