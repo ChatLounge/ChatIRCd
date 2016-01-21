@@ -2,10 +2,11 @@
  *  charybdis: A slightly useful ircd.
  *  chmode.c: channel mode management
  *
- * Copyright (C) 1990 Jarkko Oikarinen and University of Oulu, Co Center 
- * Copyright (C) 1996-2002 Hybrid Development Team 
- * Copyright (C) 2002-2005 ircd-ratbox development team 
+ * Copyright (C) 1990 Jarkko Oikarinen and University of Oulu, Co Center
+ * Copyright (C) 1996-2002 Hybrid Development Team
+ * Copyright (C) 2002-2005 ircd-ratbox development team
  * Copyright (C) 2005-2006 charybdis development team
+ * Copyright (C) 2016 ChatLounge IRC Network Development Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -89,7 +90,7 @@ construct_cflags_strings(void)
 
 	for(i = 0; i < 256; i++)
 	{
-		if( !(chmode_table[i].set_func == chm_ban) && 
+		if( !(chmode_table[i].set_func == chm_ban) &&
 			!(chmode_table[i].set_func == chm_forward) &&
 			!(chmode_table[i].set_func == chm_throttle) &&
                         !(chmode_table[i].set_func == chm_key) &&
@@ -106,7 +107,7 @@ construct_cflags_strings(void)
 		{
 			chmode_flags[i] = 0;
 		}
-                
+
 		switch (chmode_flags[i])
 		{
 		    case MODE_FREETARGET:
@@ -120,14 +121,14 @@ construct_cflags_strings(void)
 			    *ptr++ = (char) i;
 			}
 		}
-		
+
 		/* Should we leave orphaned check here? -- dwr */
 		if(!(chmode_table[i].set_func == chm_nosuch) && !(chmode_table[i].set_func == chm_orphaned))
 		{
 		    *ptr2++ = (char) i;
 		}
 	}
-        
+
         *ptr++ = '\0';
 	*ptr2++ = '\0';
 }
@@ -210,7 +211,7 @@ get_channel_access(struct Client *source_p, struct membership *msptr, int dir)
 		return CHFL_HALFOP;
 	else
 		return CHFL_PEON;
-	
+
 	if (msptr == NULL)
 		return CHFL_PEON;
 
@@ -645,7 +646,7 @@ chm_simple(struct Client *source_p, struct Channel *chptr,
 			return;
 		}
 	}
-	
+
 	/* Special case since +g, +F, and +Q can't be set by halfops. - Ben
 	 */
 	if((c == 'g' || c == 'F' || c == 'Q') &&
@@ -705,7 +706,7 @@ chm_orphaned(struct Client *source_p, struct Channel *chptr,
 
 	if(MyClient(source_p))
 		return;
-        
+
 	if((dir == MODE_ADD) && !(chptr->mode.mode & mode_type))
 	{
 		chptr->mode.mode |= mode_type;
@@ -752,7 +753,7 @@ chm_staff(struct Client *source_p, struct Channel *chptr,
 		*errors |= SM_ERR_NOPRIVS;
 		return;
 	}
-	
+
 	if(!allow_mode_change(source_p, chptr, CHFL_CHANOP, errors, c))
 		return;
 
@@ -1350,7 +1351,7 @@ chm_op(struct Client *source_p, struct Channel *chptr,
 	const char *opnick;
 	struct Client *targ_p;
 	int overrided_mode = 0;
-	
+
 	if(alevel != CHFL_CHANOP && alevel != CHFL_ADMIN && alevel != CHFL_OWNER)
 	{
 		if(IsSetOverride(source_p))
@@ -1447,7 +1448,7 @@ chm_halfop(struct Client *source_p, struct Channel *chptr,
 	const char *halfopnick;
 	struct Client *targ_p;
 	int overrided_mode = 0;
-	
+
 	if(!(alevel & CHFL_CHANOP) && !(alevel & CHFL_OWNER) && !(alevel & CHFL_ADMIN) && !(alevel & CHFL_HALFOP) && !IsService(source_p))
 	{
 		if(IsSetOverride(source_p))
@@ -1493,7 +1494,7 @@ chm_halfop(struct Client *source_p, struct Channel *chptr,
 		*errors |= SM_ERR_NOTONCHANNEL;
 		return;
 	}
-	
+
 	/* Always permit self dehalfop, regardless of config. setting. */
 	if(!ConfigChannel.halfops_can_dehalfop_others && alevel == CHFL_HALFOP && !(source_p == targ_p))
 	{
@@ -1570,12 +1571,13 @@ chm_voice(struct Client *source_p, struct Channel *chptr,
 	{
 		if(IsSetOverride(source_p))
 			overrided_mode = 1;
-		else
+		else if(!IsService(source_p))
 			return;
 	}
 
 	if(!(alevel & CHFL_CHANOP) && !(alevel & CHFL_HALFOP) &&
 		!(alevel & CHFL_ADMIN) && !(alevel & CHFL_OWNER) &&
+		!IsService(source_p) &&
 		!(msptr != NULL && ConfigChannel.can_self_devoice && msptr->flags & CHFL_VOICE))
 	{
 		if(IsSetOverride(source_p))
@@ -1621,7 +1623,7 @@ chm_voice(struct Client *source_p, struct Channel *chptr,
 
 	/* Permit self-devoice regardless of op status, while still not permitting
 	 * voices to set any other modes.
-	 */	
+	 */
 	if(ConfigChannel.can_self_devoice && msptr != NULL && msptr->flags & CHFL_VOICE && !(msptr->flags & CHFL_HALFOP || msptr->flags & CHFL_CHANOP ||
 		msptr->flags & CHFL_ADMIN || msptr->flags & CHFL_OWNER) && source_p != targ_p)
 	{
@@ -1644,7 +1646,7 @@ chm_voice(struct Client *source_p, struct Channel *chptr,
 	{
 		if(targ_p == source_p && mstptr->flags & CHFL_VOICE)
 			return;
-		
+
 		if(!IsServer(source_p) && mstptr->flags & CHFL_VOICE)
 			return;
 
@@ -2261,7 +2263,7 @@ struct ChannelMode chmode_table[256] =
 /* set_channel_mode()
  *
  * inputs	- client, source, channel, membership pointer, params
- * output	- 
+ * output	- None
  * side effects - channel modes/memberships are changed, MODE is issued
  *
  * Extensively modified to be hotpluggable, 03/09/06 -- nenolod
@@ -2407,7 +2409,7 @@ set_channel_mode(struct Client *client_p, struct Client *source_p,
 				pbuf += len;
 				paralen += len;
 			}
-			
+
 			if(mode_changes[i].overrided_mode)
 				override = 1;
 		}
@@ -2419,12 +2421,12 @@ set_channel_mode(struct Client *client_p, struct Client *source_p,
 		if(cur_len > mlen)
 			sendto_channel_local(flags, chptr, "%s %s", modebuf, parabuf);
 	}
-	
+
 	if(override && MyClient(source_p) && !IsService(source_p))
 		sendto_realops_snomask(SNO_GENERAL, L_NETWIDE,
 					   "%s is using oper-override on %s (modehacking)",
 				       get_oper_name(source_p), chptr->chname);
-		
+
 
 	/* only propagate modes originating locally, or if we're hubbing */
 	if(MyClient(source_p) || rb_dlink_list_length(&serv_list) > 1)
@@ -2434,7 +2436,7 @@ set_channel_mode(struct Client *client_p, struct Client *source_p,
 /* set_channel_mlock()
  *
  * inputs	- client, source, channel, params
- * output	- 
+ * output	- None
  * side effects - channel mlock is changed / MLOCK is propagated
  */
 void
