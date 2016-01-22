@@ -1575,9 +1575,9 @@ chm_voice(struct Client *source_p, struct Channel *chptr,
 			return;
 	}
 
-	if(!(alevel & CHFL_CHANOP) && !(alevel & CHFL_HALFOP) &&
+	if(!IsService(source_p) && !IsServer(source_p) &&
+		!(alevel & CHFL_CHANOP) && !(alevel & CHFL_HALFOP) &&
 		!(alevel & CHFL_ADMIN) && !(alevel & CHFL_OWNER) &&
-		!IsService(source_p) &&
 		!(msptr != NULL && ConfigChannel.can_self_devoice && msptr->flags & CHFL_VOICE))
 	{
 		if(IsSetOverride(source_p))
