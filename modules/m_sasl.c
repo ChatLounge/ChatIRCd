@@ -250,10 +250,21 @@ advertise_sasl(struct Client *client_p)
 static void
 advertise_sasl_exit(hook_data_client_exit *data)
 {
+	/* Check to see if the server the SASL agent is one has dropped,
+	 * as Atheme/ChatServices doesn't send QUITs for each client
+	 * and thus, this can't be assumed.
+	 *
+	 * Ben
+	 */
 	if (!ConfigFileEntry.sasl_service)
 		return;
 
-	if (irccmp(data->target->name, ConfigFileEntry.sasl_service))
+	struct Client *sasl_p;
+
+	if((sasl_p = find_named_client(ConfigFileEntry.sasl_service)) == NULL)
+		return;
+
+	if (irccmp(data->target->name, sasl_p->servptr->name) != 0)
 		return;
 
 	sendto_local_clients_with_capability(CLICAP_CAP_NOTIFY, ":%s CAP * DEL :sasl", me.name);
