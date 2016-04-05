@@ -1127,6 +1127,8 @@ chm_ban(struct Client *source_p, struct Channel *chptr,
 			/* mask isn't a valid ban, check raw_mask */
 			if((removed = del_id(chptr, raw_mask, list, mode_type)) != NULL)
 				mask = raw_mask;
+			else
+				return;
 		}
 
 		if(removed && removed->forward)
