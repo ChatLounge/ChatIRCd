@@ -1160,6 +1160,13 @@ chm_owner(struct Client *source_p, struct Channel *chptr,
 	struct Client *targ_p;
 	int overrided_mode = 0;
 
+	/* If owner mode isn't enabled, bail immediately. */
+	if(!ConfigChannel.use_owner)
+	{
+		sendto_one(source_p, form_str(ERR_UNKNOWNMODE), me.name, source_p->name, c);
+		return;
+	}
+
 	if(alevel != CHFL_OWNER)
 	{
 		if(IsSetOverride(source_p))
@@ -1256,6 +1263,13 @@ chm_admin(struct Client *source_p, struct Channel *chptr,
 	const char *adminnick;
 	struct Client *targ_p;
 	int overrided_mode = 0;
+
+	/* If admin/protect mode isn't enabled, bail immediately. */
+	if(!ConfigChannel.use_admin)
+	{
+		sendto_one(source_p, form_str(ERR_UNKNOWNMODE), me.name, source_p->name, c);
+		return;
+	}
 
 	if(alevel != CHFL_ADMIN && alevel != CHFL_OWNER)
 	{
@@ -1450,6 +1464,13 @@ chm_halfop(struct Client *source_p, struct Channel *chptr,
 	const char *halfopnick;
 	struct Client *targ_p;
 	int overrided_mode = 0;
+
+	/* If halfop mode isn't enabled, bail immediately. */
+	if(!ConfigChannel.use_halfop)
+	{
+		sendto_one(source_p, form_str(ERR_UNKNOWNMODE), me.name, source_p->name, c);
+		return;
+	}
 
 	if(!(alevel & CHFL_CHANOP) && !(alevel & CHFL_OWNER) && !(alevel & CHFL_ADMIN) && !(alevel & CHFL_HALFOP) && !IsService(source_p))
 	{
