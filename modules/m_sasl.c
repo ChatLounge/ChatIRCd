@@ -267,8 +267,7 @@ advertise_sasl_exit(hook_data_client_exit *data)
 	if((sasl_p = find_named_client(ConfigFileEntry.sasl_service)) == NULL)
 		return;
 
-	if (irccmp(data->target->name, sasl_p->servptr->name) != 0)
-		return;
-
-	sendto_local_clients_with_capability(CLICAP_CAP_NOTIFY, ":%s CAP * DEL :sasl", me.name);
+	if (irccmp(data->target->name, sasl_p->servptr->name) == 0 ||
+		irccmp(data->target->name, ConfigFileEntry.sasl_service) == 0)
+		sendto_local_clients_with_capability(CLICAP_CAP_NOTIFY, ":%s CAP * DEL :sasl", me.name);
 }
