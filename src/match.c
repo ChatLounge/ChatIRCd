@@ -451,8 +451,9 @@ int match_cidr(const char *s1, const char *s2)
 #ifdef RB_IPV6
 	if (strchr(ip, ':') && strchr(ipmask, ':'))
 	{
-		if (cidrlen < 128)
+		if (cidrlen > 128)
 			return 0;
+
 		aftype = AF_INET6;
 		ipptr = &((struct sockaddr_in6 *)&ipaddr)->sin6_addr;
 		maskptr = &((struct sockaddr_in6 *)&maskaddr)->sin6_addr;
