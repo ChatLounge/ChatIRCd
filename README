@@ -15,7 +15,7 @@ Contact: #ChatIRCd at irc.chatlounge.net
 In addition to original code, it may include some features and code from
 ShadowIRCd, ElementalIRCd, Ircd-seven, and elsewhere.
 
-Differences from Charybdis 3.5.0:
+Differences from Charybdis 3.5.x:
 
 - Global nick change notices (snomask +N)
 - SNO_SPY Server notices (extensions/sno_*_notice.c) are now global
@@ -27,9 +27,6 @@ Differences from Charybdis 3.5.0:
 - Usermodes are shown in /whois.  Only shown when
     an oper performs the whois, and/or a self-whois.
 - When a K-lined user connects, snomask +K shows it.
-- Initial channel modes when a channel is created are
-    now configurable with the 'autochanmodes'
-    option.
 - Default initial channel modes are now +nst if not configured.
 - Extended ban type $u.  $u:nick!ident@host matches any clients
     that are not identified to services.
@@ -58,6 +55,9 @@ In addition, these differences from Charybdis 3.4.2:
 - Channel mode +T blocks channel notices.
 - SSLv3 is an older encryption protocol that's no longer supported.
     SSL clients must support at least TLS v1.0+.
+- Initial channel modes when a channel is created are
+    now configurable with the 'autochanmodes'
+    option.
 
 Note: The list may not be exhaustive.  Refer to the commit
 	history for details.
