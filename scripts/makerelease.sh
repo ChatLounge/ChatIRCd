@@ -1,7 +1,8 @@
 #!/bin/sh
-# mkrelease.sh: Creates a release suitable for distfiles.atheme.org.
+# mkrelease.sh: Creates a release tarball for ChatIRCd..
 #
 # Copyright (c) 2007, 2011 atheme.org
+# Copyright (c) 2016 ChatLounge IRC Network Development Team
 #
 # Permission to use, copy, modify, and/or distribute this software for
 # any purpose with or without fee is hereby granted, provided that the above
@@ -67,40 +68,40 @@ tar jcf $RELEASENAME.tar.bz2 $RELEASENAME/
 
 rm $RELEASENAME-working.tar.gz
 
-PUBLISH="yes"
+# Maybe replace this entire commented out section with code specific to ChatIRCd?
+#
+#PUBLISH="yes"
+#
+#ok="0"
+#if [ "x$AUTOMATIC" != "xyes" ]; then
+#	echo
+#	echo "Would you like to publish these releases now?"
+#	while [ $ok -eq 0 ]; do
+#		echo -n "[$PUBLISH] "
+#
+#		read INPUT
+#		case $INPUT in
+#			[Yy]*)
+#				PUBLISH="yes"
+#				ok=1
+#				;;
+#			[Nn]*)
+#				PUBLISH="no"
+#				ok=1
+#				;;
+#		esac
+#	done
+#fi
 
-ok="0"
-if [ "x$AUTOMATIC" != "xyes" ]; then
-	echo
-	echo "Would you like to publish these releases now?"
-	while [ $ok -eq 0 ]; do
-		echo -n "[$PUBLISH] "
+#if [ "x$PUBLISH" = "xyes" ]; then
+#	scp $RELEASENAME.tgz hg.atheme.org:/srv/distfiles
+#	scp $RELEASENAME.tbz2 hg.atheme.org:/srv/distfiles
 
-		read INPUT
-		case $INPUT in
-			[Yy]*)
-				PUBLISH="yes"
-				ok=1
-				;;
-			[Nn]*)
-				PUBLISH="no"
-				ok=1
-				;;
-		esac
-	done
-fi
-
-if [ "x$PUBLISH" = "xyes" ]; then
-	scp $RELEASENAME.tgz hg.atheme.org:/srv/distfiles
-	scp $RELEASENAME.tbz2 hg.atheme.org:/srv/distfiles
-
-	echo
-	echo "The releases have been published, and will be available to the entire"
-	echo "distribution network within 15 minutes."
-fi
+#	echo
+#	echo "The releases have been published, and will be available to the entire"
+#	echo "distribution network within 15 minutes."
+#fi
 
 echo
-echo "Done. If you have any bugs to report, report them against"
-echo "the distfiles.atheme.org component at http://jira.atheme.org"
-echo "Thanks!"
+echo "Done.  Release tarballs have been created for ChatIRCd."
 echo
