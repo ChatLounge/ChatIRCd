@@ -14,7 +14,7 @@
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- *  
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
@@ -401,7 +401,6 @@ rb_init_ssl(void)
 int
 rb_setup_ssl_server(const char *cert, const char *keyfile, const char *dhfile, const char *cipher_list)
 {
-	DH *dh;
 	unsigned long err;
 	if(cert == NULL)
 	{
@@ -437,7 +436,7 @@ rb_setup_ssl_server(const char *cert, const char *keyfile, const char *dhfile, c
 		BIO *bio = BIO_new_file(dhfile, "r");
 		if(bio != NULL)
 		{
-			dh = PEM_read_bio_DHparams(bio, NULL, NULL, NULL);
+			DH *dh = PEM_read_bio_DHparams(bio, NULL, NULL, NULL);
 			if(dh == NULL)
 			{
 				err = ERR_get_error();
@@ -449,6 +448,7 @@ rb_setup_ssl_server(const char *cert, const char *keyfile, const char *dhfile, c
 			}
 			BIO_free(bio);
 			SSL_CTX_set_tmp_dh(ssl_server_ctx, dh);
+			DH_free(dh);
 		}
 		else
 		{
