@@ -969,7 +969,7 @@ chm_ban(struct Client *source_p, struct Channel *chptr,
 
 		/* non-ops cant see +eI lists.. */
 		/* note that this is still permitted if +e/+I are mlocked. */
-		if(alevel != CHFL_OWNER && alevel != CHFL_CHANOP && alevel != CHFL_HALFOP &&
+		if(alevel != CHFL_OWNER && alevel != CHFL_ADMIN && alevel != CHFL_CHANOP && alevel != CHFL_HALFOP &&
 				mode_type != CHFL_BAN && mode_type != CHFL_QUIET)
 		{
 			/* Controversial?  Let opers with override view +eI silently. - Ben */
