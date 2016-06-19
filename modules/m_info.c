@@ -401,6 +401,12 @@ static struct InfoStruct info_table[] = {
 		"Network name"
 	},
 	{
+		"server description",
+		OUTPUT_STRING,
+		&ServerInfo.description,
+		"Server description as shown in /LINKS."
+	},
+	{
 		/* Note: String generated in newconf.c at config read time.
 		 *   This is better than generating the string every time the
 		 *   /info command is used. - Ben
