@@ -379,7 +379,18 @@ single_whois(struct Client *source_p, struct Client *target_p, int operspy)
 		for (i = 0; i < 128; i++) /* >= 127 is extended ascii */
 			if (target_p->umodes & user_modes[i])
 				*m++ = (char) i;
-				*m = '\0';
+
+		if (target_p->umodes & user_modes['s'])
+		{
+			*m++ = ' ';
+			*m++ = '+';
+
+			for (i = 0; i < 128 ; i++)
+				if (snomask_modes[i] && (target_p->snomask & snomask_modes[i]))
+					*m++ = (char) i;
+		}
+
+		*m = '\0';
 
 		sendto_one_numeric(source_p, RPL_WHOISMODES,
 				form_str(RPL_WHOISMODES),
