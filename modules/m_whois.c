@@ -404,17 +404,26 @@ single_whois(struct Client *source_p, struct Client *target_p, int operspy)
 
 	if(MyClient(target_p))
 	{
-		if (IsDynSpoof(target_p) && (IsOper(source_p) || source_p == target_p))
+		if (IsOper(source_p) || source_p == target_p)
 		{
+			int isDynSpoof = 0;
+
+			if (IsDynSpoof(target_p))
+				isDynSpoof = 1;
+
 			/* trick here: show a nonoper their own IP if
 			 * dynamic spoofed but not if auth{} spoofed
 			 * -- jilles */
-			ClearDynSpoof(target_p);
+			if (isDynSpoof)
+				ClearDynSpoof(target_p);
+
 			sendto_one_numeric(source_p, RPL_WHOISHOST,
-					   form_str(RPL_WHOISHOST),
-					   target_p->name, target_p->orighost,
-					   show_ip(source_p, target_p) ? target_p->sockhost : "255.255.255.255");
-			SetDynSpoof(target_p);
+					form_str(RPL_WHOISHOST),
+					target_p->name, target_p->orighost,
+					show_ip(source_p, target_p) ? target_p->sockhost : "255.255.255.255");
+
+			if (isDynSpoof)
+				SetDynSpoof(target_p);
 		}
 		else if(ConfigFileEntry.use_whois_actually && show_ip(source_p, target_p))
 			sendto_one_numeric(source_p, RPL_WHOISACTUALLY,
@@ -442,14 +451,23 @@ single_whois(struct Client *source_p, struct Client *target_p, int operspy)
 	}
 	else
 	{
-		if (IsDynSpoof(target_p) && (IsOper(source_p) || source_p == target_p))
+		if (IsOper(source_p) || source_p == target_p)
 		{
-			ClearDynSpoof(target_p);
+			int isDynSpoof = 0;
+
+			if (IsDynSpoof(target_p))
+				isDynSpoof = 1;
+
+			if (isDynSpoof)
+				ClearDynSpoof(target_p);
+
 			sendto_one_numeric(source_p, RPL_WHOISHOST,
-					   form_str(RPL_WHOISHOST),
-					   target_p->name, target_p->orighost,
-					   show_ip(source_p, target_p) && !EmptyString(target_p->sockhost) && strcmp(target_p->sockhost, "0")? target_p->sockhost : "255.255.255.255");
-			SetDynSpoof(target_p);
+					form_str(RPL_WHOISHOST),
+					target_p->name, target_p->orighost,
+					show_ip(source_p, target_p) && !EmptyString(target_p->sockhost) && strcmp(target_p->sockhost, "0")? target_p->sockhost : "255.255.255.255");
+
+			if (isDynSpoof)
+				SetDynSpoof(target_p);
 		}
 		else if(ConfigFileEntry.use_whois_actually && show_ip(source_p, target_p) &&
 		   !EmptyString(target_p->sockhost) && strcmp(target_p->sockhost, "0"))
