@@ -139,8 +139,8 @@ static struct StatsStruct stats_cmd_table[] = {
 	{'D', stats_deny,		1, 0, },
 	{'e', stats_exempt,		1, 0, },
 	{'E', stats_events,		1, 1, },
-	{'f', stats_comm,		1, 1, },
-	{'F', stats_comm,		1, 1, },
+	{'f', stats_comm,		0, 0, },
+	{'F', stats_comm,		0, 0, },
 	{'g', stats_prop_klines,	1, 0, },
 	{'h', stats_hubleaf,		0, 0, },
 	{'H', stats_hubleaf,		0, 0, },
@@ -1690,6 +1690,26 @@ rb_dump_fd_callback(int fd, const char *desc, void *data)
 static void
 stats_comm(struct Client *source_p)
 {
+	/* Local user, so admins should be able to see this. */
+	if (MyConnect(source_p))
+	{
+		if (!(IsNetAdmin(source_p) || IsAdmin(source_p)))
+		{
+			sendto_one(source_p, form_str(ERR_NOPRIVS),
+					me.name, source_p->name, "admin/netadmin");
+			return;
+		}
+	}
+	else /* Remote user, so should be a NetAdmin. */
+	{
+		if (!IsNetAdmin(source_p))
+		{
+			sendto_one(source_p, form_str(ERR_NOPRIVS),
+					me.name, source_p->name, "netadmin");
+			return;
+		}
+	}
+
 	rb_dump_fd(rb_dump_fd_callback, source_p);
 }
 
