@@ -4,8 +4,9 @@ differences between Charybdis and ChatIRCd.
 ChatIRCd 1.1.6 has been released.
 
 - /WHOIS now always shows the connecting IP and hostname, regardless of whether a
-  vhost is used to self+opers.
-- /WHOIS how shows SNOMASKS enabled, if applicable.
+  vhost is used to self+opers.  Resolves a possible issue of wanting to ban by IP
+  or range, but the reverse DNS has both IPv4 and IPv6, making it ambiguous.
+- /WHOIS now shows SNOMASKS enabled, if applicable.
 - Remote /stats f now works for NetAdmins only.
 - /INFO now includes the server description.
 - Fix a situation where in some cases, certain users couldn't view the +eI lists
