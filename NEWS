@@ -1,5 +1,96 @@
-New version of ChatIRCd.  Please refer to README to compare the
+Please refer to README to compare the
 differences between Charybdis and ChatIRCd.
+
+ChatIRCd 1.1.6 has been released.
+
+- /WHOIS now always shows the connecting IP and hostname, regardless of whether a
+  vhost is used to self+opers.
+- /WHOIS how shows SNOMASKS enabled, if applicable.
+- Remote /stats f now works for NetAdmins only.
+- /INFO now includes the server description.
+- Fix a situation where in some cases, certain users couldn't view the +eI lists
+  of a channel.
+
+-- ChatIRCd-1.1.6
+
+ChatIRCd 1.1.5 has been released.
+
+- Fix a minor issue in one of the matching functions.
+- Fix a rare situation where CAP * DEL :sasl wasn't being sent.
+- Other minor fixes.
+
+-- ChatIRCd-1.1.4
+
+ChatIRCd 1.1.4 has been released.
+
+- Bans, quiets, ban exceptions, and invex can no longer be unset if not set to begin with,
+  in a similar spirit as the other non-list channel modes.
+
+-- ChatIRCd-1.1.4
+
+ChatIRCd 1.1.3 has been released.
+
+- Fix an issue with CAP * DEL :sasl not being sent in certain cases.
+
+-- ChatIRCd-1.1.3
+
+ChatIRCd 1.1.2 has been released.
+
+- Fixed a bug that was introduced when optional self devoicing was introduced.
+
+-- ChatIRCd-1.1.2
+
+ChatIRCd 1.1.0 has been released.
+
+- Introduce additional channel prefixes, can be turned on or off:
+  +y/~, +a/&, +h/% for a total of +yaohv/~&@%+.
+- Halfops can set all channel modes except: +f, +F, +Q, +k, +l, +y, +a, +o.
+- Auto accept with +R works the same as with +g.
+- Voiced users can directly devoice themselves with MODE, if enabled.
+- Network Administrator oper role.
+- Cmode +j can no longer be set negative, or to stratospheric values.
+- Channel prefixes can no longer be set multiple times (i.e. can't op a user who is already an op)
+- WHOIS shows oper name, class block used, and EUID to self + opers.
+- WHOIS shows SSL cipher used, if applicable.
+- CERT SHA hash used is now configurable, choices are SHA1, SHA256, and SHA512.
+- Supported SSL ciphers are now configurable.
+- New oper flags: oper:unresv (UNRESV command), oper:force (to use FJOIN/FNICK),
+    oper:cansetbot (for opers to set umode +B), and oper:local_routing (local SQUIT and connect)
+- no_kill_higher_opers.so extension added (opers can't /kill (net)admins, admins can't /kill netadmins).
+- m_roleplay.so has been removed.
+- chm_netadminonly.so has been added (cmode +N)
+- FJOIN/FNICK commands added, will notify affected users.
+- SVSJOIN added.
+- ENCAP USERMODE so services can change a user's modes.
+  (intended for a NS MODESONID feature)
+- Remote /stats P will show IPs to NetAdmins.
+- /JOIN 0 is disabled by default, but could be reenabled.
+- /PARTALL replaces /JOIN 0.
+- Introduce the /WHY command, which lists matching bans, quiets, ban exceptions,
+  and/or invite exceptions for a given user and channel, if any.
+- Introduce the /UNINVITE command to "take back" an /INVITE.
+- Extban $o will now only function with ban exceptions and invite exceptions.
+- Extban $u will now only function with bans and quiets.
+- Extbans *_compat, $s, and $z are no longer included.
+- Local channels are no longer supported.
+- Optional, configurable static channel part reasons.
+- Optional, configurable static quit reasons.
+- /list can be configured to strip colors and formatting from topics.
+- Channel topics can be configured not to accept colors and formatting (default off).
+- /list will indicate channel modes of the channels.
+- Configurable extended channel join limits.
+- Add remote /mod(re|un|)load commands (requires NetAdmin)
+- Add remote restart/die commands (requires NetAdmin)
+- Add channel invite notices from the server (hidden from users with the invite-notify cap enabled)
+- IRCv3.2 invite-notify added.
+- IRCv3.2 chghost added.
+- IRCv3.2 cap-notify added.
+- The SASL cap will be added and removed as SaslServ (or the other target) is available,
+  if cap-notify is enabled.
+
+- Pull in all the Charybdis 3.5.0 updates.
+
+- Minor fixes.
 
 -- ChatIRCd-1.1.0
 
