@@ -45,7 +45,7 @@ static int me_why(struct Client *client_p, struct Client *source_p,
 
 struct Message why_msgtab = {
 	"WHY", 0, 0, 0, MFLG_SLOW,
-	{mg_unreg, {m_why, 2}, mg_ignore, mg_ignore, {me_why, 2}, {m_why, 2}}
+	{mg_unreg, {m_why, 3}, mg_ignore, mg_ignore, {me_why, 2}, {m_why, 3}}
 };
 
 mapi_clist_av1 why_clist[] = { &why_msgtab, NULL };
@@ -264,13 +264,6 @@ m_why(struct Client *client_p, struct Client *source_p, int parc, const char *pa
 	}
 
 	/* Does the target user exist? */
-	if(EmptyString(parv[2]))
-	{
-		sendto_one_numeric(source_p, ERR_NEEDMOREPARAMS,
-			form_str(ERR_NEEDMOREPARAMS), me.name, source_p->name, "WHY");
-		return 0;
-	}
-
 	target_p = find_named_person(parv[2]);
 
 	if(target_p == NULL)
