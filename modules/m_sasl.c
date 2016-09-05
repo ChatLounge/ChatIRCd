@@ -91,6 +91,12 @@ m_authenticate(struct Client *client_p, struct Client *source_p,
 		return 0;
 	}
 
+	if (*parv[1] == ':' || strchr(parv[1], ' '))
+	{
+		exit_client(client_p, client_p, client_p, "Malformed AUTHENTICATE");
+		return 0;
+	}
+
 	saslserv_p = find_named_client(ConfigFileEntry.sasl_service);
 	if (saslserv_p == NULL || !IsService(saslserv_p))
 	{
@@ -250,12 +256,11 @@ advertise_sasl(struct Client *client_p)
 static void
 advertise_sasl_exit(hook_data_client_exit *data)
 {
-	/* Check to see if the server the SASL agent is one has dropped,
-	 * as Atheme/ChatServices doesn't send QUITs for each client
-	 * and thus, this can't be assumed.
-	 *
-	 * TODO: Maybe make it configurable to check for client quits if
-	 * the SASL agent is *not* on a services server.
+	/* Check to see if the server the SASL agent is one has dropped, as well
+	 * as if only the SASL agent quits (i.e. SaslServ gets unloaded) as
+	 * different services packages react differently on services shutdown/
+	 * restart.  Some will send a /QUIT for each services client, others will
+	 * simply split the server.
 	 *
 	 * Ben
 	 */
