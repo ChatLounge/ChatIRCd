@@ -1,6 +1,14 @@
 Please refer to README to compare the
 differences between Charybdis and ChatIRCd.
 
+ChatIRCd 1.1.7 has been released.
+
+- SASL: The AUTHENTICATE parameter is checked to ensure it doesn't begin
+  with a colon or have a space.
+- /WHY no longer doubles the 461 numeric in certain cases.
+
+-- ChatIRCd 1.1.7
+
 ChatIRCd 1.1.6 has been released.
 
 - /WHOIS now always shows the connecting IP and hostname, regardless of whether a
