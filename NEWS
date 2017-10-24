@@ -1,6 +1,10 @@
 Please refer to README to compare the
 differences between Charybdis and ChatIRCd.
 
+ChatIRCd 1.1.8 has been released.
+
+- Fix a minor problem where clients with the CHGHOST cap would still get the status mode change as if it was a QJM without the quit-join.
+
 ChatIRCd 1.1.7 has been released.
 
 - SASL: The AUTHENTICATE parameter is checked to ensure it doesn't begin
