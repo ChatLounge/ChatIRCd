@@ -719,6 +719,8 @@ set_default_conf(void)
 	ConfigFileEntry.static_quits = NO;
 	ConfigFileEntry.static_quit_reason = NULL;
 
+	ConfigFileEntry.hide_uids_in_whois = YES;
+
 	ConfigFileEntry.default_umodes = UMODE_INVISIBLE;	
 	ConfigFileEntry.failed_oper_notice = YES;
 	ConfigFileEntry.anti_nick_flood = NO;

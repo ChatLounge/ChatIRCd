@@ -5,7 +5,7 @@
  *  Copyright (C) 1990 Jarkko Oikarinen and University of Oulu, Co Center
  *  Copyright (C) 1996-2002 Hybrid Development Team
  *  Copyright (C) 2002-2004 ircd-ratbox development team
- *  Copyright (C) 2015-2016 ChatLounge IRC Network Development Team
+ *  Copyright (C) 2015-2017 ChatLounge IRC Network Development Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -156,6 +156,8 @@ struct config_file_entry
 	char *static_part_reason;
 	int static_quits;
 	char *static_quit_reason;
+
+	int hide_uids_in_whois;
 
 	char *identifyservice;
 	char *identifycommand;
