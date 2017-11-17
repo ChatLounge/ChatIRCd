@@ -593,6 +593,7 @@ conf_end_oper(struct TopConf *tc)
 		if(!EmptyString(yy_oper->passwd))
 			yy_tmpoper->passwd = rb_strdup(yy_oper->passwd);
 
+		yy_tmpoper->classblock = yy_oper->classblock;
 		yy_tmpoper->flags = yy_oper->flags;
 		yy_tmpoper->umodes = yy_oper->umodes;
 		yy_tmpoper->snomask = yy_oper->snomask;
@@ -654,6 +655,14 @@ conf_set_oper_fingerprint(void *data)
 	if (yy_oper->certfp)
 		rb_free(yy_oper->certfp);
 	yy_oper->certfp = rb_strdup((char *) data);
+}
+
+static void
+conf_set_oper_class_block(void *data)
+{
+	if (yy_oper->classblock)
+		rb_free(yy_oper->classblock);
+	yy_oper->classblock = rb_strdup((char *) data);
 }
 
 static void
@@ -2319,6 +2328,7 @@ static struct ConfEntry conf_operator_table[] =
 	{ "user",	CF_QSTRING, conf_set_oper_user,		0, NULL },
 	{ "password",	CF_QSTRING, conf_set_oper_password,	0, NULL },
 	{ "fingerprint",	CF_QSTRING, conf_set_oper_fingerprint,	0, NULL },
+	{ "class",	CF_QSTRING, conf_set_oper_class_block,	0, NULL },
 	{ "\0",	0, NULL, 0, NULL }
 };
 

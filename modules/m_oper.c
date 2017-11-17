@@ -115,6 +115,27 @@ m_oper(struct Client *client_p, struct Client *source_p, int parc, const char *p
 		return 0;
 	}
 
+	if (oper_p->classblock != NULL)
+	{
+		char *classblock = get_client_class(source_p);
+
+		if (strcasecmp(oper_p->classblock, classblock))
+		{
+			sendto_one_numeric(source_p, ERR_NOOPERHOST, form_str(ERR_NOOPERHOST));
+			ilog(L_FOPER, "FAILED OPER (%s) by (%s!%s@%s) (%s) -- client class block mismatch",
+			     name, source_p->name,
+			     source_p->username, source_p->host, source_p->sockhost);
+
+			if(ConfigFileEntry.failed_oper_notice)
+			{
+				sendto_realops_snomask(SNO_GENERAL, L_ALL,
+						     "Failed OPER attempt - client class block mismatch by %s (%s@%s)",
+						     source_p->name, source_p->username, source_p->host);
+			}
+			return 0;
+		}
+	}
+
 	if (oper_p->certfp != NULL)
 	{
 		if (source_p->certfp == NULL || strcasecmp(source_p->certfp, oper_p->certfp))

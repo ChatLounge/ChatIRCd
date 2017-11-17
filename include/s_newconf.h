@@ -2,6 +2,7 @@
  * ircd-ratbox: an advanced Internet Relay Chat Daemon(ircd).
  * s_newconf.h: code for dealing with conf stuff
  *
+ * Copyright (C) 2017 ChatLounge IRC Network Development Team
  * Copyright (C) 2004 Lee Hardy <lee@leeh.co.uk>
  * Copyright (C) 2004 ircd-ratbox development team
  *
@@ -117,6 +118,7 @@ struct oper_conf
 	char *host;
 	char *passwd;
 	char *certfp;
+	char *classblock; /* If not NULL, the class block name the user must match. */
 
 	int flags;
 	int umodes;
