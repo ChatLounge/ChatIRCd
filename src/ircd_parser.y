@@ -34,25 +34,36 @@ static time_t conf_find_time(char*);
 static struct {
 	const char *	name;
 	const char *	plural;
+	const char *	plural2;
 	time_t	val;
 } ircd_times[] = {
-	{"second",     "seconds",    1},
-	{"minute",     "minutes",    60},
-	{"hour",       "hours",      60 * 60},
-	{"day",        "days",       60 * 60 * 24},
-	{"week",       "weeks",      60 * 60 * 24 * 7},
-	{"fortnight",  "fortnights", 60 * 60 * 24 * 14},
-	{"month",      "months",     60 * 60 * 24 * 7 * 4},
-	{"year",       "years",      60 * 60 * 24 * 365},
+	{"second",     "seconds",    "s",           1},
+	{"minute",     "minutes",    "m",           60},
+	{"moment",     "moments",    NULL,          90},
+	{"hour",       "hours",      "h",           60 * 60},
+	{"day",        "days",       "d",           60 * 60 * 24},
+	{"week",       "weeks",      "w",           60 * 60 * 24 * 7},
+	{"fortnight",  "fortnights", NULL,          60 * 60 * 24 * 14},
+	{"month",      "months",     "mo",          60 * 60 * 24 * 365.2422 / 12},
+	{"year",       "years",      "y",           60 * 60 * 24 * 365.2422},
+	{"decade",     "decades",    NULL,          60 * 60 * 24 * 365.2422 * 10},
+	{"century",    "centuries",  NULL,          60 * 60 * 24 * 365.2422 * 100},
+	{"millennium", "millennia",  "millenniums", 60 * 60 * 24 * 365.2422 * 1000},
 	/* ok-- we now do sizes here too. they aren't times, but
 	   it's close enough */
-	{"byte",	"bytes",	1},
-	{"kb",		NULL,		1024},
-	{"kbyte",	"kbytes",	1024},
-	{"kilobyte",	"kilebytes",	1024},
-	{"mb",		NULL,		1024 * 1024},
-	{"mbyte",	"mbytes",	1024 * 1024},
-	{"megabyte",	"megabytes",	1024 * 1024},
+	{"byte",       "bytes",      "b",           1},
+	{"kb",         "kbs",        NULL,          1024},
+	{"kbyte",      "kbytes",     NULL,          1024},
+	{"kilobyte",   "kilebytes",  NULL,          1024},
+	{"kibibyte",   "kibibytes",  NULL,          1024},
+	{"mb",         "mbs",        NULL,          1024 * 1024},
+	{"mbyte",      "mbytes",     NULL,          1024 * 1024},
+	{"megabyte",   "megabytes",  NULL,          1024 * 1024},
+	{"mebibyte",   "mebibytes",  NULL,          1024 * 1024},
+	{"gb",         "gbs",        "g",           1024 * 1024 * 1024},
+	{"gbyte",      "gbytes",     NULL,          1024 * 1024 * 1024},
+	{"gigabyte",   "gigabytes",  NULL,          1024 * 1024 * 1024},
+	{"gibibyte",   "gibibytes",  NULL,          1024 * 1024 * 1024},
 	{NULL, NULL, 0},
 };
 
@@ -63,8 +74,9 @@ time_t conf_find_time(char *name)
   for (i = 0; ircd_times[i].name; i++)
     {
       if (strcasecmp(ircd_times[i].name, name) == 0 ||
-	  (ircd_times[i].plural && strcasecmp(ircd_times[i].plural, name) == 0))
-	return ircd_times[i].val;
+      (ircd_times[i].plural && strcasecmp(ircd_times[i].plural, name) == 0) ||
+      (ircd_times[i].plural2 && strcasecmp(ircd_times[i].plural2, name) == 0))
+    return ircd_times[i].val;
     }
 
   return 0;
