@@ -25,7 +25,7 @@ cat <<EOF
 Now change these lines in the IRCd config file:
 
     ssl_private_key = "${relative_sysconfdir}/ssl.key";
-    ssl_cert = "${relative_sysconfdir}/ssl.cert";
+    ssl_cert = "${relative_sysconfdir}/ssl.pem";
     ssl_dh_params = "${relative_sysconfdir}/dh.pem";
 
 Enjoy using ssl.
